@@ -1,6 +1,4 @@
-require_relative 'project'
-
-class Shanty::Project::StaticProject < Shanty::Project
+class Shanty::Graph::Project::StaticProject < Shanty::Graph::Project::Base
   # Public: A string representation of the type of the current Project subclass.
   # This is expected to be overriden in subclasses.
   #

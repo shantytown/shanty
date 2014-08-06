@@ -1,9 +1,11 @@
-class Shanty::Graph::Discovery
-  def initialize(project_link_graph)
-    @project_link_graph = project_link_graph
-  end
-
-  def populate
-
+module Shanty
+  module Graph
+    module Discovery
+      class Base
+        def discover(root_dir, current_branch, build_number)
+          nil
+        end
+      end
+    end
   end
 end

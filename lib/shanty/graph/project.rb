@@ -1,8 +1,9 @@
-require_relative 'mixins/acts_as_link_graph_node'
-
 # Public: Represents a project in the current repository.
-class Shanty::Project
-  include ActsAsLinkGraphNode
+module Shanty
+  module Graph
+  module Project
+    class Base
+  include Shanty::Graph::Mixins::ActsAsLinkGraphNode
 
   attr_accessor :name, :path, :current_branch, :root_dir, :build_number,
                 :absolute_path, :options
@@ -37,8 +38,12 @@ class Shanty::Project
   #
   # Returns an instance of the Project subclass.
   def self.create(type, *args)
-    klass = const_get("#{type.capitalize}Project")
-    klass.new(*args)
+    begin
+      klass = const_get("Shanty::Graph::Project::#{type.capitalize}Project")
+      klass.new(*args)
+    rescue
+      puts "Could not create a project for type #{type}, are the correct plugins installed?"
+    end
   end
 
   # Public: A string representation of the type of the current Project subclass.
@@ -108,4 +113,7 @@ class Shanty::Project
       current_branch: current_branch
     }.inspect
   end
+end
+end
+end
 end

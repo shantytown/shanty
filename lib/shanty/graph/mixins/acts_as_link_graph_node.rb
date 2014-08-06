@@ -2,7 +2,10 @@
 # convenience methods for determining dependencies, depdenants, and a distance
 # from the root node. Note that in contrast to a tree, this link graph module
 # allows multiple parents.
-module Shanty::Graph::ActsAsLinkGraphNode
+module Shanty
+module Graph
+module Mixins
+module ActsAsLinkGraphNode
   # The self.included idiom. This is described in great detail in a
   # fantastic blog post here:
   #
@@ -73,4 +76,7 @@ module Shanty::Graph::ActsAsLinkGraphNode
     return 0 if parents.empty?
     parents.map(&:distance_from_root).max + 1
   end
+end
+end
+end
 end

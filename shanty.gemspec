@@ -3,7 +3,7 @@ require 'shanty'
 
 Gem::Specification.new do |gem|
   gem.name        = 'shanty'
-  gem.version     = Deb::S3::VERSION
+  gem.version     = Shanty::VERSION
 
   gem.author      = 'Chris Jansen & Nathan Kleyn'
   gem.email       = ''

@@ -39,15 +39,6 @@ class Shanty::Graph::ProjectLinkGraph
     @to_commit = to_commit
 
     @path_trie = Containers::Trie.new
-    @buildable_projects = []
-  end
-
-  def add_projects(&block)
-    callbacks = Shanty::Callbacks.new(block)
-    projects = callbacks.call(:discover)
-    @buildable_projects.concat(projects).uniq { |project| project.name + project.type } if projects.kind_of?(Array)
-  end
-
   end
 
   # Public: All the projects in the current repository.
@@ -57,7 +48,14 @@ class Shanty::Graph::ProjectLinkGraph
   def all
     return @projects unless @projects.nil?
 
-    @projects = @buildable_projects
+    @projects = Shanty::Graph::Discovery.constants.each_with_object([]) do |c, acc|
+      projects = Shanty::Graph::Discovery.const_get(c).new.discover(@root_dir, @current_branch, @build_number)
+      acc << projects
+      acc.flatten!
+      acc.reject! { |item| item.nil? }
+    end
+
+    @projects = []
 
     # Everything must be added to the Trie first before we can start linking
     # projects together.
