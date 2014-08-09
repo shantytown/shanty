@@ -1,5 +1,6 @@
 require 'thor'
 
-class Shanty::CLI < Thor
-
+module Shanty
+  class CLI < Thor
+  end
 end
