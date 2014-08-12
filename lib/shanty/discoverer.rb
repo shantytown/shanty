@@ -15,8 +15,8 @@ module Shanty
     end
 
     private
-    def create_project(path)
-      ProjectTemplate.new(path)
+    def create_project(*args)
+      ProjectTemplate.new(*args)
     end
   end
 end

@@ -38,7 +38,11 @@ module Shanty
         Discoverer.find_all
       end
 
-      binding.pry
+      projects = project_templates.map do |project_template|
+        project_template.type.new(project_template)
+      end
+
+
     end
   end
 end

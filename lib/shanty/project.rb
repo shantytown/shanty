@@ -5,7 +5,7 @@ module Shanty
   class Project
     include Mixins::ActsAsLinkGraphNode
 
-    attr_accessor :name, :path, :options
+    attr_accessor :name, :path, :options, :changed
 
     # Public: Initialise the Project instance.
     #
@@ -15,6 +15,7 @@ module Shanty
       @name = project_template.name
       @path = project_template.path
       @options = project_template.options
+      @changed = false
 
       project_template.plugins.each do |plugin|
         include plugin
