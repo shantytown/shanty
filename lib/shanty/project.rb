@@ -5,7 +5,7 @@ module Shanty
   class Project
     include Mixins::ActsAsLinkGraphNode
 
-    attr_accessor :name, :path, :options, :changed
+    attr_accessor :name, :path, :options, :parents_by_name, :changed
 
     # Public: Initialise the Project instance.
     #
@@ -15,6 +15,7 @@ module Shanty
       @name = project_template.name
       @path = project_template.path
       @options = project_template.options
+      @parents_by_name = project_template.parents
       @changed = false
 
       project_template.plugins.each do |plugin|
@@ -30,16 +31,6 @@ module Shanty
     # Returns a boolean representing whether the current project is deployable.
     def deployable?
       @options.include?('deployable') ? @options['deployable'] : true
-    end
-
-    # Public: A list of the dependencies this project has by name. This is used
-    # as a precursor to building the links between project instances, whilst not
-    # all of the Project instances are created. This is expected to be overriden
-    # in subclasses where needed.
-    #
-    # Returns an Array of Strings representing parent projects by name only.
-    def parents_by_name
-      []
     end
 
     # Public: A list of the external dependencies this project has by name

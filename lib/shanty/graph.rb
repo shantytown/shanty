@@ -1,5 +1,4 @@
 require 'algorithms'
-require 'graph'
 
 # Public: Represents the link graph of projects in the repository. This class is
 # responsible for collecting up all the information the projects we have,

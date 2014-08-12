@@ -5,7 +5,7 @@ module Shanty
   class ShantyfileDiscoverer < Discoverer
     def discover
       Dir['**/build.gradle'].map do |path|
-        create_project(File.dirname(path), GradleProject, foo: 'bar')
+        create_project(File.dirname(path), type: GradleProject, options: { foo: 'bar' }, plugins: [GradlePlugin], parents: [''])
       end
     end
   end
