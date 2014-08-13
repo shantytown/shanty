@@ -1,11 +1,11 @@
 require 'algorithms'
 
-# Public: Represents the link graph of projects in the repository. This class is
-# responsible for collecting up all the information the projects we have,
-# making parent/child dependency links between them, and then calculating which
-# projects need to be build by combining a Git diff with the dependency graph
-# to resolve to a list of projects required to be built.
 module Shanty
+  # Public: Represents the link graph of projects in the repository. This class is
+  # responsible for collecting up all the information the projects we have,
+  # making parent/child dependency links between them, and then calculating which
+  # projects need to be build by combining a Git diff with the dependency graph
+  # to resolve to a list of projects required to be built.
   class Graph
     attr_reader :projects
 
@@ -28,7 +28,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def changed
-      @projects.find_all { |project| project.changed? }
+      @projects.select { |project| project.changed? }
     end
 
     # Public: Returns a project, if any, with the given name.
@@ -47,7 +47,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def all_of_type(*types)
-      @projects.find_all { |project| types.include?(project.class) }
+      @projects.select { |project| types.include?(project.class) }
     end
 
     # Public: Returns all the changed projects of the given types.
@@ -57,7 +57,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def changed_of_type(*types)
-      changed.find_all { |project| types.include?(project.class) }
+      changed.select { |project| types.include?(project.class) }
     end
 
     # Public: Returns the project, if any, that the current working directory
@@ -84,6 +84,7 @@ module Shanty
     end
 
     private
+
     # Private: Given a list of projects, construct the parent/child
     # relationships between them given a list of their parents/children by name
     # as defined on the project instances.
@@ -108,12 +109,12 @@ module Shanty
 
     # Private: Given a list of Project subclasses, sort them by their distance
     # from the root node (that is, the topmost node). This order is important
-    # because it matches the order in which things should be build to avoid
+    # because it matches the order in which things should be build to avoid
     # missing dependencies.
     #
     # projects - An array of Project subclasses to sort.
     #
-    # Returns a sorted Array of Project subclasses.
+    # Returns a sorted Array of Project subclasses.
     def sort_projects(projects)
       projects.sort { |a, b| a.distance_from_root <=> b.distance_from_root }
     end

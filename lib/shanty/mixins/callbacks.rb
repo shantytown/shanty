@@ -1,33 +1,38 @@
 module Shanty
   module Mixins
+    # Public: mixin which allows a class to implement callbacks around methods
     module Callbacks
       def self.included(cls)
         cls.extend(ClassMethods)
       end
 
+      # Common methods inherited by implementing classes
       module ClassMethods
-        @@before_callbacks = []
-        @@after_callbacks = []
-        @@around_callbacks = []
+        class << self
+          attr_accessor :before_callbacks, :after_callbacks, :around_callbacks
+        end
 
         def before(sym)
-          @@before_callbacks << sym
+          @before_callbacks ||= []
+          @before_callbacks << sym
         end
 
-        def after
-          @@after_callbacks << sym
+        def after(sym)
+          @after_callbacks ||= []
+          @after_callbacks << sym
         end
 
-        def around
-          @@around_callbacks << sym
+        def around(sym)
+          @around_callbacks ||= []
+          @around_callbacks << sym
         end
       end
 
-      def with_callbacks(name)
+      def with_callbacks(_name)
         # before
         # around
 
-        @@around_callbacks.inject(yield) do |acc, sym|
+        self.class.after_callbacks.reduce(yield) do |acc, sym|
           send(sym, acc)
         end
 

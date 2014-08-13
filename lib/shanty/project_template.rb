@@ -2,14 +2,16 @@ require 'shanty/mixins/attr_combined_accessor'
 require 'shanty/projects/static'
 
 module Shanty
+  # Public: Allows creation of a project using a discoverer
   class ProjectTemplate
     extend Mixins::AttrCombinedAccessor
 
     attr_combined_accessor :name, :type, :plugins, :parents, :options
-    attr_reader :path, :project_block
+    attr_accessor :project_block
+    attr_reader :path
 
     def initialize(path, args = {})
-      raise 'Path to project must be a directory.' unless File.directory?(path)
+      fail 'Path to project must be a directory.' unless File.directory?(path)
 
       @path = path
       @name = File.basename(path)
@@ -24,7 +26,7 @@ module Shanty
     def execute_shantyfile
       shantyfile_path = File.join(@path, 'Shantyfile')
 
-      return unless File.exists?(shantyfile_path)
+      return unless File.exist?(shantyfile_path)
 
       eval(File.read(shantyfile_path))
     end
@@ -39,10 +41,6 @@ module Shanty
 
     def option(key, value)
       @options[key] = value
-    end
-
-    def project(&block)
-      @project_block = block
     end
   end
 end

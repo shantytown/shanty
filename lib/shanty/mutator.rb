@@ -1,15 +1,18 @@
-require "deep_clone"
-
 module Shanty
+  # Public: enables mutation of the project graph
+  # Common usage would be to set changed flags on projects
   class Mutator
-    @@mutators = []
+    class << self
+      attr_reader :mutators
+    end
 
     def self.inherited(mutator)
-      @@mutators << mutator
+      @mutators ||= []
+      @mutators << mutator
     end
 
     def self.apply_mutations(graph)
-      @@mutators.inject(graph) do |mutator, acc|
+      self.class.mutators.reduce(graph) do |mutator, acc|
         graph = mutator.new.mutate(acc)
       end
     end

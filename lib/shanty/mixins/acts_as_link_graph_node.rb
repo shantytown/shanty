@@ -1,12 +1,12 @@
-# A mixin module enabling classes to have parents and children. It provides
-# convenience methods for determining dependencies, depdenants, and a distance
-# from the root node. Note that in contrast to a tree, this link graph module
-# allows multiple parents.
 module Shanty
   module Mixins
+    # A mixin module enabling classes to have parents and children. It provides
+    # convenience methods for determining dependencies, depdenants, and a distance
+    # from the root node. Note that in contrast to a tree, this link graph module
+    # allows multiple parents.
     module ActsAsLinkGraphNode
       # The self.included idiom. This is described in great detail in a
-      # fantastic blog post here:
+      # fantastic blog post here:
       #
       # http://www.railstips.org/blog/archives/2009/05/15/include-vs-extend-in-ruby/
       #
@@ -18,6 +18,7 @@ module Shanty
         cls.extend(ClassMethods)
       end
 
+      # Common methods inherited by all classes
       module ClassMethods
         attr_writer :parents, :children
       end
@@ -38,14 +39,14 @@ module Shanty
 
       # Public: Add a node to the parents linked to this instance.
       #
-      # node - The Object to add.
+      # node - The Object to add.
       def add_parent(node)
         parents << node
       end
 
       # Public: Add a node to the children linked to this instance.
       #
-      # node - The Object to add.
+      # node - The Object to add.
       def add_child(node)
         children << node
       end

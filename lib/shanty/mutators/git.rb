@@ -1,7 +1,7 @@
 module Shanty
-  class Git << Mutator
-    def mutate(projects)
-
+  # Git VCS mutator
+  class Git < Mutator
+    def mutate(_graph)
     end
   end
 end

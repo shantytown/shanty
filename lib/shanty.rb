@@ -5,6 +5,7 @@ require 'shanty/discoverers/shantyfile'
 require 'shanty/graph'
 
 module Shanty
+  # Main shanty class
   class Shanty
     def initialize
     end
@@ -18,25 +19,24 @@ module Shanty
     end
 
     private
+
     def find_root
-      root_dir = nil
-      Pathname.new(Dir.pwd).ascend do |d|
-        if d.join('.shantyroot').exist?
-          root_dir = d
-          break
-        end
-      end
-
       if root_dir.nil?
-        raise 'Could not find a .shantyroot file in this or any parent directories. Please run `shanty init` in the directory you want to be the root of your project structure.'
+        fail 'Could not find a .shantyroot file in this or any parent directories. \\
+             Please run `shanty init` in the directory you want to be the root of your project structure.'
       end
-
       root_dir
+    end
+
+    def root_dir
+      Pathname.new(Dir.pwd).ascend do |d|
+        break if d.join('.shantyroot').exist?
+      end
     end
 
     def construct_project_graph
       project_templates = Dir.chdir(root) do
-        Discoverer.find_all
+        Discoverer.new.discover_all
       end
 
       projects = project_templates.map do |project_template|

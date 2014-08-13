@@ -1,5 +1,6 @@
 module Shanty
   module Mixins
+    # Additional accessor utility
     module AttrCombinedAccessor
       # Creates an invariant accessor that allows getting and setting from the
       # same endpoint. It will operate in getter mode if you don't pass any
@@ -11,9 +12,9 @@ module Shanty
         syms.each do |sym|
           define_method(sym) do |*args|
             if args.empty?
-              self.instance_variable_get(:"@#{sym}")
+              instance_variable_get(:"@#{sym}")
             else
-              self.instance_variable_set(:"@#{sym}", *args)
+              instance_variable_set(:"@#{sym}", *args)
             end
           end
         end

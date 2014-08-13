@@ -1,11 +1,13 @@
 require 'shanty/mixins/acts_as_link_graph_node'
 
-# Public: Represents a project in the current repository.
 module Shanty
+  # Public: Represents a project in the current repository.
   class Project
     include Mixins::ActsAsLinkGraphNode
 
     attr_accessor :name, :path, :options, :parents_by_name, :changed
+    attr_reader :changed
+    alias_method :changed?, :changed
 
     # Public: Initialise the Project instance.
     #
@@ -22,14 +24,7 @@ module Shanty
         include plugin
       end
 
-      self.instance_eval(&project_template.project_block) unless project_template.project_block.nil?
-    end
-
-    # Public: Whether or not the current project has changed.
-    #
-    # Returns a boolean representing whether the current project has changed.
-    def changed?
-      @changed
+      instance_eval(&project_template.project_block) unless project_template.project_block.nil?
     end
 
     # Public: A list of the external dependencies this project has by name
