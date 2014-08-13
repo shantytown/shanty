@@ -5,7 +5,7 @@ module Shanty
   RSpec.describe Shanty::ShantyfileDiscoverer do
     let(:project_templates) do
       Dir.chdir('examples') do
-        Discoverer.new.discover_all
+        ShantyfileDiscoverer.new.discover
       end
     end
     let(:project1) { 'test-static-project' }
