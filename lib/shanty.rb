@@ -43,7 +43,9 @@ module Shanty
         project_template.type.new(project_template)
       end
 
-      Graph.new(projects)
+      graph = Graph.new(projects)
+
+      Mutators.apply_mutations(graph)
     end
   end
 end
