@@ -25,12 +25,11 @@ module Shanty
       self.instance_eval(&project_template.project_block) unless project_template.project_block.nil?
     end
 
-    # Public: Whether or not the current project is deployable. This is used to
-    # determine whether artifacts need to be saved for this project.
+    # Public: Whether or not the current project has changed.
     #
-    # Returns a boolean representing whether the current project is deployable.
-    def deployable?
-      @options.include?('deployable') ? @options['deployable'] : true
+    # Returns a boolean representing whether the current project has changed.
+    def changed?
+      @changed
     end
 
     # Public: A list of the external dependencies this project has by name
