@@ -33,6 +33,7 @@ GEM
       byebug (~> 2.7)
       pry (~> 0.10)
     rainbow (2.0.0)
+    rake (10.3.2)
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
@@ -62,6 +63,7 @@ PLATFORMS
 
 DEPENDENCIES
   pry-byebug (~> 1.3.3)
+  rake (~> 10.3.2)
   rspec (~> 3.0.0)
   rubocop (~> 0.24.1)
   rubocop-rspec (~> 1.1.0)
