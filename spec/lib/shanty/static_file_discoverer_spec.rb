@@ -1,10 +1,11 @@
 require 'shanty/discoverers/shantyfile'
 
+# All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe Shanty::ShantyfileDiscoverer do
     before do
       @project_templates = Dir.chdir('examples') do
-        Discoverer.find_all 
+        Discoverer.find_all
       end
       project1 = 'test-static-project'
       project2 = 'test-static-project-2'
@@ -19,7 +20,7 @@ module Shanty
     end
 
     describe '#discovered' do
-      it 'should find example projects' do 
+      it 'should find example projects' do
         expect(@project_templates.size).to be == 3
       end
 
