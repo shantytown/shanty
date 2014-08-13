@@ -8,15 +8,41 @@ module Shanty
   RSpec.describe Graph do
     before do
       @project_paths = [
-        File.join('examples', 'test-static-project'),
+        File.join('examples', 'test-static-project-2', 'test-static-project-3'),
         File.join('examples', 'test-static-project-2'),
-        File.join('examples', 'test-static-project-2', 'test-static-project-3')
+        File.join('examples', 'test-static-project')
       ]
 
       @project_templates = @project_paths.map { |project_path| ProjectTemplate.new(project_path) }
       @projects = @project_templates.map { |project_template| StaticProject.new(project_template) }
 
       @graph = Graph.new(@projects)
+    end
+
+    describe '#projects' do
+      it 'should return projects linked together with parent relationships' do
+        projects = @graph.projects
+
+        expect(projects[0].parents).to eql([])
+        expect(projects[1].parents).to eql([projects[0]])
+        expect(projects[2].parents).to eql([projects[1]])
+      end
+
+      it 'should return projects linked together with child relationships' do
+        projects = @graph.projects
+
+        expect(projects[0].children).to eql([projects[1]])
+        expect(projects[1].children).to eql([projects[2]])
+        expect(projects[2].children).to eql([])
+      end
+
+      it 'should return projects sorted from roots to leaves' do
+        projects = @graph.projects
+
+        expect(projects[0]).to equal(@projects[2])
+        expect(projects[1]).to equal(@projects[1])
+        expect(projects[2]).to equal(@projects[0])
+      end
     end
 
     describe '#changed' do
