@@ -37,7 +37,7 @@ module Shanty
     #
     # Returns an instance of a Project subclass if found, otherwise nil.
     def by_name(name)
-      @projects.find { |project| project.name == name && (type.nil? || project.type == type) }
+      @projects.find { |project| project.name == name }
     end
 
     # Public: Returns all projects of the given types.
@@ -47,7 +47,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def all_of_type(*types)
-      @projects.find_all { |project| types.include?(project.type) }
+      @projects.find_all { |project| types.include?(project.class) }
     end
 
     # Public: Returns all the changed projects of the given types.
@@ -57,7 +57,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def changed_of_type(*types)
-      changed.find_all { |project| types.include?(project.type) }
+      changed.find_all { |project| types.include?(project.class) }
     end
 
     # Public: Returns the project, if any, that the current working directory
