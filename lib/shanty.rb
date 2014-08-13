@@ -2,6 +2,7 @@ require 'pathname'
 require 'pry'
 
 require 'shanty/discoverers/shantyfile'
+require 'shanty/mutators/git'
 require 'shanty/graph'
 
 module Shanty
@@ -22,7 +23,7 @@ module Shanty
 
     def find_root
       if root_dir.nil?
-        fail 'Could not find a .shantyroot file in this or any parent directories. \\
+        fail 'Could not find a .shantyroot file in this or any parent directories. \
              Please run `shanty init` in the directory you want to be the root of your project structure.'
       end
       root_dir
@@ -30,7 +31,7 @@ module Shanty
 
     def root_dir
       Pathname.new(Dir.pwd).ascend do |d|
-        break if d.join('.shantyroot').exist?
+        return d if d.join('.shantyroot').exist?
       end
     end
 
@@ -45,7 +46,7 @@ module Shanty
 
       graph = Graph.new(projects)
 
-      Mutators.apply_mutations(graph)
+      Mutator.new.apply_mutations(graph)
     end
   end
 end
