@@ -7,12 +7,20 @@ require 'algorithms'
 # to resolve to a list of projects required to be built.
 module Shanty
   class Graph
+    attr_reader :projects
+
     # Public: Initialise a ProjectLinkGraph.
     #
     # projects - An array of project instances to take and link together into
     #            a graph structure of dependencies.
     def initialize(projects)
       @projects = sort_projects(link_projects(projects))
+
+      @project_path_trie = Containers::Trie.new
+
+      @projects.each do |project|
+        @project_path_trie[project.path] = project
+      end
     end
 
     # Public: All the changed projects in the current repository.
@@ -20,20 +28,16 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def changed
-      @projects.filter { |project| project.changed? }
+      @projects.find_all { |project| project.changed? }
     end
 
-    # Public: Returns a project, if any, with the given name. Optionally, you can
-    # specify a type to filter by too; this is useful in circumstances where two
-    # projects may have the same name but different types (eg. a java project and
-    # its counterpart docker embedded project).
+    # Public: Returns a project, if any, with the given name.
     #
     # name - The name to filter by.
-    # type - An optional type to filter by.
     #
-    # Returns an instance of a Project subclass, nil if not found.
-    def by_name(name, type = nil)
-      all.find { |project| project.name == name && (type.nil? || project.type == type) }
+    # Returns an instance of a Project subclass if found, otherwise nil.
+    def by_name(name)
+      @projects.find { |project| project.name == name && (type.nil? || project.type == type) }
     end
 
     # Public: Returns all projects of the given types.
@@ -43,7 +47,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def all_of_type(*types)
-      all.find_all { |project| types.include?(project.type) }
+      @projects.find_all { |project| types.include?(project.type) }
     end
 
     # Public: Returns all the changed projects of the given types.
@@ -59,18 +63,24 @@ module Shanty
     # Public: Returns the project, if any, that the current working directory
     # belongs to.
     #
-    # type - An optional type to filter by.
-    #
-    # Returns a Project subclass if found.
-    # Raises a RuntimeException if not found.
-    # FIXME: Uses trie, cannot use.
-    def current(type = nil)
-      # Call #all, the Trie needs to be populated before we can use it.
-      all
+    # Returns an instance of a Project subclass if found, otherwise nil.
+    def current
+      owner_of_file(Dir.pwd)
+    end
 
-      project = owner_of_file(Dir.pwd[(@root_dir.size + 1)..-1])
-      raise "The current working directory is not a valid #{type.nil? ? '' : "#{type} "}project." unless project && (type.nil? || project.type == type)
-      project
+    # Public: Given a path to a file or directory (normally a path obtained
+    # while looking at a Git diff), find the project that owns this file. This
+    # works by finding the project with the longest path in common with the
+    # file, and is very efficient because this search is backed using a Trie
+    # data structure. This data structure allows worst case matching of O(m)
+    # complexity.
+    #
+    # path - The path to the file to find the owner project.
+    #
+    # Returns a Project subclass if any found, otherwise nil.
+    def owner_of_file(path)
+      key = @project_path_trie.longest_prefix(path)
+      @project_path_trie[key]
     end
 
     private
@@ -82,9 +92,9 @@ module Shanty
     #
     # Returns an Array of linked projects.
     def link_projects(projects)
-      projects_by_name = projects.each_with_object { |project, acc| acc[project.name] = project }
+      projects_by_name = projects.each_with_object({}) { |project, acc| acc[project.name] = project }
 
-      projects.map do |project|
+      projects.each do |project|
         parent_dependencies = project.parents_by_name.map { |parent_name| projects_by_name[parent_name] }.compact
 
         parent_dependencies.each do |parent_dependency|
@@ -92,6 +102,8 @@ module Shanty
           parent_dependency.add_child(project)
         end
       end
+
+      projects
     end
 
     # Private: Given a list of Project subclasses, sort them by their distance

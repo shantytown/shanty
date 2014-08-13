@@ -17,6 +17,8 @@ module Shanty
       @plugins = args[:plugins] || []
       @parents = args[:parents] || []
       @options = args[:options] || {}
+
+      execute_shantyfile
     end
 
     def execute_shantyfile
@@ -24,7 +26,7 @@ module Shanty
 
       return unless File.exists?(shantyfile_path)
 
-      load shantyfile_path
+      eval(File.read(shantyfile_path))
     end
 
     def plugin(plugin)

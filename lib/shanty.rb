@@ -2,6 +2,7 @@ require 'pathname'
 require 'pry'
 
 require 'shanty/discoverers/shantyfile'
+require 'shanty/graph'
 
 module Shanty
   class Shanty
@@ -42,7 +43,7 @@ module Shanty
         project_template.type.new(project_template)
       end
 
-
+      Graph.new(projects)
     end
   end
 end
