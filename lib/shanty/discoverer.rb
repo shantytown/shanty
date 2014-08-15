@@ -1,3 +1,4 @@
+require 'shanty/util'
 require 'shanty/project_template'
 
 module Shanty
@@ -10,6 +11,7 @@ module Shanty
     end
 
     def self.inherited(discoverer)
+      Util.logger.debug("Detected project discoverer #{discoverer}")
       @discoverers ||= []
       @discoverers << discoverer
     end

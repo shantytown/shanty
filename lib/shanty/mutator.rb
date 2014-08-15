@@ -1,3 +1,5 @@
+require 'shanty/util'
+
 module Shanty
   # Public: enables mutation of the project graph
   # Common usage would be to set changed flags on projects
@@ -7,6 +9,7 @@ module Shanty
     end
 
     def self.inherited(mutator)
+      Util.logger.debug("Detected mutator #{mutator}")
       @mutators ||= []
       @mutators << mutator
     end
