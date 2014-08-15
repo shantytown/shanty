@@ -50,7 +50,7 @@ module Shanty
     #
     # Returns a simple String representation of this instance.
     def to_s
-      "Name: #{name}, Type: #{type}"
+      "Name: #{name}"
     end
 
     # Public: Overriden String conversion method to return a more detailed
