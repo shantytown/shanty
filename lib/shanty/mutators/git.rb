@@ -1,22 +1,23 @@
 require 'shanty/mutator'
+require 'shanty/vcs_ranges/local_git'
 
 module Shanty
   # Git VCS mutator
   class Git < Mutator
+    def initialize
+      @vcs_range = VCSRange.new
+    end
+
     def mutate(graph)
-      diff_files = `git diff --name-only #{@from_commit} #{@to_commit}`.split("\n")
+      git_root = `git rev-parse --show-toplevel`.strip
+      diff_files = `git diff --name-only #{@vcs_range.from_commit} #{@vcs_range.to_commit}`.split("\n")
       diff_files.each do |path|
+        next if path.nil?
+        path = File.join(git_root, path)
         project = graph.owner_of_file(path)
-        project.changed = true
+        project.changed = true unless project.nil?
       end
-    end
-
-    def from_commit
-      'HEAD^^'
-    end
-
-    def to_commit
-      'HEAD'
+      graph
     end
   end
 end
