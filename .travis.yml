@@ -1,3 +1,5 @@
 language: ruby
 rvm:
   - 2.1.0
+notifications:
+  webhooks: "https://hubot-shantytown.rhcloud.com/hubot/travis?room=#shantytown"
