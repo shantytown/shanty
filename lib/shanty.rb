@@ -5,6 +5,7 @@ require 'shanty/discoverers/shantyfile'
 require 'shanty/mutators/git'
 require 'shanty/graph'
 require 'shanty/tasks/base'
+require 'shanty/tasks/ruby'
 
 module Shanty
   # Main shanty class

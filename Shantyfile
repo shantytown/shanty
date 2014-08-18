@@ -1,0 +1,2 @@
+require 'shanty/projects/ruby'
+type RubyProject
