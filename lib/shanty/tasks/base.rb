@@ -1,10 +1,9 @@
-require 'thor'
-require 'shanty'
+require 'shanty/task'
 require 'shanty/util'
 
 module Shanty
   # Cli
-  class CLI < Thor
+  class Base < Task
     desc 'projects', 'Lists projects discovered by shanty'
     def projects
       Util.logger.info(Shanty.new.graph.projects.inspect)

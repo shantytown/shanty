@@ -4,6 +4,7 @@ require 'pry'
 require 'shanty/discoverers/shantyfile'
 require 'shanty/mutators/git'
 require 'shanty/graph'
+require 'shanty/tasks/base'
 
 module Shanty
   # Main shanty class

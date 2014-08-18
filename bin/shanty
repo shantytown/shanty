@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'shanty/cli'
-Shanty::CLI.start
+require 'thor/runner'
+require 'shanty'
+$thor_runner = true
+Thor::Runner.start
