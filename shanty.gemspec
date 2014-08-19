@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'thor', '~> 0.18.1'
   gem.add_dependency 'algorithms', '~> 0.6.1'
   gem.add_dependency 'graph', '~> 2.6.0'
+  gem.add_dependency 'deep_merge', '~> 1.0.1'
 
   gem.add_development_dependency 'pry-byebug', '~> 1.3.3'
   gem.add_development_dependency 'rspec', '~> 3.0.0'
