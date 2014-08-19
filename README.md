@@ -25,7 +25,7 @@ So, with Shanty, building the Docker container would be as simple as `shanty bui
 
 ## Contibuting
 
-We welcome any contribution, whether big or small! We're busy importing our planned work as GitHub issues so people can join in the fun. If you have any questions, please hit us up on our freenode IRC channel `#shantytown`.
+We welcome any contribution, whether big or small! We're busy importing our planned work as GitHub issues so people can join in the fun, we also have a [Huboard](https://huboard.com/shantytown/shanty) to make following the progress easier. If you have any questions, please hit us up on our freenode IRC channel `#shantytown`.
 
 ## License
 
