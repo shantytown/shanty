@@ -1,4 +1,4 @@
-# Shanty [![Build Status](https://travis-ci.org/shantytown/shanty.svg?branch=master)](https://travis-ci.org/shantytown/shanty)
+# Shanty [![Build Status](https://travis-ci.org/shantytown/shanty.svg?branch=master)](https://travis-ci.org/shantytown/shanty)[![Coverage Status](https://coveralls.io/repos/shantytown/shanty/badge.png?branch=master)](https://coveralls.io/r/shantytown/shanty?branch=master)
 
 **Shanty** is a project orchestration tool. It is designed to make it easy for you to build dependencies between projects, and execute tasks across this tree of relationships, regardless of what language or technology these projects use. The aim is consistency in the way you manage, build, test and deploy your projects.
 
