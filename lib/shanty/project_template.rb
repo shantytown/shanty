@@ -6,7 +6,7 @@ module Shanty
   class ProjectTemplate
     extend Mixins::AttrCombinedAccessor
 
-    attr_combined_accessor :name, :type, :plugins, :parents, :options, :after_create
+    attr_combined_accessor :name, :type, :plugins, :parents, :options
     attr_reader :path
 
     def initialize(path, args = {})
@@ -40,6 +40,14 @@ module Shanty
 
     def option(key, value)
       @options[key] = value
+    end
+
+    def after_create(&block)
+      if block.nil?
+        @after_create
+      else
+        @after_create = block
+      end
     end
   end
 end
