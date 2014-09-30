@@ -10,8 +10,10 @@ module Shanty
       # nice looking DSL.
       def attr_combined_accessor(*syms)
         syms.each do |sym|
-          define_method(sym) do |*args|
-            if args.empty?
+          define_method(sym) do |*args, &block|
+            if !block.nil?
+              instance_variable_set(:"@#{sym}", block)
+            elsif args.empty?
               instance_variable_get(:"@#{sym}")
             else
               instance_variable_set(:"@#{sym}", *args)

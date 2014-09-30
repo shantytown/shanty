@@ -6,8 +6,7 @@ module Shanty
   class ProjectTemplate
     extend Mixins::AttrCombinedAccessor
 
-    attr_combined_accessor :name, :type, :plugins, :parents, :options
-    attr_accessor :project_block
+    attr_combined_accessor :name, :type, :plugins, :parents, :options, :after_create
     attr_reader :path
 
     def initialize(path, args = {})

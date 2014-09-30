@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'shanty'
+
+Shanty::Shanty.new.graph

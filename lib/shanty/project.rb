@@ -24,7 +24,7 @@ module Shanty
         include plugin
       end
 
-      instance_eval(&project_template.project_block) unless project_template.project_block.nil?
+      instance_eval(&project_template.after_create) unless project_template.after_create.nil?
     end
 
     # Public: A list of the external dependencies this project has by name
