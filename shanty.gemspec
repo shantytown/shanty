@@ -22,4 +22,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rubocop', '~> 0.24.1'
   gem.add_development_dependency 'rubocop-rspec', '~> 1.1.0'
   gem.add_development_dependency 'rake', '~> 10.3.2'
+  gem.add_development_dependency 'coveralls', '~> 0.7.1'
 end

@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 require 'shanty/discoverer'
 
 # All classes referenced belong to the shanty project
