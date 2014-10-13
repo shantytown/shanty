@@ -2,4 +2,4 @@
 
 require 'shanty'
 
-Shanty::Cli.new(Shanty.new.graph).run
+Shanty::Cli.new(Shanty::Shanty.new.graph).run
