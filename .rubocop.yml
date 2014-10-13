@@ -5,6 +5,3 @@ LineLength:
 
 Lint/Eval:
   Enabled: false
-
-Style/GlobalVars:
-  AllowedVariables: [$thor_runner]

@@ -1,12 +1,12 @@
 require 'pathname'
 require 'pry'
 
+require 'shanty/cli'
 require 'shanty/discoverers/shantyfile'
-require 'shanty/mutators/git'
 require 'shanty/graph'
 require 'shanty/global'
-require 'shanty/tasks/base'
-require 'shanty/tasks/ruby'
+require 'shanty/mutators/git'
+require 'shanty/tasks/basic'
 
 module Shanty
   # Main shanty class

@@ -1,43 +1,45 @@
-require 'thor'
-
 module Shanty
-  # Public: An extension of the Thor class which strips our namespace
-  # from implementing tasks. We still use the normal Thor runner so
-  # any tasks which are loaded by other gems will be included with
-  # their namespace intact. Any plugins can create tasks within the
-  # Shanty namespace and expect to have it stripped when implmenting
-  # this class.
-  #
-  # Credit for this method goes to lastobelus:
-  # https://github.com/lastobelus/cleanthor
-  class Task < Thor
-    no_commands do
-      def invoke(name = nil, *args)
-        name.sub!(/^shanty:/, '') if name && $thor_runner
-        super
-      end
-    end
-
+  # Public: Discover shanty tasks
+  class Task
     class << self
-      def inherited(base) #:nodoc:
-        base.send :extend, ClassMethods
-      end
+      attr_reader :tasks
+      attr_reader :task_definitions, :task_definiton
     end
 
-    # Overridden Thor class methods
-    module ClassMethods
-      def namespace(name = nil)
-        case name
-        when nil
-          constant = to_s.gsub(/^Thor::Sandbox::/, '')
-          strip = $thor_runner ? /^Shanty::/ : /(?<=Shanty::)/
-          constant = constant.gsub(strip, '')
-          constant =  Thor::Util.snake_case(constant).squeeze(':')
-          @namespace ||= constant
-        else
-          super
-        end
-      end
+    # This method is auto-triggred by Ruby whenever a class inherits from
+    # Shanty::Task. This means we can build up a list of all the tasks
+    # without requiring them to register with us - neat!
+    def self.inherited(task)
+      @tasks ||= []
+      @tasks << task
+    end
+
+    def self.desc(desc)
+      task_definition[:desc] = desc
+    end
+
+    def self.param(name, options = {})
+      task_definition[:params][name] = options
+    end
+
+    def self.option(name, options = {})
+      task_definition[:options][name] = options
+    end
+
+    def self.method_added(name)
+      @task_definitions ||= {}
+      @task_definitions[name] = task_definition.merge(klass: self)
+
+      # Now reset the task definition.
+      @task_definition = {}
+    end
+
+    def self.task_definition
+      @task_definition ||= {}
+      @task_definition[:params] ||= {}
+      @task_definition[:options] ||= {}
+
+      @task_definition
     end
   end
 end

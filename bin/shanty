@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'thor/runner'
 require 'shanty'
-$thor_runner = true
-Thor::Runner.start
+
+Shanty::Cli.new(Shanty.new.graph).run
