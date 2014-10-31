@@ -5,13 +5,9 @@ module Shanty
   # Public: A set of basic tasks that can be applied to all projects and that
   # ship with the core of Shanty.
   class BasicTasks < Shanty::Task
-    desc 'Lists all projects. If --changed is specified, lists only changed projects.'
-    option :changed,
-           type: :boolean,
-           desc: 'Whether to list only changed projects. Defaults to false.'
-    option :types,
-           type: :array,
-           desc: 'An optional list of project types to filter by. By default, all types are shown.'
+    desc 'tasks.projects'
+    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
+    option :types, type: :array, desc: 'tasks.common.options.types'
     def projects(options, graph)
       graph.projects.each do |project|
         next if options.changed? && !project.changed?
@@ -19,17 +15,10 @@ module Shanty
       end
     end
 
-    desc 'Executes the build of all projects.'
-    option :changed,
-           type: :boolean,
-           desc: 'Whether to build only changed projects. Defaults to false.'
-    option :watch,
-           type: :boolean,
-           desc: 'If true, the command will execute the build whenever a change is detected on disk, quitting only on
-             interruption.'
-    option :types,
-           type: :array,
-           desc: 'An optional list of project types to filter by. By default, all types are built.'
+    desc 'tasks.build'
+    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
+    option :watch, type: :boolean, desc: 'tasks.common.options.watch'
+    option :types, type: :array, desc: 'tasks.common.options.types'
     def build(options, graph)
       graph.projects.each do |project|
         next if options.changed? && !project.changed?
@@ -37,17 +26,10 @@ module Shanty
       end
     end
 
-    desc 'Executes the tests of all projects.'
-    option :changed,
-           type: :boolean,
-           desc: 'Whether to test only changed projects. Defaults to false.'
-    option :watch,
-           type: :boolean,
-           desc: 'If true, the command will execute the tests whenever a change is detected on disk, quitting only on
-             interruption.'
-    option :types,
-           type: :array,
-           desc: 'An optional list of project types to filter by. By default, all types are tested.'
+    desc 'tasks.test'
+    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
+    option :watch, type: :boolean, desc: 'tasks.common.options.watch'
+    option :types, type: :array, desc: 'tasks.common.options.types'
     def test(options, graph)
       graph.projects.each do |project|
         next if options.changed? && !project.changed?

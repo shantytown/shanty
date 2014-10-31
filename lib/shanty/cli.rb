@@ -1,4 +1,5 @@
 require 'commander'
+require 'i18n'
 require 'shanty/task'
 
 module Shanty
@@ -36,10 +37,10 @@ module Shanty
 
     def setup_task(name, task)
       command name do |c|
-        c.description = task[:desc]
+        c.description = I18n.t(task[:desc], default: task[:desc])
 
         task[:options].each do |option_name, option|
-          c.option(syntax_for_option(option_name, option), option[:desc])
+          c.option(syntax_for_option(option_name, option), I18n.t(option[:desc], default: option[:desc]))
         end
 
         c.action do |args, options|
