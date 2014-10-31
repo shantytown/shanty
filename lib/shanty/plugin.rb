@@ -1,16 +1,26 @@
+require 'shanty/util'
+require 'shanty/project_template'
+
 module Shanty
-  # Public: Discover shanty plugins
-  class Plugin
-    class << self
-      attr_reader :plugins
+  # Some basic functionality for every plugin.
+  module Plugin
+    def self.extended(mod)
+      mod.module_eval do
+        def self.included(cls)
+          copy_subscribes_to_class(cls)
+        end
+      end
     end
 
-    # This method is auto-triggred by Ruby whenever a class inherits from
-    # Shanty::Plugin. This means we can build up a list of all the plugins
-    # without requiring them to register with us - neat!
-    def self.inherited(plugin)
-      @plugins ||= []
-      @plugins << plugin
+    def copy_subscribes_to_class(cls)
+      @subscriptions.each do |args|
+        cls.subscribe(*args)
+      end
+    end
+
+    def subscribe(*args)
+      @subscriptions ||= []
+      @subscriptions.push(args)
     end
   end
 end

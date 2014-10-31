@@ -1,12 +1,14 @@
 require 'shanty/plugin'
 
 module Shanty
-  # Public: Rubocop plugin for style checking Ruby projects.
-  class RubocopPlugin < Plugin
-    before :test, :rubocop
+  # Public: Rubocop plugin for style checking ruby projects.
+  module RubocopPlugin
+    extend Plugin
+
+    subscribe :test, :rubocop
 
     def rubocop
-      `rubocop`
+      system 'rubocop'
     end
   end
 end

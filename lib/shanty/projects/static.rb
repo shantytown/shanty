@@ -3,6 +3,11 @@ require 'shanty/project'
 module Shanty
   # Public: Base type of project, simply creates a tarball of the directory
   class StaticProject < Project
+    subscribe :build, :on_build
+
+    def on_build
+    end
+
     # Public: The absolute path to the artifact that would be created by this
     # project when built.
     #

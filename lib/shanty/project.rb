@@ -1,9 +1,11 @@
 require 'shanty/mixins/acts_as_link_graph_node'
+require 'shanty/mixins/callbacks'
 
 module Shanty
   # Public: Represents a project in the current repository.
   class Project
     include Mixins::ActsAsLinkGraphNode
+    include Mixins::Callbacks
 
     attr_accessor :name, :path, :options, :parents_by_name, :changed
     attr_reader :changed
@@ -21,7 +23,7 @@ module Shanty
       @changed = false
 
       project_template.plugins.each do |plugin|
-        include plugin
+        self.class.include plugin
       end
 
       instance_eval(&project_template.after_create) unless project_template.after_create.nil?

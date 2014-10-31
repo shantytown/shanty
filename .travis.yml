@@ -3,5 +3,7 @@ rvm:
   - 2.1.0
 notifications:
   webhooks: "https://hubot-shantytown.rhcloud.com/hubot/travis?room=#shantytown"
+# FIXME: Make sure this goes back when we can run the test task all the way
+# through, triggering the correct plugins.
 # script: "bundle exec ./bin/shanty ruby:test"
 script: "bundle exec rspec"
