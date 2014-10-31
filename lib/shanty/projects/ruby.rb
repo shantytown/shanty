@@ -1,11 +1,12 @@
 require 'shanty/project'
 
 module Shanty
-  # Public: Base type of project, simply creates a tarball of the directory
+  # Public: Represents a projects created with the Ruby language.
   class RubyProject < Project
     subscribe :build, :on_build
 
     def on_build
+      system 'gem build *.gemspec'
     end
   end
 end

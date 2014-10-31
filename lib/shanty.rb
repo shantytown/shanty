@@ -1,3 +1,4 @@
+require 'i18n'
 require 'pathname'
 require 'pry'
 
@@ -11,7 +12,11 @@ require 'shanty/tasks/basic'
 module Shanty
   # Main shanty class
   class Shanty
-    def initialize
+    GEM_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
+    def start!
+      setup_i18n
+      Cli.new(graph).run
     end
 
     def graph
@@ -19,6 +24,11 @@ module Shanty
     end
 
     private
+
+    def setup_i18n
+      I18n.enforce_available_locales = true
+      I18n.load_path = Dir[File.join(GEM_ROOT, 'translations', '*.yml')]
+    end
 
     def construct_project_graph
       project_templates = Dir.chdir(Global.root) do

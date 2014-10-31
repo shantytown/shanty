@@ -1,0 +1,16 @@
+---
+en:
+  tasks:
+    common:
+      options:
+        changed: Whether to run the task for only changed projects. Defaults to false.
+        types: An optional list of project types to filter by. By default, all types are shown.
+        watch: If true, the command will execute the build whenever a change is detected on disk, quitting only on interruption.
+    projects:
+      desc: Lists all projects. If --changed is specified, lists only changed projects.
+    build:
+      desc: Executes the build of all projects.
+      failed: "The build failed for the following project: %{project}"
+    test:
+      desc: Executes the tests of all projects.
+      failed: "The tests failed for the following project: %{project}"

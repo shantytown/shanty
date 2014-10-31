@@ -8,7 +8,8 @@ module Shanty
     subscribe :build, :bundle_install
 
     def bundle_install
-      `bundle install`
+      # FIXME: Add support for the --jobs argument to parallelise the bundler run.
+      system 'bundle install --quiet'
     end
   end
 end

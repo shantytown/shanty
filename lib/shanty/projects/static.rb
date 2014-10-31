@@ -6,6 +6,8 @@ module Shanty
     subscribe :build, :on_build
 
     def on_build
+      # FIXME: Create a tarball of the current project.
+      true
     end
 
     # Public: The absolute path to the artifact that would be created by this

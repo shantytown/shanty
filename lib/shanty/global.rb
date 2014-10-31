@@ -36,6 +36,7 @@ module Shanty
         fail "Could not find a #{Global.config_file} file in this or any parent directories. \
              Please run `shanty init` in the directory you want to be the root of your project structure."
       end
+
       root_dir
     end
 

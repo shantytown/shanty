@@ -17,6 +17,7 @@ module Shanty
         project = graph.owner_of_file(path)
         project.changed = true unless project.nil?
       end
+
       graph
     end
   end
