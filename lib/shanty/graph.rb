@@ -28,7 +28,7 @@ module Shanty
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
     def changed
-      @projects.select { |project| project.changed? }
+      @projects.select(&:changed?)
     end
 
     # Public: Returns a project, if any, with the given name.

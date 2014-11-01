@@ -29,17 +29,17 @@ module Shanty
       end
 
       it 'finds project templates named' do
-        project_names = project_templates.map { |project| project.name }
+        project_names = project_templates.map(&:name)
         expect(project_names).to contain_exactly(*project_names)
       end
 
       it 'finds project templates with parents' do
-        project_parents = project_templates.map { |project| project.parents }
+        project_parents = project_templates.map(&:parents)
         expect(project_parents).to contain_exactly(*project_parents)
       end
 
       it 'finds project templates with paths' do
-        project_paths = project_templates.map { |project| project.path }
+        project_paths = project_templates.map(&:path)
         expect(project_paths).to contain_exactly(*project_paths)
       end
     end
