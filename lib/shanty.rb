@@ -5,9 +5,9 @@ require 'pry'
 require 'shanty/cli'
 require 'shanty/discoverers/shantyfile'
 require 'shanty/graph'
-require 'shanty/global'
 require 'shanty/mutators/git'
-require 'shanty/tasks/basic'
+require 'shanty/task_env'
+require 'shanty/task_sets/basic'
 
 module Shanty
   # Main shanty class
@@ -16,11 +16,10 @@ module Shanty
 
     def start!
       setup_i18n
-      Cli.new(graph).run
-    end
 
-    def graph
-      @graph ||= construct_project_graph
+      task_env = TaskEnv.new
+      task_env.load!
+      Cli.new(task_env).run
     end
 
     private
@@ -28,20 +27,6 @@ module Shanty
     def setup_i18n
       I18n.enforce_available_locales = true
       I18n.load_path = Dir[File.join(GEM_ROOT, 'translations', '*.yml')]
-    end
-
-    def construct_project_graph
-      project_templates = Dir.chdir(Global.root) do
-        Discoverer.new.discover_all
-      end
-
-      projects = project_templates.map do |project_template|
-        project_template.type.new(project_template)
-      end
-
-      graph = Graph.new(projects)
-
-      Mutator.new.apply_mutations(graph)
     end
   end
 end

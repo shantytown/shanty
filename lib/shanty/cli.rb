@@ -1,6 +1,6 @@
 require 'commander'
 require 'i18n'
-require 'shanty/task'
+require 'shanty/task_set'
 
 module Shanty
   # Public: Handle the CLI interface between the user and the registered tasks
@@ -8,13 +8,13 @@ module Shanty
   class Cli
     include Commander::Methods
 
-    def initialize(graph)
-      @graph = graph
+    def initialize(task_env)
+      @task_env = task_env
     end
 
     def tasks
-      Task.tasks.reduce({}) do |acc, task|
-        acc.merge(task.task_definitions)
+      TaskSet.task_sets.reduce({}) do |acc, task_set|
+        acc.merge(task_set.tasks)
       end
     end
 
@@ -36,28 +36,40 @@ module Shanty
     end
 
     def setup_task(name, task)
-      command name do |c|
+      command(name) do |c|
         c.description = I18n.t(task[:desc], default: task[:desc])
 
-        task[:options].each do |option_name, option|
-          c.option(syntax_for_option(option_name, option), I18n.t(option[:desc], default: option[:desc]))
-        end
-
+        add_options_to_command(task, c)
         c.action do |args, options|
-          execute_task(name, args, options)
+          task = tasks[name]
+          options.default(Hash[defaults_for_options(task)])
+          execute_task(name, task, args, options)
         end
       end
     end
 
-    def execute_task(name, args, options)
-      task = tasks[name]
+    def add_options_to_command(task, command)
+      task[:options].each do |option_name, option|
+        command.option(syntax_for_option(option_name, option), I18n.t(option[:desc], default: option[:desc]))
+      end
+    end
 
-      default_option_pairs = task[:options].map do |option_name, option|
+    def execute_task(name, task, args, options)
+      # We use allocate here beccause we do not want this to blow up because the class defines a constructor.
+      # We cannot and do not support taskset classes needing constructors.
+      klass = task[:klass].allocate
+      arity = klass.method(name).arity
+
+      args.unshift(@task_env) if arity >= 2
+      args.unshift(options) if arity >= 1
+
+      klass.send(name, *args)
+    end
+
+    def defaults_for_options(task)
+      task[:options].map do |option_name, option|
         [option_name, default_for_type(option)]
       end
-      options.default(Hash[default_option_pairs])
-
-      task[:klass].new.send(name, options, @graph, *args)
     end
 
     def syntax_for_option(name, option)

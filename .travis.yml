@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.1.4
+  - 2.2.0
 notifications:
   webhooks: https://hubot-shantytown.rhcloud.com/hubot/travis?room=#shantytow n
 script: bundle exec ./bin/shanty --trace test
