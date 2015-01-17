@@ -13,7 +13,8 @@ module Shanty
       @task_sets << task_set
     end
 
-    def self.desc(desc)
+    def self.desc(syntax, desc)
+      partial_task[:syntax] = syntax
       partial_task[:desc] = desc
     end
 

@@ -5,13 +5,13 @@ require 'shanty/util'
 module Shanty
   # Public: A set of basic tasks that can be applied to all projects and that
   # ship with the core of Shanty.
-  class BasicTasks < Shanty::TaskSet
-    desc 'tasks.init.desc'
-    def init
+  class BasicTasks < TaskSet
+    desc 'init', 'tasks.init.desc'
+    def init(_options, _task_env)
       # FIXME
     end
 
-    desc 'tasks.projects.desc'
+    desc 'projects [--changed] [--types TYPE,TYPE,...]', 'tasks.projects.desc'
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
     option :types, type: :array, desc: 'tasks.common.options.types'
     def projects(options, task_env)
@@ -21,7 +21,7 @@ module Shanty
       end
     end
 
-    desc 'tasks.build.desc'
+    desc 'build [--changed] [--watch] [--types TYPE,TYPE,...]', 'tasks.build.desc'
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
     option :watch, type: :boolean, desc: 'tasks.common.options.watch'
     option :types, type: :array, desc: 'tasks.common.options.types'
@@ -32,7 +32,7 @@ module Shanty
       end
     end
 
-    desc 'tasks.test.desc'
+    desc 'test [--changed] [--watch] [--types TYPE,TYPE,...]', 'tasks.test.desc'
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
     option :watch, type: :boolean, desc: 'tasks.common.options.watch'
     option :types, type: :array, desc: 'tasks.common.options.types'

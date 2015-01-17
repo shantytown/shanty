@@ -52,7 +52,7 @@ module Shanty
     #
     # Returns a simple String representation of this instance.
     def to_s
-      "Name: #{name}"
+      "Name: #{name}, Type: #{self.class}"
     end
 
     # Public: Overriden String conversion method to return a more detailed
@@ -66,6 +66,14 @@ module Shanty
         path: path,
         options: options
       }.inspect
+    end
+
+    private
+
+    def within_project_dir
+      Dir.chdir(path) do
+        yield
+      end
     end
   end
 end

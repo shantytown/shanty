@@ -10,7 +10,7 @@ module Shanty
 
     def mutate(graph)
       git_root = `git rev-parse --show-toplevel`.strip
-      diff_files = `git diff --name-only #{@vcs_range.from_commit} #{@vcs_range.to_commit}`.split("\n")
+      diff_files = `git diff --name-only #{@vcs_range.from_commit} #{@vcs_range.to_commit} 2>/dev/null`.split("\n")
       diff_files.each do |path|
         next if path.nil?
         path = File.join(git_root, path)

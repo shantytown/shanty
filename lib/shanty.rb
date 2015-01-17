@@ -12,14 +12,14 @@ require 'shanty/task_sets/basic'
 module Shanty
   # Main shanty class
   class Shanty
+    # This is the root directory where the Shanty gem is located. Do not confuse this with the root of the repository
+    # in which Shanty is operating, which is available via the TaskEnv class.
     GEM_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
     def start!
       setup_i18n
 
-      task_env = TaskEnv.new
-      task_env.load!
-      Cli.new(task_env).run
+      Cli.new(TaskEnv.new).run
     end
 
     private

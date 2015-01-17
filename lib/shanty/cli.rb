@@ -38,19 +38,23 @@ module Shanty
     def setup_task(name, task)
       command(name) do |c|
         c.description = I18n.t(task[:desc], default: task[:desc])
-
+        c.syntax = task[:syntax]
         add_options_to_command(task, c)
-        c.action do |args, options|
-          task = tasks[name]
-          options.default(Hash[defaults_for_options(task)])
-          execute_task(name, task, args, options)
-        end
+        add_action_to_command(name, task, c)
       end
     end
 
     def add_options_to_command(task, command)
       task[:options].each do |option_name, option|
         command.option(syntax_for_option(option_name, option), I18n.t(option[:desc], default: option[:desc]))
+      end
+    end
+
+    def add_action_to_command(name, task, command)
+      command.action do |args, options|
+        task = tasks[name]
+        options.default(Hash[defaults_for_options(task)])
+        execute_task(name, task, args, options)
       end
     end
 
@@ -77,7 +81,7 @@ module Shanty
                when :boolean
                  "--#{name}"
                else
-                 "--#{name} #{option[:type].upcase}"
+                 "--#{name} #{(option[:type] || 'string').upcase}"
                end
 
       option[:required] ? "[#{syntax}]" : syntax

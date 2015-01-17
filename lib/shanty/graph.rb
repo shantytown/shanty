@@ -15,7 +15,6 @@ module Shanty
     #            a graph structure of dependencies.
     def initialize(projects)
       @projects = sort_projects(link_projects(projects))
-
       @project_path_trie = Containers::Trie.new
 
       @projects.each do |project|

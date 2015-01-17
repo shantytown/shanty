@@ -7,18 +7,18 @@ module Shanty
     CONFIG_FILE = '.shanty.yml'
     DEFAULT_CONFIG = {}
 
-    def load!
-      (config['require'] || {}).each do |requirement|
-        requirement = "#{requirement}/**/*.rb" unless requirement.include?('.rb')
-        Dir[requirement].each { |f| require f }
+    def initialize
+      Dir.chdir(root) do
+        (config['require'] || {}).each do |requirement|
+          requirement = "#{requirement}/**/*.rb" unless requirement.include?('.rb')
+          Dir[requirement].each { |f| require(File.join(root, f)) }
+        end
       end
     end
 
     def graph
       @graph ||= construct_project_graph
     end
-
-    private
 
     def environment
       @environment = ENV['SHANTY_ENV'] || 'local'
@@ -27,6 +27,8 @@ module Shanty
     def root
       @root ||= find_root
     end
+
+    private
 
     def config
       return @config unless @config.nil?
