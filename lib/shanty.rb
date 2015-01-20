@@ -4,8 +4,12 @@ require 'pry'
 
 require 'shanty/cli'
 require 'shanty/discoverers/shantyfile'
+require 'shanty/discoverers/rubygem'
 require 'shanty/graph'
+require 'shanty/mutators/bundler'
 require 'shanty/mutators/git'
+require 'shanty/plugins/rspec'
+require 'shanty/plugins/rubocop'
 require 'shanty/task_env'
 require 'shanty/task_sets/basic'
 

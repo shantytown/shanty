@@ -1,10 +1,2 @@
-# FIXME: This shouldn't need to be required, can be auto-discovered.
-require 'shanty/projects/ruby'
-require 'shanty/plugins/bundler'
-require 'shanty/plugins/rspec'
-require 'shanty/plugins/rubocop'
-
-type RubyProject
-plugin ::Shanty::BundlerPlugin
 plugin ::Shanty::RspecPlugin
 plugin ::Shanty::RubocopPlugin
