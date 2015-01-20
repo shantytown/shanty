@@ -24,8 +24,8 @@ module Shanty
 
     private
 
-    def create_project(*args)
-      ProjectTemplate.new(Dir.pwd, *args)
+    def create_project_template(*args)
+      ProjectTemplate.new(Dir.pwd, *args).tap { |pt| yield pt }
     end
   end
 end

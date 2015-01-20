@@ -6,19 +6,21 @@ module Shanty
   class ProjectTemplate
     extend Mixins::AttrCombinedAccessor
 
-    attr_combined_accessor :name, :type, :plugins, :parents, :options
+    attr_combined_accessor :name, :type, :priority, :plugins, :parents, :options
+    attr_writer :name, :type, :priority, :plugins, :parents, :options
     attr_reader :root, :path
 
-    def initialize(root, path, args = {})
+    def initialize(root, path)
       fail 'Path to project must be a directory.' unless File.directory?(path)
 
       @root = root
       @path = path
       @name = File.basename(path)
-      @type = args[:type] || StaticProject
-      @plugins = args[:plugins] || []
-      @parents = args[:parents] || []
-      @options = args[:options] || {}
+      @type = StaticProject
+      @priority = 0
+      @plugins = []
+      @parents = []
+      @options = []
 
       execute_shantyfile
     end

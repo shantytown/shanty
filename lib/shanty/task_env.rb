@@ -54,7 +54,7 @@ module Shanty
 
     def construct_project_graph
       project_templates = Dir.chdir(root) do
-        Discoverer.new.discover_all
+        Discoverer.new.discover_all.sort_by(&:priority).reverse.uniq(&:path)
       end
 
       graph = Graph.new(project_templates)
