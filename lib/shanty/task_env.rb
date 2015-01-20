@@ -57,9 +57,9 @@ module Shanty
         Discoverer.new.discover_all.sort_by(&:priority).reverse.uniq(&:path)
       end
 
-      graph = Graph.new(project_templates)
-
-      Mutator.new.apply_mutations(graph)
+      Graph.new(project_templates).tap do |graph|
+        Mutator.new.apply_mutations(graph)
+      end
     end
   end
 end

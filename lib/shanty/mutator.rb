@@ -15,8 +15,8 @@ module Shanty
     end
 
     def apply_mutations(graph)
-      self.class.mutators.reduce(graph) do |acc, mutator|
-        mutator.new.mutate(acc)
+      self.class.mutators.each do |mutator|
+        mutator.new.mutate(graph)
       end
     end
   end

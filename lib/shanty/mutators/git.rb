@@ -3,7 +3,7 @@ require 'shanty/vcs_ranges/local_git'
 
 module Shanty
   # Git VCS mutator
-  class Git < Mutator
+  class GitMutator < Mutator
     def initialize
       @vcs_range = VCSRange.new
     end
@@ -17,8 +17,6 @@ module Shanty
         project = graph.owner_of_file(path)
         project.changed = true unless project.nil?
       end
-
-      graph
     end
   end
 end
