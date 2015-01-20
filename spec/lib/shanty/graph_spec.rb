@@ -8,48 +8,42 @@ require 'shanty/project_template'
 # Allows all classes to be refereneced without the module name
 module Shanty
   RSpec.describe Graph do
+    let(:root) { File.expand_path(File.join(__dir__, '..', '..', '..')) }
     let(:project_paths) do
       [
-        File.join('examples', 'test-static-project-2', 'test-static-project-3'),
-        File.join('examples', 'test-static-project-2'),
-        File.join('examples', 'test-static-project')
+        File.join(root, 'examples', 'test-static-project-2', 'test-static-project-3'),
+        File.join(root, 'examples', 'test-static-project-2'),
+        File.join(root, 'examples', 'test-static-project')
       ]
     end
-    let(:project_templates) { project_paths.map { |project_path| ProjectTemplate.new(project_path) } }
-    let(:projects) { project_templates.map { |project_template| StaticProject.new(project_template) } }
-    let(:graph) { Graph.new(projects) }
+    let(:project_templates) { project_paths.map { |project_path| ProjectTemplate.new(root, project_path) } }
+    let(:graph) { Graph.new(project_templates) }
 
-    describe '#projects' do
+    describe 'enumerable methods' do
       it 'returns projects linked together with parent relationships' do
-        projects = graph.projects
-
-        expect(projects[0].parents).to eql([])
-        expect(projects[1].parents).to eql([projects[0]])
-        expect(projects[2].parents).to eql([projects[1]])
+        expect(graph[0].parents.map(&:path)).to eql([])
+        expect(graph[1].parents.map(&:path)).to eql([project_paths[2]])
+        expect(graph[2].parents.map(&:path)).to eql([project_paths[1]])
       end
 
       it 'returns projects linked together with child relationships' do
-        projects = graph.projects
-
-        expect(projects[0].children).to eql([projects[1]])
-        expect(projects[1].children).to eql([projects[2]])
-        expect(projects[2].children).to eql([])
+        expect(graph[0].children.map(&:path)).to eql([project_paths[1]])
+        expect(graph[1].children.map(&:path)).to eql([project_paths[0]])
+        expect(graph[2].children.map(&:path)).to eql([])
       end
 
-      it 'returns projects sorted from roots to leaves' do
-        graph_projects = graph.projects
-
-        expect(projects[0]).to equal(graph_projects[2])
-        expect(projects[1]).to equal(graph_projects[1])
-        expect(projects[2]).to equal(graph_projects[0])
+      it "returns projects sorted using Tarjan's strongly connected components algorithm" do
+        expect(graph[0].path).to equal(project_paths[2])
+        expect(graph[1].path).to equal(project_paths[1])
+        expect(graph[2].path).to equal(project_paths[0])
       end
     end
 
     describe '#changed' do
       it 'returns only projects where #changed? is true' do
-        projects.first.changed = true
+        graph.first.changed = true
 
-        expect(graph.changed).to contain_exactly(projects.first)
+        expect(graph.changed).to contain_exactly(graph.first)
       end
     end
 
@@ -59,7 +53,7 @@ module Shanty
       end
 
       it 'returns the correct project when finding a name that does exist' do
-        expect(graph.by_name(projects.first.name)).to equal(projects.first)
+        expect(graph.by_name(graph.first.name)).to equal(graph.first)
       end
     end
 
@@ -73,13 +67,13 @@ module Shanty
       end
 
       it 'returns the correct projects when matching types are given' do
-        expect(graph.all_of_type(StaticProject)).to match_array(projects)
+        expect(graph.all_of_type(StaticProject)).to match_array(graph)
       end
     end
 
     describe '#changed_of_type' do
       before do
-        projects.first.changed = true
+        graph.first.changed = true
       end
 
       it 'returns an empty array when no types are given' do
@@ -91,7 +85,7 @@ module Shanty
       end
 
       it 'returns the correct projects when matching types are given' do
-        expect(graph.changed_of_type(StaticProject)).to contain_exactly(projects.first)
+        expect(graph.changed_of_type(StaticProject)).to contain_exactly(graph.first)
       end
     end
 
@@ -101,7 +95,7 @@ module Shanty
       end
 
       it 'returns the correct project that owns a given folder' do
-        expect(graph.owner_of_file(project_paths.first)).to equal(projects.first)
+        expect(graph.owner_of_file(project_paths.first).path).to equal(project_paths.first)
       end
     end
   end

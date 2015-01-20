@@ -15,7 +15,7 @@ module Shanty
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
     option :types, type: :array, desc: 'tasks.common.options.types'
     def projects(options, task_env)
-      task_env.graph.projects.each do |project|
+      task_env.graph.each do |project|
         next if options.changed? && !project.changed?
         puts project
       end
@@ -26,7 +26,7 @@ module Shanty
     option :watch, type: :boolean, desc: 'tasks.common.options.watch'
     option :types, type: :array, desc: 'tasks.common.options.types'
     def build(options, task_env)
-      task_env.graph.projects.each do |project|
+      task_env.graph.each do |project|
         next if options.changed? && !project.changed?
         fail I18n.t('tasks.build.failed', project: project) unless project.publish(:build)
       end
@@ -37,7 +37,7 @@ module Shanty
     option :watch, type: :boolean, desc: 'tasks.common.options.watch'
     option :types, type: :array, desc: 'tasks.common.options.types'
     def test(options, task_env)
-      task_env.graph.projects.each do |project|
+      task_env.graph.each do |project|
         next if options.changed? && !project.changed?
         fail I18n.t('tasks.test.failed', project: project) unless project.publish(:test)
       end

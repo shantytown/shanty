@@ -57,13 +57,9 @@ module Shanty
         Discoverer.new.discover_all
       end
 
-      projects = project_templates.map do |project_template|
-        project_template.type.new(project_template)
-      end
+      graph = Graph.new(project_templates)
 
-      graph = Graph.new(projects)
-
-      Mutator.new.apply_mutations(graph)
+      # Mutator.new.apply_mutations(graph)
     end
   end
 end

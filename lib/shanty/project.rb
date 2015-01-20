@@ -7,7 +7,7 @@ module Shanty
     include Mixins::ActsAsLinkGraphNode
     include Mixins::Callbacks
 
-    attr_accessor :name, :path, :options, :parents_by_name, :changed
+    attr_accessor :name, :path, :options, :parents_by_path, :changed
     attr_reader :changed
     alias_method :changed?, :changed
 
@@ -19,7 +19,7 @@ module Shanty
       @name = project_template.name
       @path = project_template.path
       @options = project_template.options
-      @parents_by_name = project_template.parents
+      @parents_by_path = project_template.parents
       @changed = false
 
       project_template.plugins.each do |plugin|

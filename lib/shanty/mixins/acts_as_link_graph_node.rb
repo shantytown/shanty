@@ -66,16 +66,6 @@ module Shanty
       def all_parents
         parents + parents.map(&:all_parents).flatten
       end
-
-      # Public: Calculate the maximum number of traverses that need to be made to
-      # reach the root from this node.
-      #
-      # Returns a Fixnum representing the traverses to the root. Note that a return
-      # value of 0 means this is the root (ie. it has no parents).
-      def distance_from_root
-        return 0 if parents.empty?
-        parents.map(&:distance_from_root).max + 1
-      end
     end
   end
 end

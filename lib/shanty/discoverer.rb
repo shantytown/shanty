@@ -25,7 +25,7 @@ module Shanty
     private
 
     def create_project(*args)
-      ProjectTemplate.new(*args)
+      ProjectTemplate.new(Dir.pwd, *args)
     end
   end
 end
