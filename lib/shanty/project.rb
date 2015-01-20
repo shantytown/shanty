@@ -23,7 +23,7 @@ module Shanty
       @changed = false
 
       project_template.plugins.each do |plugin|
-        self.class.include plugin
+        plugin.add_to_project(self)
       end
 
       instance_eval(&project_template.after_create) unless project_template.after_create.nil?

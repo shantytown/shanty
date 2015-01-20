@@ -1,5 +1,3 @@
-require 'hooks'
-
 module Shanty
   module Mixins
     # A mixin to implement publish/subscribe style callbacks in the class that
@@ -15,24 +13,38 @@ module Shanty
       # to call extend and include for this mixin. You'll see this idiom everywhere
       # in the Ruby/Rails world, so we use it too.
       def self.included(cls)
-        cls.include(Hooks)
         cls.extend(ClassMethods)
       end
 
       # Common methods inherited by all classes
       module ClassMethods
+        def class_callbacks
+          @class_callbacks ||= Hash.new { |h, k| h[k] = [] }
+        end
+
         def subscribe(*names, sym)
           names.each do |name|
-            define_hook(name, halts_on_falsey: true) unless respond_to?(name)
-            send(name, sym)
+            class_callbacks[name] << sym
           end
         end
       end
 
+      def callbacks
+        @callbacks ||= Hash.new { |h, k| h[k] = [] }
+      end
+
+      def subscribe(*names, sym)
+        names.each do |name|
+          callbacks[name] << sym
+        end
+      end
+
       def publish(name, *args)
-        return true if self.class.callbacks_for_hook(name).nil?
-        results = run_hook(name, *args)
-        !results.halted?
+        class_callback_methods = self.class.class_callbacks[name]
+        callback_methods = callbacks[name]
+
+        (class_callback_methods + callback_methods).each { |method| return false unless send(method, *args) }
+        true
       end
     end
   end
