@@ -4,12 +4,7 @@ require 'shanty/discoverers/shantyfile'
 
 # All classes referenced belong to the shanty project
 module Shanty
-  RSpec.describe Shanty::ShantyfileDiscoverer do
-    let(:project_templates) do
-      Dir.chdir('examples') do
-        ShantyfileDiscoverer.new.discover
-      end
-    end
+  RSpec.describe(Shanty::ShantyfileDiscoverer) do
     let(:project1) { 'test-static-project' }
     let(:project2) { 'test-static-project-2' }
     let(:project3) { 'test-static-project-3' }
@@ -21,6 +16,11 @@ module Shanty
         File.join(Dir.pwd, 'examples', project2),
         File.join(Dir.pwd, 'examples', project2, project3)
       ]
+    end
+    let(:project_templates) do
+      Dir.chdir('examples') do
+        ShantyfileDiscoverer.new.discover
+      end
     end
 
     describe '#discovered' do

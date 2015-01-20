@@ -16,7 +16,12 @@ module Shanty
         File.join(root, 'examples', 'test-static-project')
       ]
     end
+
+    # We don't want the creation of the project templates to affect coverage here.
+    # :nocov:
     let(:project_templates) { project_paths.map { |project_path| ProjectTemplate.new(root, project_path) } }
+    # :nocov:
+
     let(:graph) { Graph.new(project_templates) }
 
     describe 'enumerable methods' do
