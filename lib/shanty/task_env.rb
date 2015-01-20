@@ -59,7 +59,7 @@ module Shanty
 
       graph = Graph.new(project_templates)
 
-      # Mutator.new.apply_mutations(graph)
+      Mutator.new.apply_mutations(graph)
     end
   end
 end
