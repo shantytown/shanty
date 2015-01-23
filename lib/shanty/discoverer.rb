@@ -10,6 +10,12 @@ module Shanty
       attr_reader :discoverers
     end
 
+    attr_reader :env
+
+    def initialize(env)
+      @env = env
+    end
+
     def self.inherited(discoverer)
       Util.logger.debug("Detected project discoverer #{discoverer}")
       @discoverers ||= []
@@ -18,7 +24,7 @@ module Shanty
 
     def discover_all
       self.class.discoverers.flat_map do |discoverer|
-        discoverer.new.discover
+        discoverer.new(env).discover
       end
     end
 

@@ -12,7 +12,7 @@ module Shanty
   # customisation.
   class ShantyfileDiscoverer < Discoverer
     def discover
-      Dir['**/Shantyfile'].map do |path|
+      Dir[File.join(env.root, '**', 'Shantyfile')].map do |path|
         create_project_template(File.absolute_path(File.dirname(path))) do |project_template|
           project_template.priority = -1
         end

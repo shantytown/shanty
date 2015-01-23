@@ -8,15 +8,22 @@ module Shanty
       attr_reader :mutators
     end
 
+    attr_reader :env, :graph
+
+    def initialize(env, graph)
+      @env = env
+      @graph = graph
+    end
+
     def self.inherited(mutator)
       Util.logger.debug("Detected mutator #{mutator}")
       @mutators ||= []
       @mutators << mutator
     end
 
-    def apply_mutations(graph)
+    def apply_mutations
       self.class.mutators.each do |mutator|
-        mutator.new.mutate(graph)
+        mutator.new(@env, @graph).mutate
       end
     end
   end

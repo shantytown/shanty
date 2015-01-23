@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name = 'shanty'
-  gem.version = '0.1.0'
+  gem.version = '0.2.0'
   gem.homepage = 'https://github.com/shantytown/shanty'
   gem.license = 'MIT'
 

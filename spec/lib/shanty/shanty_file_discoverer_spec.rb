@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+require 'shanty/env'
 require 'shanty/discoverers/shantyfile'
 
 # All classes referenced belong to the shanty project
@@ -17,11 +18,8 @@ module Shanty
         File.join(Dir.pwd, 'examples', project2, project3)
       ]
     end
-    let(:project_templates) do
-      Dir.chdir('examples') do
-        ShantyfileDiscoverer.new.discover
-      end
-    end
+    let(:env) { Dir.chdir('examples') { Env.new } }
+    let(:project_templates) { ShantyfileDiscoverer.new(env).discover }
 
     describe '#discovered' do
       it 'finds example projects' do

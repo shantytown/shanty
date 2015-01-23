@@ -7,7 +7,7 @@ module Shanty
   # a directory
   class RubygemDiscoverer < Discoverer
     def discover
-      Dir['**/*.gemspec'].map do |path|
+      Dir[File.join(env.root, '**', '*.gemspec')].map do |path|
         create_project_template(File.absolute_path(File.dirname(path))) do |project_template|
           project_template.type = RubygemProject
         end

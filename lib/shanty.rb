@@ -5,9 +5,10 @@ require 'pry'
 require 'shanty/cli'
 require 'shanty/discoverers/shantyfile'
 require 'shanty/discoverers/rubygem'
+require 'shanty/env'
 require 'shanty/graph'
 require 'shanty/mutators/bundler'
-require 'shanty/mutators/git'
+require 'shanty/mutators/changed'
 require 'shanty/plugins/rspec'
 require 'shanty/plugins/rubocop'
 require 'shanty/task_env'
@@ -23,7 +24,7 @@ module Shanty
     def start!
       setup_i18n
 
-      Cli.new(TaskEnv.new).run
+      Cli.new(TaskEnv.new(Env.new)).run
     end
 
     private

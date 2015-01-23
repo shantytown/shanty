@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    shanty (0.1.0)
+    shanty (0.2.0)
       algorithms (~> 0.6)
       commander (~> 4.2)
       deep_merge (~> 1.0)
