@@ -3,9 +3,9 @@ require 'shanty/project'
 module Shanty
   # Public: Represents a projects created with the Ruby language.
   class RubygemProject < Project
-    subscribe :build, :on_build
+    subscribe :build, :build_gem
 
-    def on_build
+    def build_gem
       system 'gem build *.gemspec'
     end
   end

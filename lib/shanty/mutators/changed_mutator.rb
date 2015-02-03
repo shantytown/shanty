@@ -1,6 +1,7 @@
 require 'find'
 require 'fileutils'
 require 'set'
+require 'zlib'
 require 'shanty/mutator'
 
 module Shanty
@@ -38,14 +39,14 @@ module Shanty
       return @cached_index unless @cached_index.nil?
       return (@cached_index = {}) unless File.exist?(index_file)
 
-      @cached_index = File.open(index_file).each_line.each_with_object({}) do |line, acc|
+      @cached_index = Zlib::GzipReader.open(index_file).each_line.each_with_object({}) do |line, acc|
         path, *attrs = line.split(UNIT_SEPARATOR)
         acc[path] = attrs
       end
     end
 
     def cached_index=(new_index)
-      File.open(index_file, 'w+') do |f|
+      Zlib::GzipWriter.open(File.open(index_file, 'w+')) do |f|
         new_index.each do |path, attrs|
           f.puts(attrs.unshift(path).join(UNIT_SEPARATOR))
         end
@@ -60,8 +61,8 @@ module Shanty
 
     def current_index
       @current_index ||= Find.find(env.root).each_with_object({}) do |path, acc|
-        # FIXME: Pass in list of excludes and match as follows:
-        # next Find.prune if path =~ /(build|.git|.gradle)/
+        # FIXME: Pass in list of excludes that aren't hardcoded here.
+        next Find.prune if path =~ /(?:build|.git|.svn|.gradle)/
         next unless File.exist?(path)
         s = File.stat(path)
         next if s.directory?

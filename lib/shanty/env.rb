@@ -1,36 +1,56 @@
-require 'deep_merge'
+require 'logger'
 require 'yaml'
 
 module Shanty
   #
   class Env
     CONFIG_FILE = '.shanty.yml'
-    DEFAULT_CONFIG = {}
 
-    def initialize
+    def require!
       Dir.chdir(root) do
-        (config['require'] || {}).each do |requirement|
-          requirement = "#{requirement}/**/*.rb" unless requirement.include?('.rb')
-          Dir[requirement].each { |f| require(File.join(root, f)) }
+        (config['require'] || {}).each do |path|
+          requires_in_path(path).each { |f| require File.join(root, f) }
         end
       end
     end
 
+    def logger
+      @logger ||= Logger.new(STDOUT)
+    end
+
     def environment
-      @environment = ENV['SHANTY_ENV'] || 'local'
+      @environment ||= ENV['SHANTY_ENV'] || 'local'
+    end
+
+    def build_number
+      @build_number ||= (ENV['SHANTY_BUILD_NUMBER'] || 1).to_i
     end
 
     def root
       @root ||= find_root
     end
 
-    private
-
     def config
       return @config unless @config.nil?
+      return @config = {} unless File.exist?(config_path)
+      config = YAML.load_file(config_path) || {}
+      @config = config[environment] || {}
+    end
 
-      file_config = YAML.load_file("#{root}/#{CONFIG_FILE}") || {}
-      @config = DEFAULT_CONFIG.deep_merge!(file_config[environment])
+    private
+
+    def requires_in_path(path)
+      if File.directory?(path)
+        Dir[File.join(path, '**', '*.rb')]
+      elsif File.exist?(path)
+        [path]
+      else
+        Dir[path]
+      end
+    end
+
+    def config_path
+      "#{root}/#{CONFIG_FILE}"
     end
 
     def find_root
@@ -44,7 +64,7 @@ module Shanty
 
     def root_dir
       Pathname.new(Dir.pwd).ascend do |d|
-        return d if d.join(CONFIG_FILE).exist?
+        return d.to_s if d.join(CONFIG_FILE).exist?
       end
     end
   end

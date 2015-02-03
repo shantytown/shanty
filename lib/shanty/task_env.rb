@@ -16,7 +16,7 @@ module Shanty
         Discoverer.new(env).discover_all.sort_by(&:priority).reverse.uniq(&:path)
       end
 
-      Graph.new(project_templates).tap do |graph|
+      Graph.new(env, project_templates).tap do |graph|
         Mutator.new(env, graph).apply_mutations
       end
     end

@@ -1,5 +1,7 @@
 require 'commander'
 require 'i18n'
+require 'shanty/info'
+require 'shanty/task_env'
 require 'shanty/task_set'
 
 module Shanty
@@ -8,20 +10,28 @@ module Shanty
   class Cli
     include Commander::Methods
 
-    def initialize(task_env)
-      @task_env = task_env
+    attr_reader :env, :task_sets
+
+    def initialize(env, task_sets)
+      @env = env
+      @task_sets = task_sets
+    end
+
+    def task_env
+      @task_env ||= TaskEnv.new(@env)
     end
 
     def tasks
-      TaskSet.task_sets.reduce({}) do |acc, task_set|
+      @tasks ||= task_sets.reduce({}) do |acc, task_set|
+        # FIXME: Warn or fail when there are duplicate task names?
         acc.merge(task_set.tasks)
       end
     end
 
     def run
-      program :name, 'Shanty'
-      program :version, '0.1.0'
-      program :description, 'Something'
+      program(:name, 'Shanty')
+      program(:version, Info::VERSION)
+      program(:description, Info::DESCRIPTION)
 
       setup_tasks
       run!
@@ -59,14 +69,9 @@ module Shanty
     end
 
     def execute_task(name, task, args, options)
-      # We use allocate here beccause we do not want this to blow up because the class defines a constructor.
-      # We cannot and do not support taskset classes needing constructors.
-      klass = task[:klass].allocate
+      klass = task[:klass].new(task_env)
       arity = klass.method(name).arity
-
-      args.unshift(@task_env) if arity >= 2
       args.unshift(options) if arity >= 1
-
       klass.send(name, *args)
     end
 

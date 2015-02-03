@@ -3,28 +3,22 @@ require 'pathname'
 require 'pry'
 
 require 'shanty/cli'
-require 'shanty/discoverers/shantyfile'
-require 'shanty/discoverers/rubygem'
 require 'shanty/env'
 require 'shanty/graph'
-require 'shanty/mutators/bundler'
-require 'shanty/mutators/changed'
-require 'shanty/plugins/rspec'
-require 'shanty/plugins/rubocop'
-require 'shanty/task_env'
-require 'shanty/task_sets/basic'
+
+# Require all discoverers, mutators, plugins and task sets.
+Dir[File.join(__dir__, 'shanty', '{discoverers,mutators,plugins,task_sets}', '*.rb')].each { |f| require f }
 
 module Shanty
   # Main shanty class
   class Shanty
     # This is the root directory where the Shanty gem is located. Do not confuse this with the root of the repository
     # in which Shanty is operating, which is available via the TaskEnv class.
-    GEM_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+    GEM_ROOT = File.expand_path(File.join(__dir__, '..'))
 
     def start!
       setup_i18n
-
-      Cli.new(TaskEnv.new(Env.new)).run
+      Cli.new(env, TaskSet.task_sets).run
     end
 
     private
@@ -32,6 +26,10 @@ module Shanty
     def setup_i18n
       I18n.enforce_available_locales = true
       I18n.load_path = Dir[File.join(GEM_ROOT, 'translations', '*.yml')]
+    end
+
+    def env
+      Env.new.tap(&:require!)
     end
   end
 end

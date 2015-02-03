@@ -17,9 +17,11 @@ module Shanty
 
     # Public: Initialise a ProjectLinkGraph.
     #
+    # env               - The environment, an instance of Env.
     # project_templates - An array of project templates to take, instantiate and
     #                     link together into a graph structure of dependencies.
-    def initialize(project_templates)
+    def initialize(env, project_templates)
+      @env = env
       @project_path_trie = Containers::Trie.new
       @project_templates = project_templates
       @projects = projects_by_path.values
@@ -64,14 +66,6 @@ module Shanty
       changed.select { |project| types.include?(project.class) }
     end
 
-    # Public: Returns the project, if any, that the current working directory
-    # belongs to.
-    #
-    # Returns an instance of a Project subclass if found, otherwise nil.
-    def current
-      owner_of_file(Dir.pwd)
-    end
-
     # Public: Given a path to a file or directory (normally a path obtained
     # while looking at a Git diff), find the project that owns this file. This
     # works by finding the project with the longest path in common with the
@@ -85,6 +79,16 @@ module Shanty
     def owner_of_file(path)
       key = @project_path_trie.longest_prefix(path)
       @project_path_trie[key]
+    end
+
+    # Public: Given a path, find all the projects at or below this path.
+    #
+    # path - The path to search within.
+    #
+    # Returns an Array of project subclasses, one for each project below
+    # this path.
+    def projects_within_path(path)
+      select { |project| project.path.start_with?(path) }
     end
 
     private
@@ -103,7 +107,7 @@ module Shanty
 
     def projects_by_path
       @projects_by_path ||= Hash[@project_templates.map do |project_template|
-        project = project_template.type.new(project_template)
+        project = project_template.type.new(@env, project_template)
         @project_path_trie[project.path] = project
         [project.path, project]
       end]

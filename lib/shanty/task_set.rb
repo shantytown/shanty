@@ -5,12 +5,17 @@ module Shanty
       attr_reader :task_sets, :tasks, :partial_task
     end
 
+    attr_reader :task_env
+
+    def initialize(task_env)
+      @task_env = task_env
+    end
+
     # This method is auto-triggered by Ruby whenever a class inherits from
     # Shanty::TaskSet. This means we can build up a list of all the tasks
     # without requiring them to register with us - neat!
     def self.inherited(task_set)
-      @task_sets ||= []
-      @task_sets << task_set
+      (@task_sets ||= []) << task_set
     end
 
     def self.desc(syntax, desc)

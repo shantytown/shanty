@@ -1,5 +1,5 @@
 require 'shanty/discoverer'
-require 'shanty/projects/rubygem'
+require 'shanty/projects/rubygem_project'
 
 module Shanty
   # Public: Discoverer for Shantyfiles

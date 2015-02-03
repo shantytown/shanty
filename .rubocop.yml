@@ -2,6 +2,3 @@ require: rubocop-rspec
 
 LineLength:
   Max: 120
-
-Lint/Eval:
-  Enabled: false

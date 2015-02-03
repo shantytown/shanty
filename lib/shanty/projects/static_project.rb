@@ -3,9 +3,9 @@ require 'shanty/project'
 module Shanty
   # Public: Base type of project, simply creates a tarball of the directory
   class StaticProject < Project
-    subscribe :build, :on_build
+    subscribe :build, :tar_project
 
-    def on_build
+    def tar_project
       # FIXME: Create a tarball of the current project.
       true
     end
@@ -15,7 +15,7 @@ module Shanty
     #
     # Returns a String representing the absolute path to the artifact.
     def artifact_path
-      "#{@root_dir}/build/#{@options['artifact_name'] || name}-#{@build_number}.tgz"
+      File.join(@env.root, 'build', "#{@options['artifact_name'] || @name}-#{@env.build_number}.tar.gz")
     end
   end
 end

@@ -1,45 +1,54 @@
+require 'fileutils'
 require 'i18n'
 require 'shanty/task_set'
-require 'shanty/util'
 
 module Shanty
   # Public: A set of basic tasks that can be applied to all projects and that
   # ship with the core of Shanty.
   class BasicTasks < TaskSet
     desc 'init', 'tasks.init.desc'
-    def init(_options, _task_env)
-      # FIXME
+    def init
+      FileUtils.touch(File.join(Dir.pwd, '.shanty.yml'))
     end
 
     desc 'projects [--changed] [--types TYPE,TYPE,...]', 'tasks.projects.desc'
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
     option :types, type: :array, desc: 'tasks.common.options.types'
-    def projects(options, task_env)
+    def projects(options)
       task_env.graph.each do |project|
-        next if options.changed? && !project.changed?
+        next if options.changed && !project.changed?
         puts project
       end
     end
 
-    desc 'build [--changed] [--watch] [--types TYPE,TYPE,...]', 'tasks.build.desc'
+    desc 'build [--changed] [--types TYPE,TYPE,...]', 'tasks.build.desc'
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
-    option :watch, type: :boolean, desc: 'tasks.common.options.watch'
     option :types, type: :array, desc: 'tasks.common.options.types'
-    def build(options, task_env)
-      task_env.graph.each do |project|
+    def build(options)
+      run_common_task(options, :build)
+    end
+
+    desc 'test [--changed] [--types TYPE,TYPE,...]', 'tasks.test.desc'
+    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
+    option :types, type: :array, desc: 'tasks.common.options.types'
+    def test(options)
+      run_common_task(options, :test)
+    end
+
+    private
+
+    def run_common_task(options, task)
+      projects_to_execute.each do |project|
         next if options.changed? && !project.changed?
-        fail I18n.t('tasks.build.failed', project: project) unless project.publish(:build)
+        fail I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
       end
     end
 
-    desc 'test [--changed] [--watch] [--types TYPE,TYPE,...]', 'tasks.test.desc'
-    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
-    option :watch, type: :boolean, desc: 'tasks.common.options.watch'
-    option :types, type: :array, desc: 'tasks.common.options.types'
-    def test(options, task_env)
-      task_env.graph.each do |project|
-        next if options.changed? && !project.changed?
-        fail I18n.t('tasks.test.failed', project: project) unless project.publish(:test)
+    def projects_to_execute
+      if Dir.pwd == task_env.root
+        task_env.graph
+      else
+        task_env.graph.projects_within_path(Dir.pwd)
       end
     end
   end

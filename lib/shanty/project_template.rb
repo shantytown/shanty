@@ -1,36 +1,26 @@
-require 'shanty/mixins/attr_combined_accessor'
-require 'shanty/projects/static'
+require 'attr_combined_accessor'
+require 'shanty/projects/static_project'
 
 module Shanty
   # Public: Allows creation of a project using a discoverer
   class ProjectTemplate
-    extend Mixins::AttrCombinedAccessor
-
     attr_combined_accessor :name, :type, :priority, :plugins, :parents, :options
-    attr_writer :name, :type, :priority, :plugins, :parents, :options
-    attr_reader :root, :path
+    attr_reader :env, :path
 
-    def initialize(root, path)
+    def initialize(env, path)
       fail 'Path to project must be a directory.' unless File.directory?(path)
 
-      @root = root
+      @env = env
       @path = path
+
       @name = File.basename(path)
       @type = StaticProject
       @priority = 0
       @plugins = []
       @parents = []
-      @options = []
+      @options = {}
 
       execute_shantyfile
-    end
-
-    def execute_shantyfile
-      shantyfile_path = File.join(@path, 'Shantyfile')
-
-      return unless File.exist?(shantyfile_path)
-
-      instance_eval(File.read(shantyfile_path), shantyfile_path)
     end
 
     def plugin(plugin)
@@ -39,7 +29,7 @@ module Shanty
 
     def parent(parent)
       # Will make the parent path relative to the root if (and only if) it is relative.
-      @parents << File.expand_path(parent, @root)
+      @parents << File.expand_path(parent, @env.root)
     end
 
     def option(key, value)
@@ -52,6 +42,14 @@ module Shanty
       else
         @after_create = block
       end
+    end
+
+    private
+
+    def execute_shantyfile
+      shantyfile_path = File.join(@path, 'Shantyfile')
+      return unless File.exist?(shantyfile_path)
+      instance_eval(File.read(shantyfile_path), shantyfile_path)
     end
   end
 end

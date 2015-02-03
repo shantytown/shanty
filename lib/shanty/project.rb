@@ -1,21 +1,22 @@
-require 'shanty/mixins/acts_as_link_graph_node'
-require 'shanty/mixins/callbacks'
+require 'call_me_ruby'
+require 'shanty/mixins/acts_as_graph_node'
 
 module Shanty
   # Public: Represents a project in the current repository.
   class Project
-    include Mixins::ActsAsLinkGraphNode
-    include Mixins::Callbacks
+    include Mixins::ActsAsGraphNode
+    include CallMeRuby
 
     attr_accessor :name, :path, :options, :parents_by_path, :changed
-    attr_reader :changed
     alias_method :changed?, :changed
 
     # Public: Initialise the Project instance.
     #
+    # env              - The environment, an instance of Env.
     # project_template - An instance of ProjectTemplate from which to
     #                    instantiate this project.
-    def initialize(project_template)
+    def initialize(env, project_template)
+      @env = env
       @name = project_template.name
       @path = project_template.path
       @options = project_template.options
@@ -29,15 +30,6 @@ module Shanty
       instance_eval(&project_template.after_create) unless project_template.after_create.nil?
     end
 
-    # Public: A list of the external dependencies this project has by name
-    # and version. This is used in dependency tree generation.
-    #
-    # Returns an Array of Strings representing external dependencies by name
-    # and version.
-    def externals_by_name
-      []
-    end
-
     # Public: The absolute path to the artifact that would be created by this
     # project when built, if any. This is expected to be overriden in subclasses.
     #
@@ -48,7 +40,7 @@ module Shanty
 
     # Public: Overriden String conversion method to return a simplified
     # representation of this instance that doesn't include the cyclic
-    # parent/children attributes as defined by the ActsAsLinkGraphNode mixin.
+    # parent/children attributes as defined by the ActsAsGraphNode mixin.
     #
     # Returns a simple String representation of this instance.
     def to_s
@@ -57,7 +49,7 @@ module Shanty
 
     # Public: Overriden String conversion method to return a more detailed
     # representation of this instance that doesn't include the cyclic
-    # parent/children attributes as defined by the ActsAsLinkGraphNode mixin.
+    # parent/children attributes as defined by the ActsAsGraphNode mixin.
     #
     # Returns more detailed String representation of this instance.
     def inspect
@@ -67,8 +59,6 @@ module Shanty
         options: options
       }.inspect
     end
-
-    private
 
     def within_project_dir
       Dir.chdir(path) do

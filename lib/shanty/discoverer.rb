@@ -1,4 +1,3 @@
-require 'shanty/util'
 require 'shanty/project_template'
 
 module Shanty
@@ -17,9 +16,7 @@ module Shanty
     end
 
     def self.inherited(discoverer)
-      Util.logger.debug("Detected project discoverer #{discoverer}")
-      @discoverers ||= []
-      @discoverers << discoverer
+      (@discoverers ||= []) << discoverer
     end
 
     def discover_all
@@ -31,7 +28,7 @@ module Shanty
     private
 
     def create_project_template(*args)
-      ProjectTemplate.new(Dir.pwd, *args).tap { |pt| yield pt }
+      ProjectTemplate.new(env, *args).tap { |pt| yield pt }
     end
   end
 end

@@ -1,9 +1,10 @@
 require 'shanty/discoverer'
-require 'shanty/projects/static'
+require 'shanty/projects/static_project'
 
 module Shanty
   # Public: Discoverer for Shantyfiles
-  # will create a a project for every Shantyfile it finds in
+  #
+  # It will create a project for every Shantyfile it finds in
   # a directory
   #
   # Note that this does not execute the Shantyfile. That

@@ -1,5 +1,5 @@
 require 'shanty/mutator'
-require 'shanty/plugins/bundler'
+require 'shanty/plugins/bundler_plugin'
 
 module Shanty
   # Bundler mutator

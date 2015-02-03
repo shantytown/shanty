@@ -1,10 +1,10 @@
 module Shanty
   module Mixins
     # A mixin module enabling classes to have parents and children. It provides
-    # convenience methods for determining dependencies, depdenants, and a distance
-    # from the root node. Note that in contrast to a tree, this link graph module
-    # allows multiple parents.
-    module ActsAsLinkGraphNode
+    # convenience methods for determining dependencies, and depdenants.
+    #
+    # Note that in contrast to a tree, this graph module allows multiple parents.
+    module ActsAsGraphNode
       # The self.included idiom. This is described in great detail in a
       # fantastic blog post here:
       #
