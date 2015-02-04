@@ -5,10 +5,6 @@ module Shanty
   # utilises inherited class method to find all implementing
   # classes
   class Discoverer
-    class << self
-      attr_reader :discoverers
-    end
-
     attr_reader :env
 
     def initialize(env)
@@ -16,13 +12,21 @@ module Shanty
     end
 
     def self.inherited(discoverer)
-      (@discoverers ||= []) << discoverer
+      discoverers << discoverer
+    end
+
+    def self.discoverers
+      @discoverers ||= []
     end
 
     def discover_all
-      self.class.discoverers.flat_map do |discoverer|
-        discoverer.new(env).discover
-      end
+      self.class.discoverers
+        .lazy
+        .flat_map { |discoverer| discoverer.new(env).discover.each(&:setup!) }
+        .sort_by(&:priority)
+        .reverse
+        .uniq(&:path)
+        .to_a
     end
 
     private

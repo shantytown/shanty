@@ -17,25 +17,28 @@ module Shanty
     #                    instantiate this project.
     def initialize(env, project_template)
       @env = env
+      @project_template = project_template
       @name = project_template.name
       @path = project_template.path
       @options = project_template.options
       @parents_by_path = project_template.parents
       @changed = false
+    end
 
-      project_template.plugins.each do |plugin|
+    def setup!
+      @project_template.plugins.each do |plugin|
         plugin.add_to_project(self)
       end
 
-      instance_eval(&project_template.after_create) unless project_template.after_create.nil?
+      instance_eval(&@project_template.after_create) unless @project_template.after_create.nil?
     end
 
-    # Public: The absolute path to the artifact that would be created by this
+    # Public: The absolute paths to the artifacts that would be created by this
     # project when built, if any. This is expected to be overriden in subclasses.
     #
-    # Returns a String representing the absolute path to the artifact.
-    def artifact_path
-      nil
+    # Returns an Array of Strings representing the absolute paths to the artifacts.
+    def artifact_paths
+      []
     end
 
     # Public: Overriden String conversion method to return a simplified
@@ -54,13 +57,17 @@ module Shanty
     # Returns more detailed String representation of this instance.
     def inspect
       {
-        name: name,
-        path: path,
-        options: options
+        name: @name,
+        path: @path,
+        options: @options,
+        parents_by_path: @parents_by_path,
+        changed: @changed
       }.inspect
     end
 
     def within_project_dir
+      return unless block_given?
+
       Dir.chdir(path) do
         yield
       end

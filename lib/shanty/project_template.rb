@@ -19,8 +19,11 @@ module Shanty
       @plugins = []
       @parents = []
       @options = {}
+    end
 
+    def setup!
       execute_shantyfile
+      self
     end
 
     def plugin(plugin)

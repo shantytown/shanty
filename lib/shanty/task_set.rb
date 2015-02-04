@@ -1,10 +1,6 @@
 module Shanty
   # Public: Discover shanty tasks
   class TaskSet
-    class << self
-      attr_reader :task_sets, :tasks, :partial_task
-    end
-
     attr_reader :task_env
 
     def initialize(task_env)
@@ -15,7 +11,22 @@ module Shanty
     # Shanty::TaskSet. This means we can build up a list of all the tasks
     # without requiring them to register with us - neat!
     def self.inherited(task_set)
-      (@task_sets ||= []) << task_set
+      task_sets << task_set
+    end
+
+    def self.task_sets
+      @task_sets ||= []
+    end
+
+    def self.tasks
+      @tasks ||= {}
+    end
+
+    def self.partial_task
+      @partial_task ||= {
+        options: {},
+        params: {}
+      }
     end
 
     def self.desc(syntax, desc)
@@ -32,19 +43,10 @@ module Shanty
     end
 
     def self.method_added(name)
-      @tasks ||= {}
-      @tasks[name] = partial_task.merge(klass: self)
+      tasks[name] = partial_task.merge(klass: self)
 
       # Now reset the task definition.
-      @partial_task = {}
-    end
-
-    def self.partial_task
-      @partial_task ||= {}
-      @partial_task[:params] ||= {}
-      @partial_task[:options] ||= {}
-
-      @partial_task
+      @partial_task = nil
     end
   end
 end

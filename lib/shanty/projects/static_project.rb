@@ -7,15 +7,13 @@ module Shanty
 
     def tar_project
       # FIXME: Create a tarball of the current project.
-      true
+      system "tar -czvf #{artifact_paths.first} ."
     end
 
-    # Public: The absolute path to the artifact that would be created by this
-    # project when built.
-    #
-    # Returns a String representing the absolute path to the artifact.
-    def artifact_path
-      File.join(@env.root, 'build', "#{@options['artifact_name'] || @name}-#{@env.build_number}.tar.gz")
+    def artifact_paths
+      [
+        File.join(@env.root, 'build', "#{@options['artifact_name'] || @name}-#{@env.build_number}.tar.gz")
+      ]
     end
   end
 end

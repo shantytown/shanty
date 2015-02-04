@@ -5,7 +5,7 @@ require 'shanty/projects/rubygem_project'
 module Shanty
   RSpec.describe(RubygemProject) do
     include_context('graph')
-    subject { RubygemProject.new(env, project_templates.first) }
+    subject { RubygemProject.new(env, project_templates[:shanty]) }
 
     it('subscribes to the build event') do
       expect(RubygemProject.class_callbacks).to include(build: [:build_gem])

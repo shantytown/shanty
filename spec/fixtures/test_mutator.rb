@@ -2,5 +2,7 @@ require 'shanty/mutator'
 
 module Shanty
   # Test Mutator fixture.
-  class TestMutator < Mutator; end
+  class TestMutator < Mutator
+    def mutate; end
+  end
 end

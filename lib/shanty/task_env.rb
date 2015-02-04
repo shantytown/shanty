@@ -13,7 +13,7 @@ module Shanty
 
     def construct_project_graph
       project_templates = Dir.chdir(root) do
-        Discoverer.new(env).discover_all.sort_by(&:priority).reverse.uniq(&:path)
+        Discoverer.new(env).discover_all
       end
 
       Graph.new(env, project_templates).tap do |graph|

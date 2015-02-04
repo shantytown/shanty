@@ -32,8 +32,13 @@ end
 RSpec.shared_context('graph') do
   include_context('basics')
 
-  let(:project_templates) { project_paths.values.map { |project_path| Shanty::ProjectTemplate.new(env, project_path) } }
-  let(:graph) { Shanty::Graph.new(env, project_templates) }
+  let(:project_templates) do
+    Hash[project_paths.map do |key, project_path|
+      [key, Shanty::ProjectTemplate.new(env, project_path).setup!]
+    end]
+  end
+  let(:project_template) { project_templates[:shanty] }
+  let(:graph) { Shanty::Graph.new(env, project_templates.values) }
 end
 
 def require_fixture(path)

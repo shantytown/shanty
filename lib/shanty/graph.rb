@@ -108,6 +108,7 @@ module Shanty
     def projects_by_path
       @projects_by_path ||= Hash[@project_templates.map do |project_template|
         project = project_template.type.new(@env, project_template)
+        project.setup!
         @project_path_trie[project.path] = project
         [project.path, project]
       end]

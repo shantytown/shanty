@@ -2,10 +2,6 @@ module Shanty
   # Public: enables mutation of the project graph
   # Common usage would be to set changed flags on projects
   class Mutator
-    class << self
-      attr_reader :mutators
-    end
-
     attr_reader :env, :graph
 
     def initialize(env, graph)
@@ -14,7 +10,11 @@ module Shanty
     end
 
     def self.inherited(mutator)
-      (@mutators ||= []) << mutator
+      mutators << mutator
+    end
+
+    def self.mutators
+      @mutators ||= []
     end
 
     def apply_mutations
