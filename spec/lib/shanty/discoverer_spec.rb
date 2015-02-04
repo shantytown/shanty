@@ -38,7 +38,7 @@ module Shanty
       end
 
       it('returns an array of all discovered project templates') do
-        expect(subject.discover_all.map(&:path)).to match_array(project_paths.values)
+        expect(subject.discover_all.map(&:path)).to include(*project_paths.values)
       end
 
       it('sorts the projects by priority, highest priority first') do
