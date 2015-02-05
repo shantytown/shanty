@@ -6,7 +6,6 @@ module Shanty
     subscribe :build, :tar_project
 
     def tar_project
-      # FIXME: Create a tarball of the current project.
       system "tar -czvf #{artifact_paths.first} ."
     end
 

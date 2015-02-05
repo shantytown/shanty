@@ -24,6 +24,7 @@ module Shanty
 
     def self.partial_task
       @partial_task ||= {
+        klass: self,
         options: {},
         params: {}
       }
@@ -38,12 +39,12 @@ module Shanty
       partial_task[:params][name] = options
     end
 
-    def self.option(name, options = {})
-      partial_task[:options][name] = options
+    def self.option(name, attrs = {})
+      partial_task[:options][name] = attrs
     end
 
     def self.method_added(name)
-      tasks[name] = partial_task.merge(klass: self)
+      tasks[name] = partial_task
 
       # Now reset the task definition.
       @partial_task = nil

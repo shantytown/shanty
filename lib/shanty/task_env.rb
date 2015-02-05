@@ -12,9 +12,7 @@ module Shanty
     private
 
     def construct_project_graph
-      project_templates = Dir.chdir(root) do
-        Discoverer.new(env).discover_all
-      end
+      project_templates = Discoverer.new(env).discover_all
 
       Graph.new(env, project_templates).tap do |graph|
         Mutator.new(env, graph).apply_mutations

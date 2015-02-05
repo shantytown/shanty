@@ -60,6 +60,12 @@ module Shanty
       end
     end
 
+    describe('#logger') do
+      it('returns a logger object') do
+        expect(subject.logger).to be_a(Logger)
+      end
+    end
+
     describe('#environment') do
       before do
         ENV.delete('SHANTY_ENV')
