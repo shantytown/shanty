@@ -2,9 +2,12 @@
 
 ## v0.3.0
 
+* **100% test coverage:** The entire Shanty core is now fully covered by automated tests running on Travis!
 * **--watch is no more:** It was never a good fit within Shanty itself: we don't have global options, and it doesn't fit well as a plugin. We recommend you use an external tool that does this, of which there are many (filewatcher, nodemon, and many others).
+* **Tasks no longer can have params:** Use options instead - although they have to be named, they're otherwise the same.
 * **Graph#projects_within_path:** A convenience method for getting all the projects from the given path downwards. Useful for getting a list of the projects a task may need to run on when it uses the current working directory for determining such things.
 * **TaskEnv at instance scope for Tasks:** Previously, all tasks had to take in the `options` and `task_env` arguments followed by any params. Now, they just take `options`, followed by any params; `task_env` is available as an attribute on the `TaskSet` class.
+
 
 ## v0.2.0 (22nd January, 2015)
 

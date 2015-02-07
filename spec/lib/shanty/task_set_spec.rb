@@ -5,8 +5,18 @@ require_fixture 'test_task_set'
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(TaskSet) do
+    include_context('basics')
+    let(:task_env) { TaskEnv.new(env) }
+    subject { TaskSet.new(task_env) }
+
     after do
       TaskSet.instance_variable_set(:@partial_task, nil)
+    end
+
+    describe('.new') do
+      it('sets the task_env instance variable to the passed in task env') do
+        expect(subject.instance_variable_get(:@task_env)).to equal(task_env)
+      end
     end
 
     describe('.inherited') do
@@ -33,7 +43,7 @@ module Shanty
 
     describe('.partial_task') do
       it('returns a partial task') do
-        expect(TestTaskSet.partial_task).to eql(klass: TestTaskSet, options: {}, params: {})
+        expect(TestTaskSet.partial_task).to eql(klass: TestTaskSet, options: {})
       end
     end
 
@@ -48,14 +58,6 @@ module Shanty
         TaskSet.desc('foo', 'bar')
 
         expect(TaskSet.instance_variable_get(:@partial_task)).to include(desc: 'bar')
-      end
-    end
-
-    describe('.param') do
-      it('sets the given param with the given options in the current partial task') do
-        TaskSet.param('foo', bar: 'lux')
-
-        expect(TaskSet.instance_variable_get(:@partial_task)[:params]).to include('foo' => { bar: 'lux' })
       end
     end
 

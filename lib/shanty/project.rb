@@ -1,10 +1,10 @@
+require 'acts_as_graph_vertex'
 require 'call_me_ruby'
-require 'shanty/mixins/acts_as_graph_node'
 
 module Shanty
   # Public: Represents a project in the current repository.
   class Project
-    include Mixins::ActsAsGraphNode
+    include ActsAsGraphVertex
     include CallMeRuby
 
     attr_accessor :name, :path, :options, :parents_by_path, :changed

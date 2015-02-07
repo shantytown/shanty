@@ -61,17 +61,17 @@ module Shanty
     end
 
     def add_action_to_command(name, task, command)
-      command.action do |args, options|
+      command.action do |_, options|
         task = tasks[name]
         options.default(Hash[defaults_for_options(task)])
-        execute_task(name, task, args, options)
+        execute_task(name, task, options)
       end
     end
 
-    def execute_task(name, task, args, options)
+    def execute_task(name, task, options)
       klass = task[:klass].new(task_env)
       arity = klass.method(name).arity
-      args.unshift(options) if arity >= 1
+      args = (arity >= 1 ? [options] : [])
       klass.send(name, *args)
     end
 
@@ -82,14 +82,13 @@ module Shanty
     end
 
     def syntax_for_option(name, option)
-      syntax = case option[:type]
-               when :boolean
-                 "--#{name}"
-               else
-                 "--#{name} #{(option[:type] || 'string').upcase}"
-               end
-
-      option[:required] ? "[#{syntax}]" : syntax
+      required = option[:required]
+      case option[:type]
+      when :boolean
+        "--#{name}"
+      else
+        "--#{name} #{'[' unless required}#{name.upcase}#{']' unless required}"
+      end
     end
 
     def default_for_type(option)

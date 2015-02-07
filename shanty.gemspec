@@ -20,6 +20,7 @@ Gem::Specification.new do |gem|
   gem.executables << 'shanty'
   gem.files = Dir['**/*'].select { |d| d =~ %r{^(README|bin/|ext/|lib/)} }
 
+  gem.add_dependency 'acts_as_graph_vertex', '~>1.0'
   gem.add_dependency 'algorithms', '~> 0.6'
   gem.add_dependency 'attr_combined_accessor', '~>1.0'
   gem.add_dependency 'call_me_ruby', '~>1.0'

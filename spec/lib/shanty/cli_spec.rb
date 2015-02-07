@@ -31,47 +31,52 @@ module Shanty
         expect(subject.tasks.keys).to contain_exactly(:foo)
 
         command = subject.tasks[:foo]
-        expect(command[:syntax]).to eql('foo --bonkers BONKERS [--cats] [--dogs DOGS]')
+        expect(command[:syntax]).to eql('foo [--cat CAT] [--dog] --catweasel CATWEASEL')
         expect(command[:desc]).to eql('test.foo.desc')
         expect(command[:klass]).to equal(TestTaskSet)
 
         options = command[:options]
-        expect(options.keys).to contain_exactly(:bonkers, :cats, :dogs)
-        expect(options[:bonkers]).to eql(required: true, desc: 'test.options.bonkers')
-        expect(options[:cats]).to eql(type: :boolean, desc: 'test.options.cats')
-        expect(options[:dogs]).to eql(type: :string, desc: 'test.options.dogs')
-
-        params = command[:params]
-        expect(params.keys).to contain_exactly(:bar)
+        expect(options.keys).to contain_exactly(:cat, :dog, :catweasel)
+        expect(options[:cat]).to eql(desc: 'test.options.cat')
+        expect(options[:dog]).to eql(type: :boolean, desc: 'test.options.dog')
+        expect(options[:catweasel]).to eql(required: true, type: :string, desc: 'test.options.catweasel')
       end
     end
 
     describe('#run') do
       before do
+        loop do
+          ARGV.pop
+          break if ARGV.empty?
+        end
+
         allow(subject).to receive(:program).and_call_original
         allow(subject).to receive(:command).and_call_original
-        allow(subject).to receive(:run!)
       end
 
       it('sets the name of the program') do
+        allow(subject).to receive(:run!)
         expect(subject).to receive(:program).with(:name, 'Shanty')
 
         subject.run
       end
 
       it('sets the version of the program') do
+        allow(subject).to receive(:run!)
         expect(subject).to receive(:program).with(:version, Info::VERSION)
 
         subject.run
       end
 
       it('sets the description of the program') do
+        allow(subject).to receive(:run!)
         expect(subject).to receive(:program).with(:version, Info::VERSION)
 
         subject.run
       end
 
       it('sets up the tasks for the program') do
+        allow(subject).to receive(:run!)
         expect(subject).to receive(:command)
         expect(subject.commands).to include('foo')
 
@@ -79,13 +84,42 @@ module Shanty
         expect(command.description).to eql('test.foo.desc')
 
         options = command.options.map { |o| o[:description] }
-        expect(options).to contain_exactly('test.options.bonkers', 'test.options.cats', 'test.options.dogs')
+        expect(options).to contain_exactly('test.options.cat', 'test.options.dog', 'test.options.catweasel')
 
         subject.run
       end
 
       it('runs the CLI program') do
+        allow(subject).to receive(:run!)
         expect(subject).to receive(:run!)
+
+        subject.run
+      end
+
+      xit('fails to run with no command specified') do
+        subject.run
+      end
+
+      xit('fails to run an invalid command') do
+        ARGV.concat(%w(xulu))
+
+        subject.run
+      end
+
+      xit('fails to run a command when run without required options') do
+        ARGV.concat(%w(foo))
+
+        subject.run
+      end
+
+      it('executes a command correctly when run') do
+        ARGV.concat(%w(foo --cat=iamaniamscat --dog --catweasel=noiamacatweasel))
+
+        subject.run
+      end
+
+      xit('executes a command correctly when run without non-required options') do
+        ARGV.concat(%w(foo --catweasel=noiamacatweasel))
 
         subject.run
       end

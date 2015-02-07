@@ -130,7 +130,6 @@ module Shanty
           end
 
           project.add_parent(parent_dependency)
-          parent_dependency.add_child(project)
         end
       end
     end

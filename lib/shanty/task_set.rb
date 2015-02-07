@@ -25,18 +25,13 @@ module Shanty
     def self.partial_task
       @partial_task ||= {
         klass: self,
-        options: {},
-        params: {}
+        options: {}
       }
     end
 
     def self.desc(syntax, desc)
       partial_task[:syntax] = syntax
       partial_task[:desc] = desc
-    end
-
-    def self.param(name, options = {})
-      partial_task[:params][name] = options
     end
 
     def self.option(name, attrs = {})
