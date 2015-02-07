@@ -12,7 +12,7 @@ module Shanty
       it('raises an exception if the given path is not a valid directory') do
         allow(File).to receive(:directory?).and_return(false)
 
-        expect { subject }.to raise_exception('Path to project must be a directory.')
+        expect { subject }.to raise_error('Path to project must be a directory.')
       end
     end
 

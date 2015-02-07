@@ -1,3 +1,4 @@
+require 'commander'
 require 'spec_helper'
 require 'shanty/cli'
 require 'shanty/env'
@@ -96,17 +97,22 @@ module Shanty
         subject.run
       end
 
-      xit('fails to run with no command specified') do
+      it('fails to run with no command specified') do
+        expect(Commander::Runner.instance).to receive(:abort).with('invalid command. Use --help for more information')
         subject.run
       end
 
-      xit('fails to run an invalid command') do
+      it('fails to run an invalid command') do
+        expect(Commander::Runner.instance).to receive(:abort).with('invalid command. Use --help for more information')
+
         ARGV.concat(%w(xulu))
 
         subject.run
       end
 
-      xit('fails to run a command when run without required options') do
+      it('fails to run a command when run without required options') do
+        expect(subject).to receive(:abort).with('missing required params: catweasel. Use --help for more information.')
+
         ARGV.concat(%w(foo))
 
         subject.run
@@ -118,7 +124,7 @@ module Shanty
         subject.run
       end
 
-      xit('executes a command correctly when run without non-required options') do
+      it('executes a command correctly when run without non-required options') do
         ARGV.concat(%w(foo --catweasel=noiamacatweasel))
 
         subject.run

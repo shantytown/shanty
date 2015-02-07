@@ -48,7 +48,7 @@ module Shanty
     def setup_task(name, task)
       command(name) do |c|
         c.description = I18n.t(task[:desc], default: task[:desc])
-        c.syntax = task[:syntax]
+        c.syntax = syntax_for_command(name, task)
         add_options_to_command(task, c)
         add_action_to_command(name, task, c)
       end
@@ -64,6 +64,7 @@ module Shanty
       command.action do |_, options|
         task = tasks[name]
         options.default(Hash[defaults_for_options(task)])
+        enforce_required_options(task, options)
         execute_task(name, task, options)
       end
     end
@@ -79,6 +80,14 @@ module Shanty
       task[:options].map do |option_name, option|
         [option_name, default_for_type(option)]
       end
+    end
+
+    def syntax_for_command(name, task)
+      option_syntax = task[:options].map do |option_name, option|
+        syntax_for_option(option_name, option)
+      end
+
+      [name, *option_syntax].join(' ')
     end
 
     def syntax_for_option(name, option)
@@ -98,6 +107,14 @@ module Shanty
       else
         option[:default]
       end
+    end
+
+    def enforce_required_options(task, options)
+      missing = task[:options].keep_if do |option_name, option|
+        option[:required] && options.send(option_name).nil?
+      end.keys.join(', ')
+
+      abort("missing required params: #{missing}. Use --help for more information.") unless missing.empty?
     end
   end
 end
