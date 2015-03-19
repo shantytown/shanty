@@ -1,10 +1,9 @@
 require 'attr_combined_accessor'
-require 'shanty/projects/static_project'
 
 module Shanty
   # Public: Allows creation of a project using a discoverer
   class ProjectTemplate
-    attr_combined_accessor :name, :type, :priority, :plugins, :parents, :options
+    attr_combined_accessor :name, :priority, :plugins, :parents, :options
     attr_reader :env, :path
 
     def initialize(env, path)
@@ -14,7 +13,6 @@ module Shanty
       @path = path
 
       @name = File.basename(path)
-      @type = StaticProject
       @priority = 0
       @plugins = []
       @parents = []

@@ -7,7 +7,7 @@ module Shanty
     include ActsAsGraphVertex
     include CallMeRuby
 
-    attr_accessor :name, :path, :options, :parents_by_path, :changed
+    attr_accessor :name, :path, :options, :parents_by_path, :changed, :plugins
     alias_method :changed?, :changed
 
     # Public: Initialise the Project instance.
@@ -23,13 +23,11 @@ module Shanty
       @options = project_template.options
       @parents_by_path = project_template.parents
       @changed = false
+      @plugins = @project_template.plugins
     end
 
     def setup!
-      @project_template.plugins.each do |plugin|
-        plugin.add_to_project(self)
-      end
-
+      @plugins.each { |plugin| plugin.add_to_project(self) }
       instance_eval(&@project_template.after_create) unless @project_template.after_create.nil?
     end
 
@@ -43,16 +41,16 @@ module Shanty
 
     # Public: Overriden String conversion method to return a simplified
     # representation of this instance that doesn't include the cyclic
-    # parent/children attributes as defined by the ActsAsGraphNode mixin.
+    # parent/children attributes as defined by the ActsAsGraphVertex mixin.
     #
     # Returns a simple String representation of this instance.
     def to_s
-      "Name: #{name}, Type: #{self.class}"
+      name
     end
 
     # Public: Overriden String conversion method to return a more detailed
     # representation of this instance that doesn't include the cyclic
-    # parent/children attributes as defined by the ActsAsGraphNode mixin.
+    # parent/children attributes as defined by the ActsAsGraphVertex mixin.
     #
     # Returns more detailed String representation of this instance.
     def inspect

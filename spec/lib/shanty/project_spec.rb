@@ -58,7 +58,7 @@ module Shanty
 
     describe('#to_s') do
       it('returns a simple string representation of the project') do
-        expect(subject.to_s).to eql("Name: #{project_template.name}, Type: Shanty::Project")
+        expect(subject.to_s).to eql(project_template.name)
       end
     end
 

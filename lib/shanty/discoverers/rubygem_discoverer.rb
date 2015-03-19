@@ -1,5 +1,5 @@
 require 'shanty/discoverer'
-require 'shanty/projects/rubygem_project'
+require 'shanty/plugins/rubygem_plugin'
 
 module Shanty
   # Public: Discoverer for Shantyfiles
@@ -9,7 +9,7 @@ module Shanty
     def discover
       Dir[File.join(env.root, '**', '*.gemspec')].map do |path|
         create_project_template(File.absolute_path(File.dirname(path))) do |project_template|
-          project_template.type = RubygemProject
+          project_template.plugin(RubygemPlugin)
         end
       end
     end

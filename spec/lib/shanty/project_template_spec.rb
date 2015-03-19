@@ -38,12 +38,6 @@ module Shanty
       end
     end
 
-    describe('#type') do
-      it('defaults the type to StaticProject') do
-        expect(subject.type).to eql(StaticProject)
-      end
-    end
-
     describe('#priority') do
       it('defaults the priority to 0') do
         expect(subject.priority).to eql(0)

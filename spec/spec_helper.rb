@@ -8,6 +8,12 @@ require 'shanty/project_template'
 require 'shanty/plugins/rspec_plugin'
 require 'shanty/plugins/rubocop_plugin'
 
+def require_fixture(path)
+  require File.join(__dir__, 'fixtures', path)
+end
+
+require_fixture 'test_plugin'
+
 I18n.enforce_available_locales = false
 
 RSpec.configure do |config|
@@ -34,13 +40,11 @@ RSpec.shared_context('graph') do
 
   let(:project_templates) do
     Hash[project_paths.map do |key, project_path|
-      [key, Shanty::ProjectTemplate.new(env, project_path).setup!]
+      pt = Shanty::ProjectTemplate.new(env, project_path)
+      pt.plugins << Shanty::TestPlugin
+      [key, pt.setup!]
     end]
   end
   let(:project_template) { project_templates[:shanty] }
   let(:graph) { Shanty::Graph.new(env, project_templates.values) }
-end
-
-def require_fixture(path)
-  require File.join(__dir__, 'fixtures', path)
 end

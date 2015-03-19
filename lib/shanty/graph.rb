@@ -2,6 +2,8 @@ require 'algorithms'
 require 'forwardable'
 require 'tsort'
 
+require 'shanty/project'
+
 module Shanty
   # Public: Represents the link graph of projects in the repository. This class is
   # responsible for collecting up all the information the projects we have,
@@ -46,24 +48,24 @@ module Shanty
       find { |project| project.name == name }
     end
 
-    # Public: Returns all projects of the given types.
+    # Public: Returns all projects that have the given plugin.
     #
-    # *types - One or more types to filter by.
+    # *plugins - One or more plugins to filter by.
     #
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
-    def all_of_type(*types)
-      select { |project| types.include?(project.class) }
+    def all_with_plugin(*plugins)
+      reject { |project| (project.plugins & plugins).empty? }
     end
 
-    # Public: Returns all the changed projects of the given types.
+    # Public: Returns all changed projects that have the given plugin.
     #
-    # *types - One or more types to filter by.
+    # *plugins - One or more plugins to filter by.
     #
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
-    def changed_of_type(*types)
-      changed.select { |project| types.include?(project.class) }
+    def changed_with_plugin(*plugins)
+      changed.reject { |project| (project.plugins & plugins).empty? }
     end
 
     # Public: Given a path to a file or directory (normally a path obtained
@@ -107,7 +109,7 @@ module Shanty
 
     def projects_by_path
       @projects_by_path ||= Hash[@project_templates.map do |project_template|
-        project = project_template.type.new(@env, project_template)
+        project = Project.new(@env, project_template)
         project.setup!
         @project_path_trie[project.path] = project
         [project.path, project]

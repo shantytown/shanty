@@ -1,5 +1,4 @@
 require 'shanty/discoverer'
-require 'shanty/projects/static_project'
 
 module Shanty
   # Public: Discoverer for Shantyfiles

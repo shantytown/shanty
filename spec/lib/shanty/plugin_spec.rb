@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'shanty/plugin'
+
 require_fixture 'test_plugin'
 require_fixture 'test_project_with_plugin'
 

@@ -1,7 +1,10 @@
 require 'spec_helper'
 require 'tmpdir'
 require 'shanty/graph'
-require 'shanty/projects/static_project'
+require 'shanty/project'
+
+require_fixture 'test_plugin'
+require_fixture 'test_unused_plugin'
 
 # Allows all classes to be refereneced without the module name
 module Shanty
@@ -15,7 +18,7 @@ module Shanty
         project_templates[:shanty].parent(missing_parent)
 
         expect { subject }.to raise_error("Cannot find project at path #{File.join(root, missing_parent)}, which was "\
-          'specified as a dependency for Name: shanty, Type: Shanty::StaticProject')
+          'specified as a dependency for shanty')
       end
     end
 
@@ -57,35 +60,35 @@ module Shanty
       end
     end
 
-    describe('#all_of_type') do
-      it('returns an empty array when no types are given') do
-        expect(subject.all_of_type).to be_empty
+    describe('#all_with_plugin') do
+      it('returns an empty array when no plugins are given') do
+        expect(subject.all_with_plugin).to be_empty
       end
 
-      it('returns an empty array when no projects match the types given') do
-        expect(subject.all_of_type(Project)).to be_empty
+      it('returns an empty array when no projects match the plugins given') do
+        expect(subject.all_with_plugin(UnusedPlugin)).to be_empty
       end
 
-      it('returns the correct projects when matching types are given') do
-        expect(subject.all_of_type(StaticProject)).to match_array(subject)
+      it('returns the correct projects when matching plugins are given') do
+        expect(subject.all_with_plugin(TestPlugin)).to match_array(subject)
       end
     end
 
-    describe('#changed_of_type') do
+    describe('#changed_with_plugin') do
       before do
         subject.first.changed = true
       end
 
       it('returns an empty array when no types are given') do
-        expect(subject.changed_of_type).to be_empty
+        expect(subject.changed_with_plugin).to be_empty
       end
 
       it('returns an empty array when no projects match the types given') do
-        expect(subject.changed_of_type(Project)).to be_empty
+        expect(subject.changed_with_plugin(UnusedPlugin)).to be_empty
       end
 
       it('returns the correct projects when matching types are given') do
-        expect(subject.changed_of_type(StaticProject)).to contain_exactly(subject.first)
+        expect(subject.changed_with_plugin(TestPlugin)).to contain_exactly(subject.first)
       end
     end
 
