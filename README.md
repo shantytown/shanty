@@ -1,5 +1,7 @@
 # Shanty [![Build Status](https://travis-ci.org/shantytown/shanty.svg?branch=master)](https://travis-ci.org/shantytown/shanty) [![Coverage Status](https://coveralls.io/repos/shantytown/shanty/badge.png?branch=master)](https://coveralls.io/r/shantytown/shanty?branch=master)
 
+[![Join the chat at https://gitter.im/shantytown/shanty](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/shantytown/shanty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 **Shanty** is a project orchestration tool. It is designed to make it easy for you to build dependencies between projects, and execute tasks across this tree of relationships, regardless of what language or technology these projects use. The aim is consistency in the way you manage, build, test and deploy your projects.
 
 * Shanty is **language agnostic**. Shanty config files must be written in Ruby, but can be written for any type of project written in any language.
