@@ -22,11 +22,10 @@ module Shanty
     # env               - The environment, an instance of Env.
     # project_templates - An array of project templates to take, instantiate and
     #                     link together into a graph structure of dependencies.
-    def initialize(env, project_templates)
+    def initialize(env, projects)
       @env = env
       @project_path_trie = Containers::Trie.new
-      @project_templates = project_templates
-      @projects = projects_by_path.values
+      @projects = projects
 
       link_projects
     end
@@ -108,9 +107,7 @@ module Shanty
     end
 
     def projects_by_path
-      @projects_by_path ||= Hash[@project_templates.map do |project_template|
-        project = Project.new(@env, project_template)
-        project.setup!
+      @projects_by_path ||= Hash[@projects.map do |project|
         @project_path_trie[project.path] = project
         [project.path, project]
       end]

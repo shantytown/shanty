@@ -5,6 +5,7 @@ module Shanty
   module BundlerPlugin
     extend Plugin
 
+    wants_projects_matching '**/Gemfile'
     subscribe :build, :bundle_install
 
     def bundle_install

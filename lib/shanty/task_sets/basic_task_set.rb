@@ -21,7 +21,7 @@ module Shanty
       end
     end
 
-    desc 'build [--changed] [--types TYPE,TYPE,...]', 'tasks.build.desc'
+    desc 'build [--changed] [--with-plugin PLUGIN,PLUGIN,...]', 'tasks.build.desc'
     option :changed, type: :boolean, desc: 'tasks.common.options.changed'
     option :types, type: :array, desc: 'tasks.common.options.types'
     def build(options)

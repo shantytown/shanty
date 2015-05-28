@@ -79,9 +79,9 @@ module Shanty
       it('sets up the tasks for the program') do
         allow(subject).to receive(:run!)
         expect(subject).to receive(:command)
-        expect(subject.commands).to include('foo')
+        expect(subject.defined_commands).to include('foo')
 
-        command = subject.commands['foo']
+        command = subject.defined_commands['foo']
         expect(command.description).to eql('test.foo.desc')
 
         options = command.options.map { |o| o[:description] }

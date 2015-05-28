@@ -1,4 +1,5 @@
 require 'acts_as_graph_vertex'
+require 'attr_combined_accessor'
 require 'call_me_ruby'
 
 module Shanty
@@ -7,28 +8,46 @@ module Shanty
     include ActsAsGraphVertex
     include CallMeRuby
 
-    attr_accessor :name, :path, :options, :parents_by_path, :changed, :plugins
+    attr_reader :plugins
+    attr_combined_accessor :name, :options
+    attr_accessor :path, :parents_by_path, :changed
     alias_method :changed?, :changed
 
     # Public: Initialise the Project instance.
     #
-    # env              - The environment, an instance of Env.
-    # project_template - An instance of ProjectTemplate from which to
-    #                    instantiate this project.
-    def initialize(env, project_template)
+    # env  - The environment, an instance of Env.
+    # path - The path to the project.
+    def initialize(env, path)
+      fail('Path to project must be a directory.') unless File.directory?(path)
+
       @env = env
-      @project_template = project_template
-      @name = project_template.name
-      @path = project_template.path
-      @options = project_template.options
-      @parents_by_path = project_template.parents
+      @path = path
+
+      @name = File.basename(path)
+      @parents_by_path = []
+      @options = {}
       @changed = false
-      @plugins = @project_template.plugins
     end
 
-    def setup!
-      @plugins.each { |plugin| plugin.add_to_project(self) }
-      instance_eval(&@project_template.after_create) unless @project_template.after_create.nil?
+    def execute_shantyfile!
+      shantyfile_path = File.join(@path, 'Shantyfile')
+      return unless File.exist?(shantyfile_path)
+      instance_eval(File.read(shantyfile_path), shantyfile_path)
+    end
+
+    def plugin(plugin)
+      plugin.add_to_project(self)
+      @plugins ||= []
+      @plugins << plugin
+    end
+
+    def parent(parent)
+      # Will make the parent path absolute to the root if (and only if) it is relative.
+      @parents_by_path << File.expand_path(parent, @env.root)
+    end
+
+    def option(key, value)
+      @options[key] = value
     end
 
     # Public: The absolute paths to the artifacts that would be created by this
@@ -45,7 +64,7 @@ module Shanty
     #
     # Returns a simple String representation of this instance.
     def to_s
-      name
+      "#{name}"
     end
 
     # Public: Overriden String conversion method to return a more detailed

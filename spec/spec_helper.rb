@@ -4,7 +4,7 @@ Coveralls.wear!
 require 'i18n'
 require 'shanty/env'
 require 'shanty/graph'
-require 'shanty/project_template'
+require 'shanty/project'
 require 'shanty/plugins/rspec_plugin'
 require 'shanty/plugins/rubocop_plugin'
 
@@ -33,18 +33,20 @@ RSpec.shared_context('basics') do
       shanty: File.join(root)
     }
   end
+  let(:project_path) { project_paths[:shanty] }
 end
 
 RSpec.shared_context('graph') do
   include_context('basics')
 
-  let(:project_templates) do
+  let(:projects) do
     Hash[project_paths.map do |key, project_path|
-      pt = Shanty::ProjectTemplate.new(env, project_path)
-      pt.plugins << Shanty::TestPlugin
-      [key, pt.setup!]
+      [key, Shanty::Project.new(env, project_path).tap do |project|
+        project.plugin(Shanty::TestPlugin)
+        project.execute_shantyfile!
+      end]
     end]
   end
-  let(:project_template) { project_templates[:shanty] }
-  let(:graph) { Shanty::Graph.new(env, project_templates.values) }
+  let(:project) { projects[:shanty] }
+  let(:graph) { Shanty::Graph.new(env, projects.values) }
 end

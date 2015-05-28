@@ -6,8 +6,8 @@ require 'shanty/cli'
 require 'shanty/env'
 require 'shanty/graph'
 
-# Require all discoverers, mutators, plugins and task sets.
-Dir[File.join(__dir__, 'shanty', '{discoverers,mutators,plugins,task_sets}', '*.rb')].each { |f| require f }
+# Require all plugins and task sets.
+Dir[File.join(__dir__, 'shanty', '{plugins,task_sets}', '*.rb')].each { |f| require f }
 
 module Shanty
   # Main shanty class

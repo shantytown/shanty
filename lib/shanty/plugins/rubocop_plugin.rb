@@ -5,6 +5,7 @@ module Shanty
   module RubocopPlugin
     extend Plugin
 
+    wants_projects_matching '**/.rubocop.yml'
     subscribe :test, :rubocop
 
     def rubocop

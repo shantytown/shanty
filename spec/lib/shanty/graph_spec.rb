@@ -15,7 +15,7 @@ module Shanty
     describe('.new') do
       let(:missing_parent) { 'foo-bar-does-not-exist' }
       it('throws an exception if any of the projects have a dependency on a project that does not exist') do
-        project_templates[:shanty].parent(missing_parent)
+        project.parent(missing_parent)
 
         expect { subject }.to raise_error("Cannot find project at path #{File.join(root, missing_parent)}, which was "\
           'specified as a dependency for shanty')

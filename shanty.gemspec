@@ -26,6 +26,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'call_me_ruby', '~>1.0'
   gem.add_dependency 'commander', '~> 4.2'
   gem.add_dependency 'i18n', '~> 0.7'
+  gem.add_dependency 'rugged', '~> 0.21'
 
   gem.add_development_dependency 'coveralls', '~> 0.7'
   gem.add_development_dependency 'filewatcher', '~> 0.3'
