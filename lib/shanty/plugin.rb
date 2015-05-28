@@ -31,6 +31,10 @@ module Shanty
       @callbacks ||= []
     end
 
+    def tags
+      @tags ||= []
+    end
+
     def wanted_project_globs
       @wanted_project_globs ||= []
     end
@@ -45,13 +49,16 @@ module Shanty
 
     def add_to_project(project)
       project.singleton_class.include(self)
-      callbacks.each do |callback|
-        project.subscribe(*callback)
-      end
+      callbacks.each { |args| project.subscribe(*args) }
+      tags.each { |tag| project.tag(tag) }
     end
 
     def subscribe(*args)
       callbacks << args
+    end
+
+    def add_tags(*args)
+      tags.concat(args)
     end
 
     def wants_projects_matching(*globs, &block)
@@ -65,10 +72,6 @@ module Shanty
 
     def wanted_projects(env)
       (wanted_projects_from_globs(env) + wanted_projects_from_callbacks(env)).uniq
-    end
-
-    def execute_with_graph(env, graph)
-
     end
 
     private

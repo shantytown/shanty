@@ -2,6 +2,7 @@ require 'delegate'
 
 require 'shanty/plugin'
 require 'shanty/project'
+require 'shanty/project_linker'
 
 module Shanty
   #
@@ -9,7 +10,7 @@ module Shanty
     alias_method :env, :__getobj__
 
     def graph
-      @graph ||= Graph.new(env, projects).tap do |graph|
+      @graph ||= ProjectLinker.new(projects).link.tap do |graph|
         Plugin.with_graph(env, graph)
       end
     end

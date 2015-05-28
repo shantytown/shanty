@@ -48,5 +48,10 @@ RSpec.shared_context('graph') do
     end]
   end
   let(:project) { projects[:shanty] }
-  let(:graph) { Shanty::Graph.new(env, projects.values) }
+  let(:project_path_trie) do
+    Containers::Trie.new.tap do |trie|
+      projects.values.map { |project| trie[project.path] = project }
+    end
+  end
+  let(:graph) { Shanty::Graph.new(project_path_trie, projects.values) }
 end

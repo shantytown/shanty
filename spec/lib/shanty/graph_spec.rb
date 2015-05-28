@@ -12,41 +12,9 @@ module Shanty
     include_context('graph')
     subject { graph }
 
-    describe('.new') do
-      let(:missing_parent) { 'foo-bar-does-not-exist' }
-      it('throws an exception if any of the projects have a dependency on a project that does not exist') do
-        project.parent(missing_parent)
-
-        expect { subject }.to raise_error("Cannot find project at path #{File.join(root, missing_parent)}, which was "\
-          'specified as a dependency for shanty')
-      end
-    end
-
-    describe('enumerable methods') do
-      it('returns projects linked together with parent relationships') do
-        expect(subject[0].parents.map(&:path)).to eql([])
-        expect(subject[1].parents.map(&:path)).to eql([project_paths[:one]])
-        expect(subject[2].parents.map(&:path)).to eql([project_paths[:two]])
-      end
-
-      it('returns projects linked together with child relationships') do
-        expect(subject[0].children.map(&:path)).to eql([project_paths[:two]])
-        expect(subject[1].children.map(&:path)).to eql([project_paths[:three]])
-        expect(subject[2].children.map(&:path)).to eql([])
-      end
-
-      it("returns projects sorted using Tarjan's strongly connected components algorithm") do
-        expect(subject[0].path).to equal(project_paths[:one])
-        expect(subject[1].path).to equal(project_paths[:two])
-        expect(subject[2].path).to equal(project_paths[:three])
-      end
-    end
-
-    describe('#changed') do
-      it('returns only projects where #changed? is true') do
-        subject.first.changed = true
-
-        expect(subject.changed).to contain_exactly(subject.first)
+    describe('#each') do
+      it('returns the projects exactly as passed in') do
+        expect(subject.each.to_a).to eql(projects.values)
       end
     end
 
@@ -60,35 +28,17 @@ module Shanty
       end
     end
 
-    describe('#all_with_plugin') do
-      it('returns an empty array when no plugins are given') do
-        expect(subject.all_with_plugin).to be_empty
+    describe('#all_with_tags') do
+      it('returns an empty array when no tags are given') do
+        expect(subject.all_with_tags).to be_empty
       end
 
-      it('returns an empty array when no projects match the plugins given') do
-        expect(subject.all_with_plugin(UnusedPlugin)).to be_empty
+      it('returns an empty array when no projects match the tags given') do
+        expect(subject.all_with_tags('foo')).to be_empty
       end
 
-      it('returns the correct projects when matching plugins are given') do
-        expect(subject.all_with_plugin(TestPlugin)).to match_array(subject)
-      end
-    end
-
-    describe('#changed_with_plugin') do
-      before do
-        subject.first.changed = true
-      end
-
-      it('returns an empty array when no types are given') do
-        expect(subject.changed_with_plugin).to be_empty
-      end
-
-      it('returns an empty array when no projects match the types given') do
-        expect(subject.changed_with_plugin(UnusedPlugin)).to be_empty
-      end
-
-      it('returns the correct projects when matching types are given') do
-        expect(subject.changed_with_plugin(TestPlugin)).to contain_exactly(subject.first)
+      it('returns the correct projects when matching tags are given') do
+        expect(subject.all_with_tags('test')).to match_array(subject)
       end
     end
 

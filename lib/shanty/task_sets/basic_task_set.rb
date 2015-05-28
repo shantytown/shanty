@@ -11,26 +11,20 @@ module Shanty
       FileUtils.touch(File.join(Dir.pwd, '.shanty.yml'))
     end
 
-    desc 'projects [--changed] [--types TYPE,TYPE,...]', 'tasks.projects.desc'
-    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
-    option :types, type: :array, desc: 'tasks.common.options.types'
+    desc 'projects [--tags TAG,TAG,...]', 'tasks.projects.desc'
+    option :tags, type: :array, desc: 'tasks.common.options.tags'
     def projects(options)
-      task_env.graph.each do |project|
-        next if options.changed && !project.changed?
-        puts project
-      end
+      filtered_projects(options).each { |project| puts project }
     end
 
-    desc 'build [--changed] [--with-plugin PLUGIN,PLUGIN,...]', 'tasks.build.desc'
-    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
-    option :types, type: :array, desc: 'tasks.common.options.types'
+    desc 'build [--tags TAG,TAG,...]', 'tasks.build.desc'
+    option :tags, type: :array, desc: 'tasks.common.options.tags'
     def build(options)
       run_common_task(options, :build)
     end
 
-    desc 'test [--changed] [--types TYPE,TYPE,...]', 'tasks.test.desc'
-    option :changed, type: :boolean, desc: 'tasks.common.options.changed'
-    option :types, type: :array, desc: 'tasks.common.options.types'
+    desc 'test [--tags TAG,TAG,...]', 'tasks.test.desc'
+    option :tags, type: :array, desc: 'tasks.common.options.tags'
     def test(options)
       run_common_task(options, :test)
     end
@@ -38,13 +32,17 @@ module Shanty
     private
 
     def run_common_task(options, task)
-      projects_to_execute.each do |project|
-        next if options.changed? && !project.changed?
+      filtered_projects(options).each do |project|
         fail I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
       end
     end
 
-    def projects_to_execute
+    def filtered_projects(options)
+      return graph.all_with_tags(*options.tags.split(',')) unless options.tags.nil?
+      graph
+    end
+
+    def graph
       if Dir.pwd == task_env.root
         task_env.graph
       else

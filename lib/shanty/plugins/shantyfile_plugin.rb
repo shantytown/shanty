@@ -5,6 +5,7 @@ module Shanty
   module ShantyfilePlugin
     extend Plugin
 
+    add_tags :shantyfile
     wants_projects_matching '**/Shantyfile'
   end
 end

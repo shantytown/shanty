@@ -14,12 +14,6 @@ module Shanty
         expect(Shanty::TestPlugin).to receive(:add_to_project).with(subject)
         subject.plugin(Shanty::TestPlugin)
       end
-
-      it('stores the plugin for reference') do
-        subject.plugin(Shanty::TestPlugin)
-
-        expect(subject.plugins).to eql([Shanty::TestPlugin])
-      end
     end
 
     describe('#name') do
@@ -63,9 +57,9 @@ module Shanty
         expect(subject.inspect).to eql({
           name: 'shanty',
           path: project_path,
+          tags: [],
           options: {},
-          parents_by_path: [],
-          changed: false
+          parents_by_path: []
         }.inspect)
       end
     end

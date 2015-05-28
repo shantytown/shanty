@@ -8,10 +8,8 @@ module Shanty
     include ActsAsGraphVertex
     include CallMeRuby
 
-    attr_reader :plugins
-    attr_combined_accessor :name, :options
-    attr_accessor :path, :parents_by_path, :changed
-    alias_method :changed?, :changed
+    attr_combined_accessor :name, :tags, :options
+    attr_accessor :path, :parents_by_path
 
     # Public: Initialise the Project instance.
     #
@@ -25,8 +23,8 @@ module Shanty
 
       @name = File.basename(path)
       @parents_by_path = []
+      @tags = []
       @options = {}
-      @changed = false
     end
 
     def execute_shantyfile!
@@ -37,13 +35,15 @@ module Shanty
 
     def plugin(plugin)
       plugin.add_to_project(self)
-      @plugins ||= []
-      @plugins << plugin
     end
 
     def parent(parent)
       # Will make the parent path absolute to the root if (and only if) it is relative.
       @parents_by_path << File.expand_path(parent, @env.root)
+    end
+
+    def tag(tag)
+      @tags << tag
     end
 
     def option(key, value)
@@ -76,9 +76,9 @@ module Shanty
       {
         name: @name,
         path: @path,
+        tags: @tags,
         options: @options,
-        parents_by_path: @parents_by_path,
-        changed: @changed
+        parents_by_path: @parents_by_path
       }.inspect
     end
 
