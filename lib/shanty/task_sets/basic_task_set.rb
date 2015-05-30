@@ -14,7 +14,7 @@ module Shanty
     desc 'projects [--tags TAG,TAG,...]', 'tasks.projects.desc'
     option :tags, type: :array, desc: 'tasks.common.options.tags'
     def projects(options)
-      filtered_projects(options).each { |project| puts project }
+      filtered_graph(options).each { |project| puts project }
     end
 
     desc 'build [--tags TAG,TAG,...]', 'tasks.build.desc'
@@ -32,22 +32,19 @@ module Shanty
     private
 
     def run_common_task(options, task)
-      filtered_projects(options).each do |project|
+      filtered_graph(options).each do |project|
         fail I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
       end
     end
 
-    def filtered_projects(options)
-      return graph.all_with_tags(*options.tags.split(',')) unless options.tags.nil?
-      graph
+    def filtered_graph(options)
+      return scoped_graph.all_with_tags(*options.tags.split(',')) unless options.tags.nil?
+      scoped_graph
     end
 
-    def graph
-      if Dir.pwd == task_env.root
-        task_env.graph
-      else
-        task_env.graph.projects_within_path(Dir.pwd)
-      end
+    def scoped_graph
+      return graph if Dir.pwd == root
+      graph.projects_within_path(Dir.pwd)
     end
   end
 end

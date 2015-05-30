@@ -1,6 +1,11 @@
+require 'shanty/env'
+require 'shanty/project'
+
 module Shanty
   # Some basic functionality for every plugin.
   module Plugin
+    include Env
+
     def self.extended(plugin)
       plugins << plugin
     end
@@ -9,23 +14,19 @@ module Shanty
       @plugins ||= []
     end
 
-    def self.discover_all_projects(env) # => Hash[Path, Array[Plugin]] where Path = String, Plugin = Class
-      projects = Hash.new { |h, k| h[k] = [] }
-      plugins.each_with_object(projects) do |plugin, acc|
-        paths = plugin.discover_projects(env) + plugin.wanted_projects(env)
-        paths.each { |path| acc[path] << plugin }
-      end
+    #
+
+    def self.discover_all_projects # => [Project]
+      plugins.flat_map(&:wanted_projects).uniq
     end
 
-    def self.with_graph(env, graph)
+    def self.with_graph(graph)
       plugins.each do |plugin|
-        plugin.with_graph_callbacks.each { |callback| callback.call(env, graph) }
+        plugin.with_graph_callbacks.each { |callback| callback.call(graph) }
       end
     end
 
-    def discover_projects(_env)
-      []
-    end
+    #
 
     def callbacks
       @callbacks ||= []
@@ -47,17 +48,21 @@ module Shanty
       @with_graph_callbacks ||= []
     end
 
+    #
+
     def add_to_project(project)
       project.singleton_class.include(self)
       callbacks.each { |args| project.subscribe(*args) }
       tags.each { |tag| project.tag(tag) }
     end
 
+    #
+
     def subscribe(*args)
       callbacks << args
     end
 
-    def add_tags(*args)
+    def adds_tags(*args)
       tags.concat(args)
     end
 
@@ -70,27 +75,29 @@ module Shanty
       with_graph_callbacks << block
     end
 
-    def wanted_projects(env)
-      (wanted_projects_from_globs(env) + wanted_projects_from_callbacks(env)).uniq
+    #
+
+    def wanted_projects
+      (wanted_projects_from_globs + wanted_projects_from_callbacks).uniq.tap do |projects|
+        projects.each do |project|
+          project.plugin(self)
+        end
+      end
     end
 
     private
 
-    def wanted_projects_from_globs(env)
+    def wanted_projects_from_globs
       wanted_project_globs.flat_map do |globs|
         # Will make the glob absolute to the root if (and only if) it is relative.
-        Dir[File.expand_path(globs, env.root)].map do |path|
-          File.absolute_path(File.dirname(path))
+        Dir[File.expand_path(globs, root)].map do |path|
+          Project.new(File.absolute_path(File.dirname(path)))
         end
       end
     end
 
-    def wanted_projects_from_callbacks(env)
-      wanted_project_callbacks.flat_map do |callback|
-        callback.call(env).map do |path|
-          File.absolute_path(File.dirname(path))
-        end
-      end
+    def wanted_projects_from_callbacks
+      wanted_project_callbacks.flat_map(&:call)
     end
   end
 end

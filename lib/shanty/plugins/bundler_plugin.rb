@@ -5,7 +5,7 @@ module Shanty
   module BundlerPlugin
     extend Plugin
 
-    add_tags :bundler
+    adds_tags :bundler
     wants_projects_matching '**/Gemfile'
     subscribe :build, :bundle_install
 

@@ -1,31 +1,14 @@
 require 'commander'
 require 'spec_helper'
 require 'shanty/cli'
-require 'shanty/env'
 require 'shanty/info'
-require 'shanty/task_env'
 require_fixture 'test_task_set'
 
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(Cli) do
-    let(:env) { Env.new }
-    let(:task_env) { TaskEnv.new(env) }
     let(:task_sets) { [TestTaskSet] }
-    subject { Cli.new(env, task_sets) }
-
-    describe('.new') do
-      it('sets #env') do
-        expect(subject.env).to equal(env)
-      end
-    end
-
-    describe('#task_env') do
-      it('returns a TaskEnv wrapping the passed in Env') do
-        expect(subject.task_env).to be_a(TaskEnv)
-        expect(subject.task_env).to have_attributes(env: env)
-      end
-    end
+    subject { Cli.new(task_sets) }
 
     describe('#tasks') do
       it('returns a list of tasks from all given task sets') do

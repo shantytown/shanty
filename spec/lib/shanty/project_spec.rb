@@ -7,7 +7,7 @@ require_fixture 'test_plugin'
 module Shanty
   RSpec.describe(Project) do
     include_context('graph')
-    subject { Shanty::Project.new(env, project_path) }
+    subject { Shanty::Project.new(project_path) }
 
     describe('#plugin') do
       it('calls to the plugin to add it to the project') do

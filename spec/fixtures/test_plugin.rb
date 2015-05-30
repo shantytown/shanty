@@ -5,7 +5,7 @@ module Shanty
   module TestPlugin
     extend Plugin
 
-    add_tags :test
+    adds_tags :test
     subscribe :foo, :bar
     subscribe :cats, :dogs, :rabies
 

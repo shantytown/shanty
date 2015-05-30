@@ -33,4 +33,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '~> 3.2'
   gem.add_development_dependency 'rubocop', '~> 0.31'
   gem.add_development_dependency 'rubocop-rspec', '~> 1.3'
+  gem.add_development_dependency 'ruby-prof', '~>0.15'
 end

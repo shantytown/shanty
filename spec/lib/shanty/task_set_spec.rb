@@ -6,17 +6,9 @@ require_fixture 'test_task_set'
 module Shanty
   RSpec.describe(TaskSet) do
     include_context('basics')
-    let(:task_env) { TaskEnv.new(env) }
-    subject { TaskSet.new(task_env) }
 
     after do
       TaskSet.instance_variable_set(:@partial_task, nil)
-    end
-
-    describe('.new') do
-      it('sets the task_env instance variable to the passed in task env') do
-        expect(subject.instance_variable_get(:@task_env)).to equal(task_env)
-      end
     end
 
     describe('.inherited') do

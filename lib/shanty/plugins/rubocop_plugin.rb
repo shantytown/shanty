@@ -5,7 +5,7 @@ module Shanty
   module RubocopPlugin
     extend Plugin
 
-    add_tags :rubocop
+    adds_tags :rubocop
     wants_projects_matching '**/.rubocop.yml'
     subscribe :test, :rubocop
 

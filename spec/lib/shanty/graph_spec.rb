@@ -48,7 +48,7 @@ module Shanty
       end
 
       it('returns the correct project that owns a given folder') do
-        expect(subject.owner_of_file(project_paths[:three]).path).to equal(project_paths[:three])
+        expect(subject.owner_of_file(project_paths[:three]).path).to eql(project_paths[:three])
       end
     end
 

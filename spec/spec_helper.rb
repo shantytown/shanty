@@ -5,6 +5,7 @@ require 'i18n'
 require 'shanty/env'
 require 'shanty/graph'
 require 'shanty/project'
+require 'shanty/task_env'
 require 'shanty/plugins/rspec_plugin'
 require 'shanty/plugins/rubocop_plugin'
 
@@ -20,10 +21,15 @@ RSpec.configure do |config|
   config.mock_with(:rspec) do |mocks|
     mocks.verify_partial_doubles = true
   end
+
+  config.before(:example) do
+    Shanty::Env.clear!
+    Shanty::TaskEnv.clear!
+    Shanty::Project.clear!
+  end
 end
 
 RSpec.shared_context('basics') do
-  let(:env) { Shanty::Env.new }
   let(:root) { File.expand_path(File.join(__dir__, '..')) }
   let(:project_paths) do
     {
@@ -41,7 +47,7 @@ RSpec.shared_context('graph') do
 
   let(:projects) do
     Hash[project_paths.map do |key, project_path|
-      [key, Shanty::Project.new(env, project_path).tap do |project|
+      [key, Shanty::Project.new(project_path).tap do |project|
         project.plugin(Shanty::TestPlugin)
         project.execute_shantyfile!
       end]
