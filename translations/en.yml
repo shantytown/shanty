@@ -3,10 +3,9 @@ en:
   tasks:
     common:
       options:
-        changed: Whether to run the task for only changed projects. Defaults to false.
-        types: An optional list of project types to filter by. By default, all types are shown.
+        tags: An optional list of tags to filter by. By default, all projects are used. Note that the tags are ANDed together, eg. passing "foo" and "bar" will only find projects with both those tags.
     projects:
-      desc: Lists all projects. If --changed is specified, lists only changed projects.
+      desc: Lists all projects.
     build:
       desc: Executes the build of all projects.
       failed: "The build failed for the following project: %{project}"

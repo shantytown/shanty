@@ -5,6 +5,8 @@ module Shanty
   module RubygemPlugin
     extend Plugin
 
+    adds_tags :rubygem
+    wants_projects_matching '**/*.gemspec'
     subscribe :build, :build_gem
 
     def build_gem

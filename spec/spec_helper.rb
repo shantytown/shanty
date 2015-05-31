@@ -4,7 +4,8 @@ Coveralls.wear!
 require 'i18n'
 require 'shanty/env'
 require 'shanty/graph'
-require 'shanty/project_template'
+require 'shanty/project'
+require 'shanty/task_env'
 require 'shanty/plugins/rspec_plugin'
 require 'shanty/plugins/rubocop_plugin'
 
@@ -20,10 +21,15 @@ RSpec.configure do |config|
   config.mock_with(:rspec) do |mocks|
     mocks.verify_partial_doubles = true
   end
+
+  config.before(:example) do
+    Shanty::Env.clear!
+    Shanty::TaskEnv.clear!
+    Shanty::Project.clear!
+  end
 end
 
 RSpec.shared_context('basics') do
-  let(:env) { Shanty::Env.new }
   let(:root) { File.expand_path(File.join(__dir__, '..')) }
   let(:project_paths) do
     {
@@ -33,18 +39,25 @@ RSpec.shared_context('basics') do
       shanty: File.join(root)
     }
   end
+  let(:project_path) { project_paths[:shanty] }
 end
 
 RSpec.shared_context('graph') do
   include_context('basics')
 
-  let(:project_templates) do
+  let(:projects) do
     Hash[project_paths.map do |key, project_path|
-      pt = Shanty::ProjectTemplate.new(env, project_path)
-      pt.plugins << Shanty::TestPlugin
-      [key, pt.setup!]
+      [key, Shanty::Project.new(project_path).tap do |project|
+        project.plugin(Shanty::TestPlugin)
+        project.execute_shantyfile!
+      end]
     end]
   end
-  let(:project_template) { project_templates[:shanty] }
-  let(:graph) { Shanty::Graph.new(env, project_templates.values) }
+  let(:project) { projects[:shanty] }
+  let(:project_path_trie) do
+    Containers::Trie.new.tap do |trie|
+      projects.values.map { |project| trie[project.path] = project }
+    end
+  end
+  let(:graph) { Shanty::Graph.new(project_path_trie, projects.values) }
 end

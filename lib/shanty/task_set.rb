@@ -1,11 +1,11 @@
+require 'shanty/env'
+require 'shanty/task_env'
+
 module Shanty
   # Public: Discover shanty tasks
   class TaskSet
-    attr_reader :task_env
-
-    def initialize(task_env)
-      @task_env = task_env
-    end
+    include Env
+    include TaskEnv
 
     # This method is auto-triggered by Ruby whenever a class inherits from
     # Shanty::TaskSet. This means we can build up a list of all the tasks

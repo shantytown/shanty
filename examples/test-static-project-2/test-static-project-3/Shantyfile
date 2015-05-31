@@ -1,5 +1,1 @@
 parent 'examples/test-static-project-2'
-
-after_create do
-  # This will run after the project has been created.
-end

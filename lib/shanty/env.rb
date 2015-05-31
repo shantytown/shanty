@@ -4,8 +4,19 @@ require 'yaml'
 
 module Shanty
   #
-  class Env
+  module Env
+    # Idiom to allow singletons that can be mixed in: http://ozmm.org/posts/singin_singletons.html
+    extend self
+
     CONFIG_FILE = '.shanty.yml'
+
+    def clear!
+      @logger = nil
+      @environment = nil
+      @build_number = nil
+      @root = nil
+      @config = nil
+    end
 
     def require!
       Dir.chdir(root) do

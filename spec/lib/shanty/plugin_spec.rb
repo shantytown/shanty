@@ -7,8 +7,9 @@ require_fixture 'test_project_with_plugin'
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(Plugin) do
+    include_context('basics')
     subject { TestPlugin }
-    let(:project) { TestProjectWithPlugin.new }
+    let(:project) { TestProjectWithPlugin.new(project_path) }
     let(:callbacks) { [%i(foo bar), %i(cats dogs rabies)] }
 
     describe('.add_to_project') do

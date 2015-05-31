@@ -1,7 +1,6 @@
 require 'commander'
 require 'i18n'
 require 'shanty/info'
-require 'shanty/task_env'
 require 'shanty/task_set'
 
 module Shanty
@@ -10,15 +9,10 @@ module Shanty
   class Cli
     include Commander::Methods
 
-    attr_reader :env, :task_sets
+    attr_reader :task_sets
 
-    def initialize(env, task_sets)
-      @env = env
+    def initialize(task_sets)
       @task_sets = task_sets
-    end
-
-    def task_env
-      @task_env ||= TaskEnv.new(@env)
     end
 
     def tasks
@@ -70,7 +64,7 @@ module Shanty
     end
 
     def execute_task(name, task, options)
-      klass = task[:klass].new(task_env)
+      klass = task[:klass].new
       arity = klass.method(name).arity
       args = (arity >= 1 ? [options] : [])
       klass.send(name, *args)

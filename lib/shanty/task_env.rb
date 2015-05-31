@@ -1,21 +1,22 @@
-require 'delegate'
+require 'shanty/plugin'
+require 'shanty/project_linker'
 
 module Shanty
   #
-  class TaskEnv < SimpleDelegator
-    alias_method :env, :__getobj__
+  module TaskEnv
+    # Idiom to allow singletons that can be mixed in: http://ozmm.org/posts/singin_singletons.html
+    extend self
 
-    def graph
-      @graph ||= construct_project_graph
+    def clear!
+      @graph = nil
     end
 
-    private
+    def graph
+      return @graph unless @graph.nil?
 
-    def construct_project_graph
-      project_templates = Discoverer.new(env).discover_all
-
-      Graph.new(env, project_templates).tap do |graph|
-        Mutator.new(env, graph).apply_mutations
+      projects = Plugin.discover_all_projects.each(&:execute_shantyfile!)
+      @graph ||= ProjectLinker.new(projects).link.tap do |graph|
+        Plugin.with_graph(graph)
       end
     end
   end

@@ -2,8 +2,6 @@ require 'algorithms'
 require 'forwardable'
 require 'tsort'
 
-require 'shanty/project'
-
 module Shanty
   # Public: Represents the link graph of projects in the repository. This class is
   # responsible for collecting up all the information the projects we have,
@@ -12,31 +10,17 @@ module Shanty
   # to resolve to a list of projects required to be built.
   class Graph
     extend Forwardable
-    include TSort, Enumerable
+    include Enumerable
 
-    def_delegators :@projects, :<<, :length, :add, :remove
-    def_delegators :sorted_projects, :each, :values, :[]
+    def_delegators :@projects, :<<, :empty?, :length, :each, :values, :[], :inspect, :to_s
 
-    # Public: Initialise a ProjectLinkGraph.
+    # Public: Initialise a Graph.
     #
-    # env               - The environment, an instance of Env.
-    # project_templates - An array of project templates to take, instantiate and
-    #                     link together into a graph structure of dependencies.
-    def initialize(env, project_templates)
-      @env = env
-      @project_path_trie = Containers::Trie.new
-      @project_templates = project_templates
-      @projects = projects_by_path.values
-
-      link_projects
-    end
-
-    # Public: All the changed projects in the current repository.
-    #
-    # Returns an Array of Project subclasses, one for each project in the
-    # repository.
-    def changed
-      select(&:changed?)
+    # project_path_trie -
+    # projects - An array of projects to use. These are expected to be pre-sorted and linked via the ProjectLinker.
+    def initialize(project_path_trie, projects)
+      @project_path_trie = project_path_trie
+      @projects = projects
     end
 
     # Public: Returns a project, if any, with the given name.
@@ -48,24 +32,18 @@ module Shanty
       find { |project| project.name == name }
     end
 
-    # Public: Returns all projects that have the given plugin.
+    # Public: Returns all projects that have the given tags.
     #
     # *plugins - One or more plugins to filter by.
     #
     # Returns an Array of Project subclasses, one for each project in the
     # repository.
-    def all_with_plugin(*plugins)
-      reject { |project| (project.plugins & plugins).empty? }
-    end
-
-    # Public: Returns all changed projects that have the given plugin.
-    #
-    # *plugins - One or more plugins to filter by.
-    #
-    # Returns an Array of Project subclasses, one for each project in the
-    # repository.
-    def changed_with_plugin(*plugins)
-      changed.reject { |project| (project.plugins & plugins).empty? }
+    def all_with_tags(*tags)
+      return [] if tags.empty?
+      select do |project|
+        project_tags = project.tags.map(&:to_sym)
+        tags.map(&:to_sym).all? { |tag| project_tags.include?(tag) }
+      end
     end
 
     # Public: Given a path to a file or directory (normally a path obtained
@@ -79,8 +57,7 @@ module Shanty
     #
     # Returns a Project subclass if any found, otherwise nil.
     def owner_of_file(path)
-      key = @project_path_trie.longest_prefix(path)
-      @project_path_trie[key]
+      @project_path_trie[@project_path_trie.longest_prefix(path)]
     end
 
     # Public: Given a path, find all the projects at or below this path.
@@ -93,47 +70,14 @@ module Shanty
       select { |project| project.path.start_with?(path) }
     end
 
+    def select
+      sub_graph(super)
+    end
+
     private
 
-    def sorted_projects
-      @sorted_projects ||= tsort
-    end
-
-    def tsort_each_node
-      @projects.each { |p| yield p }
-    end
-
-    def tsort_each_child(project)
-      projects_by_path[project.path].parents.each { |p| yield p }
-    end
-
-    def projects_by_path
-      @projects_by_path ||= Hash[@project_templates.map do |project_template|
-        project = Project.new(@env, project_template)
-        project.setup!
-        @project_path_trie[project.path] = project
-        [project.path, project]
-      end]
-    end
-
-    # Private: Given a list of projects, construct the parent/child
-    # relationships between them given a list of their parents/children by name
-    # as defined on the project instances.
-    #
-    # projects - An array of Project subclasses to link together.
-    #
-    # Returns an Array of linked projects.
-    def link_projects
-      projects_by_path.each_value do |project|
-        project.parents_by_path.each do |parent_path|
-          parent_dependency = projects_by_path[parent_path]
-          if parent_dependency.nil?
-            fail("Cannot find project at path #{parent_path}, which was specified as a dependency for #{project}")
-          end
-
-          project.add_parent(parent_dependency)
-        end
-      end
+    def sub_graph(projects)
+      self.class.new(@project_path_trie, projects)
     end
   end
 end

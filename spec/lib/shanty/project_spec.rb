@@ -1,75 +1,65 @@
 require 'spec_helper'
 require 'shanty/project'
 
+require_fixture 'test_plugin'
+
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(Project) do
     include_context('graph')
-    subject { Project.new(env, project_template) }
+    subject { Shanty::Project.new(project_path) }
 
-    describe('#setup!') do
-      it('adds all the plugins from the project template to the project') do
-        project_template.plugins.each do |plugin|
-          expect(plugin).to receive(:add_to_project).with(subject)
-        end
-
-        subject.setup!
-      end
-
-      it('evaluates the after_create block from the project template if given') do
-        block_called = false
-        project_template.after_create { block_called = true }
-
-        subject.setup!
-
-        expect(block_called).to be(true)
+    describe('#plugin') do
+      it('calls to the plugin to add it to the project') do
+        expect(Shanty::TestPlugin).to receive(:add_to_project).with(subject)
+        subject.plugin(Shanty::TestPlugin)
       end
     end
 
     describe('#name') do
       it('returns the name from the project template in the constructor') do
-        expect(subject.name).to equal(project_template.name)
+        expect(subject.name).to eql('shanty')
       end
     end
 
     describe('#path') do
       it('returns the path from the project template in the constructor') do
-        expect(subject.path).to equal(project_template.path)
+        expect(subject.path).to eql(project_path)
       end
     end
 
     describe('#options') do
-      it('returns the options from the project template in the constructor') do
-        expect(subject.options).to equal(project_template.options)
+      it('defaults the options to an empty object') do
+        expect(subject.options).to eql({})
       end
     end
 
     describe('#parents_by_path') do
-      it('returns the parents from the project template in the constructor') do
-        expect(subject.parents_by_path).to equal(project_template.parents)
+      it('defaults the parents to an empty array') do
+        expect(subject.parents_by_path).to eql([])
       end
     end
 
     describe('#artifact_paths') do
-      it('returns an empty array by default') do
+      it('defaults the paths to an empty array') do
         expect(subject.artifact_paths).to eql([])
       end
     end
 
     describe('#to_s') do
       it('returns a simple string representation of the project') do
-        expect(subject.to_s).to eql(project_template.name)
+        expect(subject.to_s).to eql('shanty')
       end
     end
 
     describe('#inspect') do
       it('returns a detailed string representation of the project') do
         expect(subject.inspect).to eql({
-          name: project_template.name,
-          path: project_template.path,
+          name: 'shanty',
+          path: project_path,
+          tags: [],
           options: {},
-          parents_by_path: [],
-          changed: false
+          parents_by_path: []
         }.inspect)
       end
     end
@@ -87,7 +77,7 @@ module Shanty
 
       it('yields the given block with the correct working directory') do
         subject.within_project_dir do
-          expect(Dir.pwd).to eql(project_template.path)
+          expect(Dir.pwd).to eql(project_path)
         end
       end
 
