@@ -1,6 +1,7 @@
 require 'acts_as_graph_vertex'
 require 'attr_combined_accessor'
 require 'call_me_ruby'
+require 'pathname'
 
 require 'shanty/env'
 
@@ -36,7 +37,9 @@ module Shanty
     #
     # path - The path to the project.
     def initialize(path)
-      fail('Path to project must be a directory.') unless File.directory?(path)
+      pathname = Pathname.new(path)
+      fail('Path to project must be a directory.') unless pathname.directory?
+      fail('Path to project must be absolute.') unless pathname.absolute?
 
       @path = path
 
@@ -99,14 +102,6 @@ module Shanty
         options: @options,
         parents_by_path: @parents_by_path
       }.inspect
-    end
-
-    def within_project_dir
-      return unless block_given?
-
-      Dir.chdir(path) do
-        yield
-      end
     end
   end
 end

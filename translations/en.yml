@@ -1,5 +1,6 @@
 ---
 en:
+  missing_root: Could not find a %{config_file} file in this or any parent directories. Please run `shanty init` in the directory you want to be the root of your project structure
   tasks:
     common:
       options:

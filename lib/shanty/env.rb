@@ -1,6 +1,9 @@
+require 'i18n'
 require 'logger'
 require 'pathname'
 require 'yaml'
+
+require 'shanty/project_tree'
 
 module Shanty
   #
@@ -16,6 +19,7 @@ module Shanty
       @build_number = nil
       @root = nil
       @config = nil
+      @project_tree = nil
     end
 
     def require!
@@ -24,6 +28,8 @@ module Shanty
           requires_in_path(path).each { |f| require File.join(root, f) }
         end
       end
+    rescue
+      nil
     end
 
     def logger
@@ -40,6 +46,10 @@ module Shanty
 
     def root
       @root ||= find_root
+    end
+
+    def project_tree
+      @project_tree ||= ProjectTree.new(root)
     end
 
     def config
@@ -66,11 +76,7 @@ module Shanty
     end
 
     def find_root
-      if root_dir.nil?
-        fail "Could not find a #{CONFIG_FILE} file in this or any parent directories. \
-        Please run `shanty init` in the directory you want to be the root of your project structure."
-      end
-
+      fail I18n.t('missing_root', config_file: CONFIG_FILE) if root_dir.nil?
       root_dir
     end
 

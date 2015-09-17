@@ -63,31 +63,5 @@ module Shanty
         }.inspect)
       end
     end
-
-    describe('#within_project_dir') do
-      it('does nothing if there is no block given') do
-        expect(Dir).to_not receive(:chdir)
-
-        subject.within_project_dir
-      end
-
-      it('yields the given block') do
-        expect { |b| subject.within_project_dir(&b) }.to yield_with_no_args
-      end
-
-      it('yields the given block with the correct working directory') do
-        subject.within_project_dir do
-          expect(Dir.pwd).to eql(project_path)
-        end
-      end
-
-      it('changes the working directory back at the end') do
-        expected_pwd = Dir.pwd
-
-        subject.within_project_dir
-
-        expect(Dir.pwd).to eql(expected_pwd)
-      end
-    end
   end
 end

@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'fileutils'
+require 'i18n'
 require 'tmpdir'
 require 'shanty/env'
 
@@ -103,7 +104,7 @@ module Shanty
 
       it('throws an exception if no ancestor folders have a .shanty.yml file in them') do
         FileUtils.rm('.shanty.yml')
-        expect { subject.root }.to raise_error
+        expect { subject.root }.to raise_error(I18n.t('missing_root'))
       end
     end
 

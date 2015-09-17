@@ -90,7 +90,7 @@ module Shanty
     def wanted_projects_from_globs
       wanted_project_globs.flat_map do |globs|
         # Will make the glob absolute to the root if (and only if) it is relative.
-        Dir[File.expand_path(globs, root)].map do |path|
+        project_tree.glob(File.expand_path(globs, root)).map do |path|
           Project.new(File.absolute_path(File.dirname(path)))
         end
       end

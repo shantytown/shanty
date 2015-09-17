@@ -1,3 +1,4 @@
+require 'bundler'
 require 'shanty/plugin'
 
 module Shanty
@@ -10,8 +11,10 @@ module Shanty
     subscribe :build, :bundle_install
 
     def bundle_install
-      # FIXME: Add support for the --jobs argument to parallelise the bundler run.
-      system 'bundle install --quiet'
+      Bundler.with_clean_env do
+        # FIXME: Add support for the --jobs argument to parallelise the bundler run.
+        system 'bundle install --quiet'
+      end
     end
   end
 end

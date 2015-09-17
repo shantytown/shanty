@@ -33,7 +33,9 @@ module Shanty
 
     def run_common_task(options, task)
       filtered_graph(options).each do |project|
-        fail I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
+        Dir.chdir(project.path) do
+          fail I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
+        end
       end
     end
 
