@@ -12,11 +12,8 @@ module Shanty
     end
 
     def graph
-      return @graph unless @graph.nil?
-
-      projects = Plugin.discover_all_projects.each(&:execute_shantyfile!)
-      @graph ||= ProjectLinker.new(projects).link.tap do |graph|
-        Plugin.with_graph(graph)
+      @graph ||= ProjectLinker.new(Plugin.all_projects).link.tap do |graph|
+        Plugin.all_with_graph(graph)
       end
     end
   end

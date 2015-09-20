@@ -1,18 +1,17 @@
 require 'acts_as_graph_vertex'
-require 'attr_combined_accessor'
 require 'call_me_ruby'
 require 'pathname'
 
 require 'shanty/env'
+require 'shanty/project_dsl'
 
 module Shanty
   # Public: Represents a project in the current repository.
   class Project
     include ActsAsGraphVertex
-    include CallMeRuby
     include Env
+    include ProjectDsl
 
-    attr_combined_accessor :name, :tags, :options
     attr_accessor :path, :parents_by_path
 
     # Multiton or Flyweight pattern - only allow once instance per unique path.
@@ -44,19 +43,18 @@ module Shanty
       @path = path
 
       @name = File.basename(path)
+      @plugins = []
       @parents_by_path = []
       @tags = []
       @options = {}
     end
 
-    def execute_shantyfile!
-      shantyfile_path = File.join(@path, 'Shantyfile')
-      return unless File.exist?(shantyfile_path)
-      instance_eval(File.read(shantyfile_path), shantyfile_path)
+    def add_plugin(plugin)
+      @plugins << plugin
     end
 
-    def plugin(plugin)
-      plugin.add_to_project(self)
+    def remove_plugin(plugin_class)
+      @plugins.delete_if { |plugin| plugin.class == plugin_class }
     end
 
     def parent(parent)
@@ -64,12 +62,16 @@ module Shanty
       @parents_by_path << File.expand_path(parent, root)
     end
 
-    def tag(tag)
-      @tags << tag
+    def tags
+      (@tags + @plugins.flat_map { |plugin| plugin.class.tags }).uniq
     end
 
-    def option(key, value)
-      @options[key] = value
+    def publish(name, *args)
+      @plugins.each do |plugin|
+        next unless plugin.subscribed?(name)
+        puts "Executing #{name} on the #{plugin.class} plugin..."
+        plugin.publish(name, *args)
+      end
     end
 
     # Public: The absolute paths to the artifacts that would be created by this

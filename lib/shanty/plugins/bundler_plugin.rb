@@ -3,11 +3,9 @@ require 'shanty/plugin'
 
 module Shanty
   # Public: Bundler plugin for building ruby projects.
-  module BundlerPlugin
-    extend Plugin
-
-    adds_tags :bundler
-    wants_projects_matching '**/Gemfile'
+  class BundlerPlugin < Plugin
+    tags :bundler
+    projects '**/Gemfile'
     subscribe :build, :bundle_install
 
     def bundle_install
