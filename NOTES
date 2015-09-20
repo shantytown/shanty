@@ -1,0 +1,10 @@
+Shanty starts up.
+It looks to find the root of the project by traversing upwards until it finds a .shanty.yml. If not found, bail.
+It creates or updates an index of all the files in the shanty project.
+
+Changed Plugin: For any files that have changed or created, find the owning project and add the changed tag.
+SBT Plugin: For any config changes, find the owning project and add the changed tag.
+
+---
+
+Git hooks for updating the Shanty checkpoint.

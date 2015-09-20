@@ -52,7 +52,10 @@ module Shanty
 
     def add_to_project(project)
       project.singleton_class.include(self)
-      callbacks.each { |args| project.subscribe(*args) }
+      callbacks.each do |args|
+        project.subscribe(args.first) { puts "Executing #{args.first} on the #{self} plugin..." }
+        project.subscribe(*args)
+      end
       tags.each { |tag| project.tag(tag) }
     end
 
@@ -88,11 +91,8 @@ module Shanty
     private
 
     def wanted_projects_from_globs
-      wanted_project_globs.flat_map do |globs|
-        # Will make the glob absolute to the root if (and only if) it is relative.
-        project_tree.glob(File.expand_path(globs, root)).map do |path|
-          Project.new(File.absolute_path(File.dirname(path)))
-        end
+      project_tree.glob(*wanted_project_globs).map do |path|
+        Project.new(File.absolute_path(File.dirname(path)))
       end
     end
 

@@ -9,9 +9,9 @@ module Shanty
       @gitignore = GitIgnoreRb.new(root)
     end
 
-    def glob(glob)
+    def glob(*globs)
       included_files.find_all do |path|
-        File.fnmatch(glob, path, File::FNM_EXTGLOB)
+        globs.any? { |pattern| File.fnmatch(pattern, path, File::FNM_EXTGLOB) }
       end
     end
 

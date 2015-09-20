@@ -21,6 +21,9 @@ module Shanty
 
       it('calls subscribe on the project for each callback in the plugin') do
         callbacks.each do |callback|
+          # Once for printing nice messages about the task being executed.
+          expect(project).to receive(:subscribe).with(callback.first)
+          # And secondly for the actual subscriptions.
           expect(project).to receive(:subscribe).with(*callback)
         end
 

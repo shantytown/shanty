@@ -86,7 +86,7 @@ module Shanty
     #
     # Returns a simple String representation of this instance.
     def to_s
-      "#{name}"
+      "#{name} (#{path})\n  - #{tags.join("\n  - ")}"
     end
 
     # Public: Overriden String conversion method to return a more detailed
