@@ -14,7 +14,7 @@ module Shanty
     desc 'projects [--tags TAG,TAG,...]', 'tasks.projects.desc'
     option :tags, type: :array, desc: 'tasks.common.options.tags'
     def projects(options)
-      filtered_graph(options).each do |project|
+      filtered_graph(options.tags).each do |project|
         puts "#{project.name} (#{project.path})#{project.tags.map { |tag| "\n  - #{tag}" }.join}"
       end
     end
