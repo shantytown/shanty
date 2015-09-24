@@ -14,7 +14,7 @@ before_install:
   - rustc --version
   - cargo --version
   - gem install gitignore_rb
-  - stat/home/travis/.rvm/gems/ruby-2.2.3/gems/gitignore_rb-0.2.2/ext/gitignore_binding/target/release/libgitignore_binding.dylib
+  - stat /home/travis/.rvm/gems/ruby-2.2.3/gems/gitignore_rb-0.2.2/ext/gitignore_binding/target/release/libgitignore_binding.dylib
   - readelf -a /home/travis/.rvm/gems/ruby-2.2.3/gems/gitignore_rb-0.2.2/ext/gitignore_binding/target/release/libgitignore_binding.dylib
 script: bundle exec ./bin/shanty --trace test
 
