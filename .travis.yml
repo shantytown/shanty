@@ -13,8 +13,6 @@ before_install:
   - export LD_LIBRARY_PATH=~/rust/lib:$LD_LIBRARY_PATH
   - rustc --version
   - cargo --version
-  - gem install gitignore_rb
-  - curl --upload-file /home/travis/.rvm/gems/ruby-2.2.3/gems/gitignore_rb-0.2.2/ext/gitignore_binding/target/release/libgitignore_binding.dylib https://transfer.sh/libgitignore_binding.dylib
 script: bundle exec ./bin/shanty --trace test
 
 notifications:
