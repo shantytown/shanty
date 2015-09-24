@@ -13,6 +13,7 @@ before_install:
   - export LD_LIBRARY_PATH=~/rust/lib:$LD_LIBRARY_PATH
   - rustc --version
   - cargo --version
+  - gem install gitignore_rb
   - ls /home/travis/.rvm/gems/ruby-2.2.3/gems/gitignore_rb-0.2.3/ext/gitignore_binding/target/release
 script: bundle exec ./bin/shanty --trace test
 
