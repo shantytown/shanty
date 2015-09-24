@@ -5,10 +5,9 @@ require 'shanty/plugins/bundler_plugin'
 module Shanty
   RSpec.describe(BundlerPlugin) do
     include_context('basics')
-    subject { Class.new { include BundlerPlugin }.new }
 
     it('subscribes to the build event') do
-      expect(BundlerPlugin.callbacks).to include([:build, :bundle_install])
+      expect(BundlerPlugin.instance_variable_get(:@class_callbacks)).to include(build: [:bundle_install])
     end
 
     describe('#bundle_install') do

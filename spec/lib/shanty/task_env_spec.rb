@@ -8,7 +8,7 @@ module Shanty
 
     describe('#graph') do
       it('discovers all the projects') do
-        expect(Plugin).to receive(:discover_all_projects).and_return([])
+        expect(Plugin).to receive(:all_projects).and_return([])
 
         subject.graph
       end

@@ -5,10 +5,9 @@ require 'shanty/plugins/rspec_plugin'
 module Shanty
   RSpec.describe(RspecPlugin) do
     include_context('basics')
-    subject { Class.new { include RspecPlugin }.new }
 
     it('subscribes to the test event') do
-      expect(RspecPlugin.callbacks).to include([:test, :rspec])
+      expect(RspecPlugin.instance_variable_get(:@class_callbacks)).to include(test: [:rspec])
     end
 
     describe('#rspec') do

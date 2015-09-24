@@ -28,12 +28,17 @@ module Shanty
           requires_in_path(path).each { |f| require File.join(root, f) }
         end
       end
+    # FIXME: Why is this needed? Seems like a bad idea to me (which it most probably is given I wrote it).
     rescue
       nil
     end
 
     def logger
-      @logger ||= Logger.new(STDOUT)
+      @logger ||= Logger.new(STDOUT).tap do |logger|
+        logger.formatter = proc do |_, datetime, _, msg|
+          "#{datetime}: #{msg}\n"
+        end
+      end
     end
 
     def environment

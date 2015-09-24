@@ -12,7 +12,7 @@ module Shanty
     include Env
     include ProjectDsl
 
-    attr_accessor :path, :parents_by_path
+    attr_accessor :path, :parents_by_path, :tags
 
     # Multiton or Flyweight pattern - only allow once instance per unique path.
     #
@@ -62,15 +62,19 @@ module Shanty
       @parents_by_path << File.expand_path(parent, root)
     end
 
-    def tags
-      (@tags + @plugins.flat_map { |plugin| plugin.class.tags }).uniq
+    # Public: The tags assigned to this project, and any tags provided by any
+    # plugins operating on this project.
+    #
+    # Returns an Array of symbols representing the tags on this project.
+    def all_tags
+      (@tags + @plugins.flat_map { |plugin| plugin.class.tags }).map(&:to_sym).uniq
     end
 
     def publish(name, *args)
       @plugins.each do |plugin|
         next unless plugin.subscribed?(name)
-        puts "Executing #{name} on the #{plugin.class} plugin..."
-        plugin.publish(name, *args)
+        logger.info("Executing #{name} on the #{plugin.class} plugin...")
+        return false unless plugin.publish(name, *args)
       end
     end
 
@@ -88,7 +92,7 @@ module Shanty
     #
     # Returns a simple String representation of this instance.
     def to_s
-      "#{name} (#{path})\n  - #{tags.join("\n  - ")}"
+      name
     end
 
     # Public: Overriden String conversion method to return a more detailed
@@ -100,7 +104,7 @@ module Shanty
       {
         name: @name,
         path: @path,
-        tags: @tags,
+        tags: all_tags,
         options: @options,
         parents_by_path: @parents_by_path
       }.inspect

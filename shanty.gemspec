@@ -28,6 +28,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'commander', '~>4.3'
   gem.add_dependency 'gitignore_rb', '~>0.2.2'
   gem.add_dependency 'i18n', '~>0.7'
+  gem.add_dependency 'shenanigans', '~>1.0'
 
   gem.add_development_dependency 'coveralls', '~>0.8'
   gem.add_development_dependency 'cucumber', '~>2.1'

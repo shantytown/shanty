@@ -29,6 +29,10 @@ module Shanty
     end
 
     describe('#all_with_tags') do
+      before do
+        subject.first.tags << 'test'
+      end
+
       it('returns an empty array when no tags are given') do
         expect(subject.all_with_tags).to be_empty
       end
@@ -38,7 +42,7 @@ module Shanty
       end
 
       it('returns the correct projects when matching tags are given') do
-        expect(subject.all_with_tags('test')).to match_array(subject)
+        expect(subject.all_with_tags('test')).to match_array([subject.first])
       end
     end
 

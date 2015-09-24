@@ -5,10 +5,9 @@ require 'shanty/plugins/rubocop_plugin'
 module Shanty
   RSpec.describe(RubocopPlugin) do
     include_context('basics')
-    subject { Class.new { include RubocopPlugin }.new }
 
     it('subscribes to the test event') do
-      expect(RubocopPlugin.callbacks).to include([:test, :rubocop])
+      expect(RubocopPlugin.instance_variable_get(:@class_callbacks)).to include(test: [:rubocop])
     end
 
     describe('#rubocop') do

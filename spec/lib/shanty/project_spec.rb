@@ -9,16 +9,9 @@ module Shanty
     include_context('graph')
     subject { Shanty::Project.new(project_path) }
 
-    describe('#plugin') do
-      it('calls to the plugin to add it to the project') do
-        expect(Shanty::TestPlugin).to receive(:add_to_project).with(subject)
-        subject.plugin(Shanty::TestPlugin)
-      end
-    end
-
     describe('#name') do
       it('returns the name from the project template in the constructor') do
-        expect(subject.name).to eql('shanty')
+        expect(subject.name).to eql('one')
       end
     end
 
@@ -48,14 +41,14 @@ module Shanty
 
     describe('#to_s') do
       it('returns a simple string representation of the project') do
-        expect(subject.to_s).to eql('shanty')
+        expect(subject.to_s).to eql('one')
       end
     end
 
     describe('#inspect') do
       it('returns a detailed string representation of the project') do
         expect(subject.inspect).to eql({
-          name: 'shanty',
+          name: 'one',
           path: project_path,
           tags: [],
           options: {},

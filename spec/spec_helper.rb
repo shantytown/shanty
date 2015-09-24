@@ -1,13 +1,16 @@
 require 'coveralls'
 Coveralls.wear!
 
+require 'fileutils'
 require 'i18n'
+require 'tmpdir'
 require 'shanty/env'
 require 'shanty/graph'
 require 'shanty/project'
 require 'shanty/task_env'
 require 'shanty/plugins/rspec_plugin'
 require 'shanty/plugins/rubocop_plugin'
+require 'shanty/plugins/shantyfile_plugin'
 
 def require_fixture(path)
   require File.join(__dir__, 'fixtures', path)
@@ -30,30 +33,43 @@ RSpec.configure do |config|
 end
 
 RSpec.shared_context('basics') do
-  let(:root) { File.expand_path(File.join(__dir__, '..')) }
+  around(:each) do |example|
+    # FIXME: The TaskEnv spec currently blows up without this because
+    # gitignore_rb cannot handle not having a `.gitignore` file present. This
+    # needs to be fixed.
+    FileUtils.touch(File.join(root, '.gitignore'))
+    FileUtils.touch(File.join(root, '.shanty.yml'))
+    project_paths.values.each do |project_path|
+      FileUtils.mkdir_p(project_path)
+    end
+
+    Dir.chdir(root) do
+      example.run
+    end
+
+    FileUtils.rm_rf(root)
+  end
+
+  let(:root) { Dir.mktmpdir('shanty-test') }
   let(:project_paths) do
     {
-      three: File.join(root, 'examples', 'test-static-project-2', 'test-static-project-3'),
-      two: File.join(root, 'examples', 'test-static-project-2'),
-      one: File.join(root, 'examples', 'test-static-project'),
-      shanty: File.join(root)
+      one: File.join(root, 'one'),
+      two: File.join(root, 'two'),
+      three: File.join(root, 'two', 'three')
     }
   end
-  let(:project_path) { project_paths[:shanty] }
+  let(:project_path) { project_paths[:one] }
 end
 
 RSpec.shared_context('graph') do
   include_context('basics')
 
   let(:projects) do
-    Hash[project_paths.map do |key, project_path|
-      [key, Shanty::Project.new(project_path).tap do |project|
-        project.plugin(Shanty::TestPlugin)
-        project.execute_shantyfile!
-      end]
-    end]
+    project_paths.each_with_object({}) do |(key, project_path), acc|
+      acc[key] = Shanty::Project.new(project_path)
+    end
   end
-  let(:project) { projects[:shanty] }
+  let(:project) { projects[:one] }
   let(:project_path_trie) do
     Containers::Trie.new.tap do |trie|
       projects.values.map { |project| trie[project.path] = project }

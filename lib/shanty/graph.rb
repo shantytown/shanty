@@ -41,7 +41,7 @@ module Shanty
     def all_with_tags(*tags)
       return [] if tags.empty?
       select do |project|
-        project_tags = project.tags.map(&:to_sym)
+        project_tags = project.all_tags
         tags.map(&:to_sym).all? { |tag| project_tags.include?(tag) }
       end
     end
