@@ -10,7 +10,7 @@ module Shanty
     include ActsAsGraphVertex
     include Env
 
-    attr_accessor :name, :path, :tags, :options
+    attr_accessor :artifacts, :name, :path, :tags, :options
 
     # Multiton or Flyweight pattern - only allow once instance per unique path.
     #
@@ -40,6 +40,7 @@ module Shanty
       @path = path
 
       @name = File.basename(path)
+      @artifacts = []
       @plugins = []
       @tags = []
       @options = {}
@@ -61,20 +62,20 @@ module Shanty
       (@tags + @plugins.flat_map { |plugin| plugin.class.tags }).map(&:to_sym).uniq
     end
 
+    # Public: The artifacts published by this project and any artifacts published
+    # by any plugins operating on this project.
+    #
+    # Returns an Array of Artifacts representing published binaries
+    def all_artifacts
+      (@artifacts + @plugins.flat_map { |plugin| plugin.artifacts(project) }).uniq
+    end
+
     def publish(name, *args)
       @plugins.each do |plugin|
         next unless plugin.subscribed?(name)
         logger.info("Executing #{name} on the #{plugin.class} plugin...")
         return false if plugin.publish(name, *args) == false
       end
-    end
-
-    # Public: The absolute paths to the artifacts that would be created by this
-    # project when built, if any. This is expected to be overriden in subclasses.
-    #
-    # Returns an Array of Strings representing the absolute paths to the artifacts.
-    def artifact_paths
-      []
     end
 
     # Public: Overriden String conversion method to return a simplified

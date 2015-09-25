@@ -84,9 +84,9 @@ module Shanty
       end
     end
 
-    describe('#artifact_paths') do
-      it('defaults the paths to an empty array') do
-        expect(subject.artifact_paths).to eql([])
+    describe('#all_artifacts') do
+      it('defaults the artifacts to an empty array') do
+        expect(subject.all_artifacts).to eql([])
       end
     end
 
