@@ -12,7 +12,7 @@ module Shanty
     include Env
     include ProjectDsl
 
-    attr_accessor :path, :parents_by_path, :tags
+    attr_accessor :artifacts, :path, :parents_by_path, :tags
 
     # Multiton or Flyweight pattern - only allow once instance per unique path.
     #
@@ -43,6 +43,7 @@ module Shanty
       @path = path
 
       @name = File.basename(path)
+      @artifacts = []
       @plugins = []
       @parents_by_path = []
       @tags = []
@@ -70,20 +71,20 @@ module Shanty
       (@tags + @plugins.flat_map { |plugin| plugin.class.tags }).map(&:to_sym).uniq
     end
 
+    # Public: The artifacts published by this project and any artifacts published
+    # by any plugins operating on this project.
+    #
+    # Returns an Array of Artifacts representing published binaries
+    def all_artifacts
+      (@artifacts + @plugins.flat_map { |plugin| plugin.artifacts(project) }).uniq
+    end
+
     def publish(name, *args)
       @plugins.each do |plugin|
         next unless plugin.subscribed?(name)
         logger.info("Executing #{name} on the #{plugin.class} plugin...")
         return false unless plugin.publish(name, *args)
       end
-    end
-
-    # Public: The absolute paths to the artifacts that would be created by this
-    # project when built, if any. This is expected to be overriden in subclasses.
-    #
-    # Returns an Array of Strings representing the absolute paths to the artifacts.
-    def artifact_paths
-      []
     end
 
     # Public: Overriden String conversion method to return a simplified

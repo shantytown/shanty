@@ -44,6 +44,10 @@ module Shanty
       end
     end
 
+    def artifacts(*)
+      []
+    end
+
     def with_graph(graph)
       (@with_graph_callbacks || []).each { |callback| callback.call(graph) }
     end
