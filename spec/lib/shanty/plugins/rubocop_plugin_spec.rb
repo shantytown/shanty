@@ -5,10 +5,17 @@ require 'shanty/plugins/rubocop_plugin'
 module Shanty
   RSpec.describe(RubocopPlugin) do
     include_context('basics')
-    subject { Class.new { include RubocopPlugin }.new }
+
+    it('adds the rubocop tag') do
+      expect(described_class).to add_tags(:rubocop)
+    end
+
+    it('finds projects that have a .rubocop.yml file') do
+      expect(described_class).to define_projects.with('**/.rubocop.yml')
+    end
 
     it('subscribes to the test event') do
-      expect(RubocopPlugin.callbacks).to include([:test, :rubocop])
+      expect(described_class).to subscribe_to(:test).with(:rubocop)
     end
 
     describe('#rubocop') do

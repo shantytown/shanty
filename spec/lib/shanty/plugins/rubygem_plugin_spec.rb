@@ -5,10 +5,17 @@ require 'shanty/plugins/rubygem_plugin'
 module Shanty
   RSpec.describe(RubygemPlugin) do
     include_context('basics')
-    subject { Class.new { include RubygemPlugin }.new }
 
-    it('subscribes to the test event') do
-      expect(RubygemPlugin.callbacks).to include([:build, :build_gem])
+    it('adds the rubygem tag') do
+      expect(described_class).to add_tags(:rubygem)
+    end
+
+    it('finds projects that have a *.gemspec file') do
+      expect(described_class).to define_projects.with('**/*.gemspec')
+    end
+
+    it('subscribes to the build event') do
+      expect(described_class).to subscribe_to(:build).with(:build_gem)
     end
 
     describe('#build_gem') do

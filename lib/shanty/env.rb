@@ -1,6 +1,9 @@
+require 'i18n'
 require 'logger'
 require 'pathname'
 require 'yaml'
+
+require 'shanty/project_tree'
 
 module Shanty
   #
@@ -10,12 +13,17 @@ module Shanty
 
     CONFIG_FILE = '.shanty.yml'
 
+    # This must be defined first due to being a class var that isn't first
+    # first accessed with ||=.
+    @@config = nil
+
     def clear!
-      @logger = nil
-      @environment = nil
-      @build_number = nil
-      @root = nil
-      @config = nil
+      @@logger = nil
+      @@environment = nil
+      @@build_number = nil
+      @@root = nil
+      @@config = nil
+      @@project_tree = nil
     end
 
     def require!
@@ -27,26 +35,34 @@ module Shanty
     end
 
     def logger
-      @logger ||= Logger.new(STDOUT)
+      @@logger ||= Logger.new(STDOUT).tap do |logger|
+        logger.formatter = proc do |_, datetime, _, msg|
+          "#{datetime}: #{msg}\n"
+        end
+      end
     end
 
     def environment
-      @environment ||= ENV['SHANTY_ENV'] || 'local'
+      @@environment ||= ENV['SHANTY_ENV'] || 'local'
     end
 
     def build_number
-      @build_number ||= (ENV['SHANTY_BUILD_NUMBER'] || 1).to_i
+      @@build_number ||= (ENV['SHANTY_BUILD_NUMBER'] || 1).to_i
     end
 
     def root
-      @root ||= find_root
+      @@root ||= find_root
+    end
+
+    def project_tree
+      @@project_tree ||= ProjectTree.new(root)
     end
 
     def config
-      return @config unless @config.nil?
-      return @config = {} unless File.exist?(config_path)
+      return @@config unless @@config.nil?
+      return @@config = {} unless File.exist?(config_path)
       config = YAML.load_file(config_path) || {}
-      @config = config[environment] || {}
+      @@config = config[environment] || {}
     end
 
     private
@@ -66,11 +82,7 @@ module Shanty
     end
 
     def find_root
-      if root_dir.nil?
-        fail "Could not find a #{CONFIG_FILE} file in this or any parent directories. \
-        Please run `shanty init` in the directory you want to be the root of your project structure."
-      end
-
+      fail I18n.t('missing_root', config_file: CONFIG_FILE) if root_dir.nil?
       root_dir
     end
 

@@ -1,6 +1,6 @@
 require 'acts_as_graph_vertex'
-require 'attr_combined_accessor'
 require 'call_me_ruby'
+require 'pathname'
 
 require 'shanty/env'
 
@@ -8,11 +8,9 @@ module Shanty
   # Public: Represents a project in the current repository.
   class Project
     include ActsAsGraphVertex
-    include CallMeRuby
     include Env
 
-    attr_combined_accessor :name, :tags, :options
-    attr_accessor :path, :parents_by_path
+    attr_accessor :name, :path, :tags, :options
 
     # Multiton or Flyweight pattern - only allow once instance per unique path.
     #
@@ -36,37 +34,39 @@ module Shanty
     #
     # path - The path to the project.
     def initialize(path)
-      fail('Path to project must be a directory.') unless File.directory?(path)
+      pathname = Pathname.new(File.expand_path(path, root))
+      fail('Path to project must be a directory.') unless pathname.directory?
 
       @path = path
 
       @name = File.basename(path)
-      @parents_by_path = []
+      @plugins = []
       @tags = []
       @options = {}
     end
 
-    def execute_shantyfile!
-      shantyfile_path = File.join(@path, 'Shantyfile')
-      return unless File.exist?(shantyfile_path)
-      instance_eval(File.read(shantyfile_path), shantyfile_path)
+    def add_plugin(plugin)
+      @plugins << plugin
     end
 
-    def plugin(plugin)
-      plugin.add_to_project(self)
+    def remove_plugin(plugin_class)
+      @plugins.delete_if { |plugin| plugin.is_a?(plugin_class) }
     end
 
-    def parent(parent)
-      # Will make the parent path absolute to the root if (and only if) it is relative.
-      @parents_by_path << File.expand_path(parent, root)
+    # Public: The tags assigned to this project, and any tags provided by any
+    # plugins operating on this project.
+    #
+    # Returns an Array of symbols representing the tags on this project.
+    def all_tags
+      (@tags + @plugins.flat_map { |plugin| plugin.class.tags }).map(&:to_sym).uniq
     end
 
-    def tag(tag)
-      @tags << tag
-    end
-
-    def option(key, value)
-      @options[key] = value
+    def publish(name, *args)
+      @plugins.each do |plugin|
+        next unless plugin.subscribed?(name)
+        logger.info("Executing #{name} on the #{plugin.class} plugin...")
+        return false if plugin.publish(name, *args) == false
+      end
     end
 
     # Public: The absolute paths to the artifacts that would be created by this
@@ -83,7 +83,7 @@ module Shanty
     #
     # Returns a simple String representation of this instance.
     def to_s
-      "#{name}"
+      name
     end
 
     # Public: Overriden String conversion method to return a more detailed
@@ -95,18 +95,10 @@ module Shanty
       {
         name: @name,
         path: @path,
-        tags: @tags,
+        tags: all_tags,
         options: @options,
-        parents_by_path: @parents_by_path
+        parents: parents.map(&:path)
       }.inspect
-    end
-
-    def within_project_dir
-      return unless block_given?
-
-      Dir.chdir(path) do
-        yield
-      end
     end
   end
 end

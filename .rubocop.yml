@@ -9,3 +9,11 @@ LineLength:
 # problem.
 ModuleFunction:
   Enabled: False
+
+# FIXME: Only enabling because we are using the singleton pattern still for the
+# Env and TaskEnv classes and they store memoized values that need to be
+# preserved even after mixing in. Without class vars, this does not work. We
+# plan to refactor these singletons out and into class instances that are passed
+# around instead as needed.
+ClassVars:
+  Enabled: False

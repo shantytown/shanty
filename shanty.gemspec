@@ -21,13 +21,16 @@ Gem::Specification.new do |gem|
   gem.files = Dir['**/*'].select { |d| d =~ %r{^(README|bin/|ext/|lib/)} }
 
   gem.add_dependency 'acts_as_graph_vertex', '~>1.0'
+  gem.add_dependency 'bundler', '~>1.10'
   gem.add_dependency 'algorithms', '~>0.6'
-  gem.add_dependency 'attr_combined_accessor', '~>1.0'
-  gem.add_dependency 'call_me_ruby', '~>1.0'
+  gem.add_dependency 'call_me_ruby', '~>1.1'
   gem.add_dependency 'commander', '~>4.3'
+  gem.add_dependency 'gitignore_rb', '~>0.2.2'
   gem.add_dependency 'i18n', '~>0.7'
+  gem.add_dependency 'shenanigans', '~>1.0'
 
   gem.add_development_dependency 'coveralls', '~>0.8'
+  gem.add_development_dependency 'cucumber', '~>2.1'
   gem.add_development_dependency 'filewatcher', '~>0.5'
   gem.add_development_dependency 'pry-byebug', '~> 3.1'
   gem.add_development_dependency 'rspec', '~> 3.2'

@@ -2,11 +2,9 @@ require 'shanty/plugin'
 
 module Shanty
   # Public: Rubocop plugin for style checking ruby projects.
-  module RubocopPlugin
-    extend Plugin
-
-    adds_tags :rubocop
-    wants_projects_matching '**/.rubocop.yml'
+  class RubocopPlugin < Plugin
+    tags :rubocop
+    projects '**/.rubocop.yml'
     subscribe :test, :rubocop
 
     def rubocop

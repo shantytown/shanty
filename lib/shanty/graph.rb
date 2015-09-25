@@ -12,12 +12,14 @@ module Shanty
     extend Forwardable
     include Enumerable
 
-    def_delegators :@projects, :<<, :empty?, :length, :each, :values, :[], :inspect, :to_s
+    def_delegators :@projects, :<<, :empty?, :length, :each, :values, :[],
+                   :inspect, :to_s
 
     # Public: Initialise a Graph.
     #
     # project_path_trie -
-    # projects - An array of projects to use. These are expected to be pre-sorted and linked via the ProjectLinker.
+    # projects - An array of projects to use. These are expected to be
+    #            pre-sorted and linked via the ProjectLinker.
     def initialize(project_path_trie, projects)
       @project_path_trie = project_path_trie
       @projects = projects
@@ -41,8 +43,7 @@ module Shanty
     def all_with_tags(*tags)
       return [] if tags.empty?
       select do |project|
-        project_tags = project.tags.map(&:to_sym)
-        tags.map(&:to_sym).all? { |tag| project_tags.include?(tag) }
+        tags.map(&:to_sym).all? { |tag| project.all_tags.include?(tag) }
       end
     end
 
