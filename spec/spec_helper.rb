@@ -31,6 +31,7 @@ require_matchers 'call_me_ruby'
 require_matchers 'plugin'
 
 I18n.enforce_available_locales = false
+I18n.load_path = Dir[File.expand_path(File.join(__dir__, '..', 'translations', '*.yml'))]
 
 RSpec.configure do |config|
   config.expect_with(:rspec) do |c|

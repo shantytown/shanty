@@ -6,8 +6,8 @@ module Shanty
   RSpec.describe(ShantyfilePlugin) do
     include_context('graph')
 
-    it('adds the shantyfile tag') do
-      expect(described_class).to add_tags(:shantyfile)
+    it('adds the shantyfile tag shantyfile') do
+      expect(described_class.tags).to match_array([:shantyfile])
     end
 
     it('finds projects by calling a method to locate the ones that have a Shantyfile') do

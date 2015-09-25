@@ -6,8 +6,8 @@ module Shanty
   RSpec.describe(CucumberPlugin) do
     include_context('graph')
 
-    it('adds the cucumber tag') do
-      expect(described_class).to add_tags(:cucumber)
+    it('adds the cucumber tag automatically') do
+      expect(described_class.tags).to match_array([:cucumber])
     end
 
     it('finds projects by calling a method to locate the ones that depend on Cucumber') do

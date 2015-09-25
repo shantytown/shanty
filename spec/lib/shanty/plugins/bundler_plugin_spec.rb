@@ -6,8 +6,8 @@ module Shanty
   RSpec.describe(BundlerPlugin) do
     include_context('graph')
 
-    it('adds the bundler tag') do
-      expect(described_class).to add_tags(:bundler)
+    it('adds the bundler tag automatically') do
+      expect(described_class.tags).to match_array([:bundler])
     end
 
     it('finds projects that have a Gemfile') do

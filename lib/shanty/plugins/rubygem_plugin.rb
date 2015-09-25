@@ -6,9 +6,9 @@ module Shanty
   class RubygemPlugin < Plugin
     ARTIFACT_EXTENSION = 'gem'
 
-    tags :rubygem
     projects '**/*.gemspec'
     subscribe :build, :build_gem
+    tags :gem
 
     def build_gem(project)
       gemspec_files(project).each do |file|
