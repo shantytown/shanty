@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'i18n'
 require 'shanty/task_set'
+require 'shanty/plugin'
 
 module Shanty
   # Public: A set of basic tasks that can be applied to all projects and that
@@ -9,6 +10,11 @@ module Shanty
     desc 'init', 'tasks.init.desc'
     def init
       FileUtils.touch(File.join(Dir.pwd, '.shanty.yml'))
+    end
+
+    desc 'plugins', 'tasks.plugins.desc'
+    def plugins(*)
+      puts Plugin.plugins
     end
 
     desc 'projects [--tags TAG,TAG,...]', 'tasks.projects.desc'

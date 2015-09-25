@@ -2,6 +2,9 @@ require 'commander'
 require 'i18n'
 require 'shanty/info'
 require 'shanty/task_set'
+require 'shanty/env'
+require 'shenanigans/hash/to_ostruct'
+require 'deep_merge'
 
 module Shanty
   # Public: Handle the CLI interface between the user and the registered tasks
@@ -10,6 +13,8 @@ module Shanty
     include Commander::Methods
 
     attr_reader :task_sets
+
+    CONFIG_FORMAT = '[plugin]:[key] [value]'
 
     def initialize(task_sets)
       @task_sets = task_sets
@@ -28,10 +33,22 @@ module Shanty
       program(:description, Info::DESCRIPTION)
 
       setup_tasks
+      global_config
       run!
     end
 
     private
+
+    def global_config
+      global_option('-c', '--config [CONFIG]', "Add config via command line in the format #{CONFIG_FORMAT}") do |config|
+        match = config.match(/(?<plugin>\S+):(?<key>\S+)\s+(?<value>\S+)/)
+        if match
+          Env.config.merge!(match[:plugin] => { match[:key] => match[:value] })
+        else
+          abort("Invalid config format \"#{config}\" should be #{CONFIG_FORMAT}")
+        end
+      end
+    end
 
     def setup_tasks
       tasks.each do |name, task|

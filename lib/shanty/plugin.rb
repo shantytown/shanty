@@ -13,6 +13,10 @@ module Shanty
       @plugins << plugin_class.new
     end
 
+    def self.plugins
+      (@plugins || []).map(&:name)
+    end
+
     def self.all_projects
       (@plugins || []).flat_map(&:projects).uniq
     end
@@ -22,8 +26,16 @@ module Shanty
     end
 
     def self.tags(*args)
-      @tags ||= []
+      @tags ||= [name]
       @tags.concat(args)
+    end
+
+    def self.option(option, default: nil)
+      config[name][option] = default if config[name][option].nil?
+    end
+
+    def self.options
+      config[name]
     end
 
     def self.projects(*globs_or_syms)
@@ -34,6 +46,14 @@ module Shanty
     def self.with_graph(&block)
       @with_graph_callbacks ||= []
       @with_graph_callbacks << block
+    end
+
+    def self.name
+      to_s.split('::').last.downcase.gsub('plugin', '').to_sym
+    end
+
+    def name
+      self.class.name
     end
 
     def projects

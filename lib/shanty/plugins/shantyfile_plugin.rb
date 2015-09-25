@@ -3,7 +3,6 @@ require 'shanty/plugin'
 module Shanty
   # Public: Plugin for finding all directories marked with a Shantyfile.
   class ShantyfilePlugin < Plugin
-    tags :shantyfile
     projects :shantyfile_projects
 
     def shantyfile_projects

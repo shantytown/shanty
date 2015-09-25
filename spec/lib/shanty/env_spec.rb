@@ -3,6 +3,8 @@ require 'fileutils'
 require 'i18n'
 require 'tmpdir'
 require 'shanty/env'
+require 'shenanigans/hash/to_ostruct'
+require 'deep_merge'
 
 # All classes referenced belong to the shanty project
 module Shanty
@@ -109,26 +111,23 @@ module Shanty
     end
 
     describe('#config') do
-      let(:env_config) { { 'foo' => 'bar' } }
-      let(:config) { { 'stray_cats' => env_config } }
-
       before do
         ENV['SHANTY_ENV'] = 'stray_cats'
-        allow(YAML).to receive(:load_file) { config }
-      end
-
-      it('has all the keys from the config file for the current env') do
-        expect(subject.config).to eql(env_config)
       end
 
       it('handles no config file existing') do
         allow(File).to receive(:exist?) { false }
-        expect(subject.config).to eql({})
+        expect(subject.config.nic).to eql(OpenStruct.new)
       end
 
       it('handles no data in the config file') do
         allow(YAML).to receive(:load_file) { false }
         expect(subject.config)
+      end
+
+      it('returns nothing if .shanty.yml does not exist') do
+        FileUtils.rm('.shanty.yml')
+        expect(subject.config.nic).to eql(OpenStruct.new)
       end
     end
   end

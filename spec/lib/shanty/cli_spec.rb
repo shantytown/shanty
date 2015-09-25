@@ -2,6 +2,8 @@ require 'commander'
 require 'spec_helper'
 require 'shanty/cli'
 require 'shanty/info'
+require 'shanty/env'
+require 'shenanigans/hash/to_ostruct'
 require_fixture 'test_task_set'
 
 # All classes referenced belong to the shanty project
@@ -111,6 +113,30 @@ module Shanty
         ARGV.concat(%w(foo --catweasel=noiamacatweasel))
 
         subject.run
+      end
+
+      it('fails to run a command with config options if config is in incorrect format') do
+        expect(subject).to receive(:abort).with('Invalid config format "nic" should be [plugin]:[key] [value]')
+
+        ARGV.concat(%w(-c nic foo))
+
+        subject.run
+      end
+
+      it('runs a command with a config option') do
+        ARGV.concat(['-c nic:kim cage'])
+
+        subject.run
+
+        expect(Env.config.nic).to eql({ kim: 'cage' }.to_ostruct)
+      end
+
+      it('runs a command with multiple config options') do
+        ARGV.concat(['-c nic:kim cage', '-c nic:copolla cage'])
+
+        subject.run
+
+        expect(Env.config.nic).to eql({ kim: 'cage', copolla: 'cage' }.to_ostruct)
       end
     end
   end
