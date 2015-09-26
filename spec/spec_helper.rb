@@ -28,7 +28,7 @@ require_matchers 'plugin'
 I18n.enforce_available_locales = false
 
 RSpec.configure do |config|
-  config.expect_with :rspec do |c|
+  config.expect_with(:rspec) do |c|
     c.include_chain_clauses_in_custom_matcher_descriptions = true
   end
 
@@ -36,12 +36,20 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  # Supress any writing to stdout or stderr during the tests. We don't want
+  # any of the logging to be written in between our test output.
+  config.around(:all) do |example|
+    $stderr = File.open(File::NULL, 'w')
+    $stdout = File.open(File::NULL, 'w')
+    example.run
+    $stderr = STDERR
+    $stdout = STDOUT
+  end
+
   config.before(:example) do
     Shanty::Env.clear!
     Shanty::TaskEnv.clear!
     Shanty::Project.clear!
-
-    Shanty::Env.logger.level = Logger::FATAL
   end
 end
 

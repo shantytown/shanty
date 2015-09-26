@@ -8,9 +8,7 @@ module Shanty
     let(:graph) { double('graph') }
     let(:plugin_class) do
       Class.new(described_class) do
-        def foo
-          []
-        end
+        def foo; end
       end
     end
     subject { plugin_class.new }
