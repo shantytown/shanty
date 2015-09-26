@@ -2,11 +2,9 @@ require 'shanty/plugin'
 
 module Shanty
   # Public: Rubygem plugin for buildin gems.
-  module RubygemPlugin
-    extend Plugin
-
-    adds_tags :rubygem
-    wants_projects_matching '**/*.gemspec'
+  class RubygemPlugin < Plugin
+    tags :rubygem
+    projects '**/*.gemspec'
     subscribe :build, :build_gem
 
     def build_gem

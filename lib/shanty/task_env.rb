@@ -1,5 +1,5 @@
 require 'shanty/plugin'
-require 'shanty/project_linker'
+require 'shanty/project_sorter'
 
 module Shanty
   #
@@ -12,11 +12,8 @@ module Shanty
     end
 
     def graph
-      return @graph unless @graph.nil?
-
-      projects = Plugin.discover_all_projects.each(&:execute_shantyfile!)
-      @graph ||= ProjectLinker.new(projects).link.tap do |graph|
-        Plugin.with_graph(graph)
+      @graph ||= ProjectSorter.new(Plugin.all_projects).sort.tap do |graph|
+        Plugin.all_with_graph(graph)
       end
     end
   end

@@ -5,10 +5,17 @@ require 'shanty/plugins/rspec_plugin'
 module Shanty
   RSpec.describe(RspecPlugin) do
     include_context('basics')
-    subject { Class.new { include RspecPlugin }.new }
+
+    it('adds the rspec tag') do
+      expect(described_class).to add_tags(:rspec)
+    end
+
+    it('finds projects by calling a method to locate the ones that depend on RSpec') do
+      expect(described_class).to define_projects.with(:rspec_projects)
+    end
 
     it('subscribes to the test event') do
-      expect(RspecPlugin.callbacks).to include([:test, :rspec])
+      expect(described_class).to subscribe_to(:test).with(:rspec)
     end
 
     describe('#rspec') do

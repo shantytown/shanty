@@ -5,8 +5,8 @@ require 'tsort'
 require 'shanty/graph'
 
 module Shanty
-  # Public:
-  class ProjectLinker
+  # Public: Sorts projects using Tarjan's strongly connected components algorithm.
+  class ProjectSorter
     include TSort
 
     # Public: Initialise a ProjectLinker.
@@ -16,23 +16,12 @@ module Shanty
       @projects = projects
     end
 
-    # Private: Given a list of projects, construct the parent/child
-    # relationships between them given a list of their parents/children by name
-    # as defined on the project instances.
+    # Private: Given a list of projects, sort them and construct a graph.
     #
-    # Returns a Graph with the projects linked and sorted.
-    def link
-      @projects.each do |project|
-        project.parents_by_path.each do |parent_path|
-          parent_dependency = project_path_trie.get(parent_path)
-          if parent_dependency.nil?
-            fail("Cannot find project at path #{parent_path}, which was specified as a dependency for #{project}")
-          end
-
-          project.add_parent(parent_dependency)
-        end
-      end
-
+    # The sorting uses Tarjan's strongly connected components algorithm.
+    #
+    # Returns a Graph with the projects sorted.
+    def sort
       Graph.new(project_path_trie, tsort)
     end
 
