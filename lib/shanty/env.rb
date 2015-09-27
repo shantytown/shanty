@@ -35,7 +35,7 @@ module Shanty
     end
 
     def logger
-      @@logger ||= Logger.new(STDOUT).tap do |logger|
+      @@logger ||= Logger.new($stdout).tap do |logger|
         logger.formatter = proc do |_, datetime, _, msg|
           "#{datetime}: #{msg}\n"
         end
