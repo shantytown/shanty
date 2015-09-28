@@ -30,16 +30,58 @@ module Shanty
       end
     end
 
+    # Public: Get the changed list of files in the project tree, with any files
+    # ignored by Git, SVN or some other VCS removed from the list.
+    #
+    # Returns an Array of Strings where the strings are paths within the
+    # project that are changed.
+    def changed_files
+      # FIXME: Implement properly once changed detection is available.
+      files
+    end
+
     # Public: Get a list of the files in the project tree that match any of the
     # given globs, with any files ignored by Git, SVN or some other VCS
     # removed from the list.
     #
     # Returns an Array of Strings where the strings are paths within the
-    # project.
+    # project that matched.
     def glob(*globs)
       files.find_all do |path|
         globs.any? { |pattern| File.fnmatch(pattern, path, File::FNM_EXTGLOB) }
       end
+    end
+
+    # Public: Get a list of the changed files in the project tree that match any
+    # of the given globs, with any files ignored by Git, SVN or some other VCS
+    # removed from the list.
+    #
+    # Returns an Array of Strings where the strings are paths within the
+    # project that are changed and matched.
+    def glob_changed(*globs)
+      # FIXME: Implement properly once changed detection is available.
+      glob(*globs)
+    end
+
+    # Public: Whether the given path is in the project tree.
+    #
+    # path - An absolute path to check for the presence of in the project tree.
+    #
+    # Returns a boolean, true if the project does exist in the project tree.
+    def exists?(path)
+      files.include?(path)
+    end
+
+    # Public: Whether the given path is present and changed in the project tree.
+    #
+    # path - An absolute path to check for the presence and changed status of in
+    #        the project tree.
+    #
+    # Returns a boolean, true if the project does exist in the project tree and
+    # is changed.
+    def changed?(path)
+      # FIXME: Implement properly once changed detection is available.
+      exists?(path)
     end
   end
 end

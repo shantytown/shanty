@@ -43,6 +43,16 @@ module Shanty
       end
     end
 
+    describe('#changed') do
+      it('returns all the changed projects') do
+        allow(projects[:one]).to receive(:changed?).and_return(true)
+        allow(projects[:two]).to receive(:changed?).and_return(false)
+        allow(projects[:three]).to receive(:changed?).and_return(true)
+
+        expect(subject.changed).to match_array([projects[:one], projects[:three]])
+      end
+    end
+
     describe('#owner_of_file') do
       it('returns nil if the given folder is outside of any project') do
         expect(subject.owner_of_file('/tmp')).to be_nil

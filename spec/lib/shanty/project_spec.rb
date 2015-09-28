@@ -53,6 +53,47 @@ module Shanty
       end
     end
 
+    describe('#all_artifacts') do
+      it('defaults the artifacts to an empty array') do
+        expect(subject.all_artifacts).to eql([])
+      end
+    end
+
+    describe('#changed?') do
+      before do
+        # FIXME: Remove this when the default of changed is properly set to
+        # false once changed detection is actually working.
+        subject.instance_variable_set(:@changed, false)
+      end
+
+      it('returns true if the changed flag is true on the current project') do
+        subject.instance_variable_set(:@changed, true)
+
+        expect(subject.changed?).to be(true)
+      end
+
+      it('returns true if any of the parents are changed') do
+        parent = double('parent')
+        allow(parent).to receive(:add_child)
+        allow(parent).to receive(:changed?).and_return(true)
+        subject.add_parent(parent)
+
+        expect(subject.changed?).to be(true)
+      end
+
+      it('returns false if the changed flag is false and the parents are unchanged') do
+        expect(subject.changed?).to be(false)
+      end
+    end
+
+    describe('#changed!') do
+      it('adds the changed flag to true on the current project') do
+        subject.changed!
+
+        expect(subject.changed?).to be(true)
+      end
+    end
+
     describe('#publish') do
       before { subject.add_plugin(plugin) }
       let(:plugin) { double('plugin') }
@@ -81,12 +122,6 @@ module Shanty
 
         expect(subject.publish(:foo)).to be(false)
         expect(next_plugin).to_not receive(:subscribed?)
-      end
-    end
-
-    describe('#all_artifacts') do
-      it('defaults the artifacts to an empty array') do
-        expect(subject.all_artifacts).to eql([])
       end
     end
 

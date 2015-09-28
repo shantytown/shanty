@@ -34,17 +34,25 @@ module Shanty
       find { |project| project.name == name }
     end
 
-    # Public: Returns all projects that have the given tags.
+    # Public: Returns all projects that have one or more of the given tags.
     #
-    # *plugins - One or more plugins to filter by.
+    # *tags - One or more tags to filter by.
     #
     # Returns an Array of Project subclasses, one for each project in the
-    # repository.
+    # repository that has one or more of the given tags.
     def all_with_tags(*tags)
       return [] if tags.empty?
       select do |project|
         tags.map(&:to_sym).all? { |tag| project.all_tags.include?(tag) }
       end
+    end
+
+    # Public: Returns all projects that have been marked as changed.
+    #
+    # Returns an Array of Project subclasses, one for each project in the
+    # repository.
+    def changed
+      select(&:changed?)
     end
 
     # Public: Given a path to a file or directory (normally a path obtained
