@@ -40,6 +40,9 @@ module Shanty
       @path = path
 
       @name = File.basename(path)
+      # FIXME: When changed is implemented properly, redefine this to default
+      # to false.
+      @changed = true
       @artifacts = []
       @plugins = []
       @tags = []
@@ -68,6 +71,20 @@ module Shanty
     # Returns the Array of Artifacts available for this project.
     def all_artifacts
       (@artifacts + @plugins.flat_map { |plugin| plugin.artifacts(project) }).uniq
+    end
+
+    # Public: Whether this project is changed. Note that a project is considered
+    # changed if any of its ancestors are marked as changed.
+    #
+    # Returns a boolean, true if the project is considered changed.
+    def changed?
+      @changed || parents.any?(&:changed?)
+    end
+
+    # Public: Mark this project as changed. Note that any decendants of this
+    # project will also be marked as changed by setting this.
+    def changed!
+      @changed = true
     end
 
     def publish(name, *args)
