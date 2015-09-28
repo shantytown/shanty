@@ -42,7 +42,7 @@ module Shanty
       it('calls cucumber') do
         expect(subject).to receive(:system).with('cucumber')
 
-        subject.cucumber
+        subject.cucumber(project)
       end
     end
   end

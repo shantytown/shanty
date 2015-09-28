@@ -41,6 +41,10 @@ module Shanty
       end
     end
 
+    def artifacts(_)
+      []
+    end
+
     def with_graph(graph)
       callbacks = self.class.instance_variable_get(:@with_graph_callbacks)
       return [] if callbacks.nil? || callbacks.empty?

@@ -43,7 +43,7 @@ module Shanty
       it('calls rspec') do
         expect(subject).to receive(:system).with('rspec')
 
-        subject.rspec
+        subject.rspec(project)
       end
     end
   end

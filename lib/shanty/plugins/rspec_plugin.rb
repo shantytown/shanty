@@ -17,7 +17,7 @@ module Shanty
       end
     end
 
-    def rspec
+    def rspec(_)
       system 'rspec'
     end
   end

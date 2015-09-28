@@ -4,7 +4,7 @@ require 'shanty/plugins/rubocop_plugin'
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(RubocopPlugin) do
-    include_context('basics')
+    include_context('graph')
 
     it('adds the rubocop tag') do
       expect(described_class).to add_tags(:rubocop)
@@ -22,7 +22,7 @@ module Shanty
       it('calls rubocop') do
         expect(subject).to receive(:system).with('rubocop')
 
-        subject.rubocop
+        subject.rubocop(project)
       end
     end
   end
