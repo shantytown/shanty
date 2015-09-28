@@ -4,7 +4,7 @@ require 'shanty/plugins/bundler_plugin'
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(BundlerPlugin) do
-    include_context('basics')
+    include_context('graph')
 
     it('adds the bundler tag') do
       expect(described_class).to add_tags(:bundler)
@@ -22,7 +22,7 @@ module Shanty
       it('calls bundler install') do
         expect(subject).to receive(:system).with('bundle install --quiet')
 
-        subject.bundle_install
+        subject.bundle_install(project)
       end
     end
   end

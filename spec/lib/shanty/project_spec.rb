@@ -68,7 +68,7 @@ module Shanty
       it('publishes the event on any listening plugins') do
         allow(plugin).to receive(:subscribed?).and_return(true)
 
-        expect(plugin).to receive(:publish).with(:foo, :bar, :lux)
+        expect(plugin).to receive(:publish).with(:foo, subject, :bar, :lux)
 
         subject.publish(:foo, :bar, :lux)
       end

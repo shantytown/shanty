@@ -7,7 +7,7 @@ module Shanty
     projects '**/.rubocop.yml'
     subscribe :test, :rubocop
 
-    def rubocop
+    def rubocop(_)
       system 'rubocop'
     end
   end

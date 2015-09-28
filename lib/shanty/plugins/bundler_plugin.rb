@@ -8,7 +8,7 @@ module Shanty
     projects '**/Gemfile'
     subscribe :build, :bundle_install
 
-    def bundle_install
+    def bundle_install(_)
       Bundler.with_clean_env do
         # FIXME: Add support for the --jobs argument to parallelise the bundler run.
         system 'bundle install --quiet'

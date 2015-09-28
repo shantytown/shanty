@@ -10,12 +10,14 @@ module Shanty
     projects '**/*.gemspec'
     subscribe :build, :build_gem
 
-    def build_gem
-      system 'gem build *.gemspec'
+    def build_gem(project)
+      gemspec_files(project).each do |file|
+        system "gem build #{file}"
+      end
     end
 
     def artifacts(project)
-      Dir[File.join(project.path, '*.gemspec')].flat_map do |file|
+      gemspec_files(project).flat_map do |file|
         gemspec = Gem::Specification.load(file)
         Artifact.new(
           ARTIFACT_EXTENSION,
@@ -23,6 +25,12 @@ module Shanty
           URI("file://#{project.path}/#{gemspec.name}-#{gemspec.version}.#{ARTIFACT_EXTENSION}")
         )
       end
+    end
+
+    private
+
+    def gemspec_files(project)
+      @gemspec_files ||= project_tree.glob(File.join(project.path, '*.gemspec'))
     end
   end
 end

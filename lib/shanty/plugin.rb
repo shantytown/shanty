@@ -41,7 +41,7 @@ module Shanty
       end
     end
 
-    def artifacts(*)
+    def artifacts(_)
       []
     end
 

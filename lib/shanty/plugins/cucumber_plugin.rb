@@ -17,7 +17,7 @@ module Shanty
       end
     end
 
-    def cucumber
+    def cucumber(_)
       system 'cucumber'
     end
   end

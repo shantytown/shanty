@@ -4,7 +4,7 @@ require 'shanty/plugins/rspec_plugin'
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(RspecPlugin) do
-    include_context('basics')
+    include_context('graph')
 
     it('adds the rspec tag') do
       expect(described_class).to add_tags(:rspec)
@@ -22,7 +22,7 @@ module Shanty
       it('calls rspec') do
         expect(subject).to receive(:system).with('rspec')
 
-        subject.rspec
+        subject.rspec(project)
       end
     end
   end

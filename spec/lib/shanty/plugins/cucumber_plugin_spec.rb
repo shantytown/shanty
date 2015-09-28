@@ -4,7 +4,7 @@ require 'shanty/plugins/cucumber_plugin'
 # All classes referenced belong to the shanty project
 module Shanty
   RSpec.describe(CucumberPlugin) do
-    include_context('basics')
+    include_context('graph')
 
     it('adds the cucumber tag') do
       expect(described_class).to add_tags(:cucumber)
@@ -22,7 +22,7 @@ module Shanty
       it('calls cucumber') do
         expect(subject).to receive(:system).with('cucumber')
 
-        subject.cucumber
+        subject.cucumber(project)
       end
     end
   end

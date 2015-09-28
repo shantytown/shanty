@@ -65,7 +65,7 @@ module Shanty
     # Public: The artifacts published by this project and any artifacts published
     # by any plugins operating on this project.
     #
-    # Returns an Array of Artifacts representing published binaries
+    # Returns the Array of Artifacts available for this project.
     def all_artifacts
       (@artifacts + @plugins.flat_map { |plugin| plugin.artifacts(project) }).uniq
     end
@@ -74,7 +74,7 @@ module Shanty
       @plugins.each do |plugin|
         next unless plugin.subscribed?(name)
         logger.info("Executing #{name} on the #{plugin.class} plugin...")
-        return false if plugin.publish(name, *args) == false
+        return false if plugin.publish(name, self, *args) == false
       end
     end
 
