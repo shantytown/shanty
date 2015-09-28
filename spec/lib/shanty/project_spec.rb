@@ -66,6 +66,17 @@ module Shanty
         subject.instance_variable_set(:@changed, false)
       end
 
+      it('defaults changed to false') do
+        pending(<<-eof)
+          This will only pass once the default value is set to true when we
+          have proper change detection working.
+        eof
+        # FIXME: Delete the following setup eventually.
+        subject.instance_variable_set(:@changed, true)
+
+        expect(subject.changed?).to be(false)
+      end
+
       it('returns true if the changed flag is true on the current project') do
         subject.instance_variable_set(:@changed, true)
 
