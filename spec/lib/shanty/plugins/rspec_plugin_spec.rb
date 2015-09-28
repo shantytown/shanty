@@ -7,8 +7,8 @@ module Shanty
   RSpec.describe(RspecPlugin) do
     include_context('graph')
 
-    it('adds the rspec tag') do
-      expect(described_class).to add_tags(:rspec)
+    it('adds the rspec tag automatically') do
+      expect(described_class.tags).to match_array([:rspec])
     end
 
     it('finds projects by calling a method to locate the ones that depend on RSpec') do

@@ -2,7 +2,9 @@ require 'i18n'
 require 'logger'
 require 'pathname'
 require 'yaml'
+require 'shenanigans/hash/to_ostruct'
 
+require 'shanty/config'
 require 'shanty/project_tree'
 
 module Shanty
@@ -28,7 +30,7 @@ module Shanty
 
     def require!
       Dir.chdir(root) do
-        (config['require'] || {}).each do |path|
+        (config['require'] || []).each do |path|
           requires_in_path(path).each { |f| require File.join(root, f) }
         end
       end
@@ -59,10 +61,10 @@ module Shanty
     end
 
     def config
-      return @@config unless @@config.nil?
-      return @@config = {} unless File.exist?(config_path)
-      config = YAML.load_file(config_path) || {}
-      @@config = config[environment] || {}
+      @@config ||= Config.new(root, environment)
+    rescue RuntimeError
+      # Create config object without .shanty.yml if the project root cannot be resolved
+      @@config ||= Config.new(nil, environment)
     end
 
     private
@@ -75,10 +77,6 @@ module Shanty
       else
         Dir[path]
       end
-    end
-
-    def config_path
-      "#{root}/#{CONFIG_FILE}"
     end
 
     def find_root

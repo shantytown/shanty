@@ -3,7 +3,6 @@ require 'shanty/plugin'
 module Shanty
   # Public: Cucumber plugin for testing ruby projects.
   class CucumberPlugin < Plugin
-    tags :cucumber
     subscribe :test, :cucumber
     # By default, we'll detect Cucumber in a project if has a dependency on it in a Gemfile or *.gemspec file. If you
     # don't use these files, you'll need to import the plugin manually using a Shantyfile as we can't tell if RSpec is

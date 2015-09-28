@@ -3,7 +3,6 @@ require 'shanty/plugin'
 module Shanty
   # Public: Rspec plugin for testing ruby projects.
   class RspecPlugin < Plugin
-    tags :rspec
     subscribe :test, :rspec
     # By default, we'll detect RSpec in a project if has a dependency on it in a Gemfile or *.gemspec file. If you don't
     # use these files, you'll need to import the plugin manually using a Shantyfile as we can't tell if RSpec is being

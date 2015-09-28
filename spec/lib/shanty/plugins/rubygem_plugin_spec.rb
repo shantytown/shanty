@@ -17,8 +17,12 @@ module Shanty
       eof
     end
 
-    it('adds the rubygem tag') do
-      expect(described_class).to add_tags(:rubygem)
+    it('adds the gem tag') do
+      expect(described_class).to add_tags(:gem)
+    end
+
+    it('adds the rubygem tag automatically') do
+      expect(described_class.tags).to match_array([:rubygem, :gem])
     end
 
     it('finds projects that have a *.gemspec file') do

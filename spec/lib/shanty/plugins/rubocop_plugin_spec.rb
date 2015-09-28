@@ -6,8 +6,8 @@ module Shanty
   RSpec.describe(RubocopPlugin) do
     include_context('graph')
 
-    it('adds the rubocop tag') do
-      expect(described_class).to add_tags(:rubocop)
+    it('adds the rubocop tag automatically') do
+      expect(described_class.tags).to match_array([:rubocop])
     end
 
     it('finds projects that have a .rubocop.yml file') do

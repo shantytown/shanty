@@ -7,10 +7,15 @@ module Shanty
   class Plugin
     include CallMeRuby
     include Env
+    extend Env
 
     def self.inherited(plugin_class)
       @plugins ||= []
       @plugins << plugin_class.new
+    end
+
+    def self.plugins
+      (@plugins || [])
     end
 
     def self.all_projects
@@ -22,7 +27,15 @@ module Shanty
     end
 
     def self.tags(*args)
-      (@tags ||= []).concat(args.map(&:to_sym))
+      (@tags ||= [name]).concat(args.map(&:to_sym))
+    end
+
+    def self.option(option, default = nil)
+      config[name][option] = default if config[name][option].nil?
+    end
+
+    def self.options
+      config[name]
     end
 
     def self.projects(*globs_or_syms)
@@ -31,6 +44,10 @@ module Shanty
 
     def self.with_graph(&block)
       (@with_graph_callbacks ||= []) << block
+    end
+
+    def self.name
+      to_s.split('::').last.downcase.gsub('plugin', '').to_sym
     end
 
     def projects

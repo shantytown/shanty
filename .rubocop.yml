@@ -3,6 +3,9 @@ require: rubocop-rspec
 LineLength:
   Max: 120
 
+Metrics/ModuleLength:
+  Max: 150
+  
 # This is a stupid lint. Yes, module_function is more explanatory than extend self for most use cases. However, the
 # former does not work if you want the methods to be able to call private methods; the latter does. See
 # https://practicingruby.com/articles/ruby-and-the-singleton-pattern-dont-get-along for a detailed explanation of the

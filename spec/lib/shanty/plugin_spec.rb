@@ -20,6 +20,18 @@ module Shanty
       described_class.instance_variable_set(:@plugins, plugins)
     end
 
+    describe('.plugins') do
+      it('finds all the loaded plugins') do
+        expect(described_class.plugins.length).to be(1)
+      end
+    end
+
+    describe('.name') do
+      it('gets the name of the class') do
+        expect(plugin_class.name).to eql(plugin_class.to_s.downcase.to_sym)
+      end
+    end
+
     describe('.inherited') do
       it('stores a new instance of any class that extends Plugin') do
         expect(described_class.instance_variable_get(:@plugins).size).to eq(1)
@@ -46,17 +58,57 @@ module Shanty
       end
     end
 
+    describe('.option') do
+      it('can set an expected option default') do
+        allow(plugin_class).to receive(:config).and_return(plugin_class.name => {})
+
+        plugin_class.option(:nic, 'cage')
+
+        expect(plugin_class.options[:nic]).to eql('cage')
+      end
+    end
+
+    describe('.options') do
+      it('returns a default option value') do
+        allow(plugin_class).to receive(:config).and_return(plugin_class.name => {})
+
+        plugin_class.option(:nic, 'cage')
+
+        expect(plugin_class.options[:nic]).to eql('cage')
+      end
+
+      it('returns an existing option value') do
+        allow(plugin_class).to receive(:config).and_return(plugin_class.name => { test: 'test' })
+
+        expect(plugin_class.options[:test]).to eql('test')
+      end
+
+      it('overrides a default option value') do
+        allow(plugin_class).to receive(:config).and_return(plugin_class.name => { nic: 'cage' })
+
+        plugin_class.option(:nic, 'copolla')
+
+        expect(plugin_class.options[:nic]).to eql('cage')
+      end
+
+      it('returns nothing for a non-existent option') do
+        allow(plugin_class).to receive(:config).and_return(plugin_class.name => {})
+
+        expect(plugin_class.options[:nic]).to be_nil
+      end
+    end
+
     describe('.tags') do
       it('stores the given tags') do
         plugin_class.tags(:foo, :marbles)
 
-        expect(plugin_class.instance_variable_get(:@tags)).to match_array([:foo, :marbles])
+        expect(plugin_class.instance_variable_get(:@tags)).to match_array([plugin_class.name.to_sym, :foo, :marbles])
       end
 
       it('converts any given tags to symbols') do
         plugin_class.tags('bar', 'lux')
 
-        expect(plugin_class.instance_variable_get(:@tags)).to match_array([:bar, :lux])
+        expect(plugin_class.instance_variable_get(:@tags)).to match_array([plugin_class.name.to_sym, :bar, :lux])
       end
     end
 
@@ -74,6 +126,12 @@ module Shanty
         plugin_class.with_graph(&block)
 
         expect(plugin_class.instance_variable_get(:@with_graph_callbacks)).to match_array([block])
+      end
+    end
+
+    describe('#artifacts') do
+      it('returns no artifacts when artifacts have not been implemented') do
+        expect(subject.artifacts(project)).to be_empty
       end
     end
 
