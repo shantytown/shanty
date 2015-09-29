@@ -1,4 +1,5 @@
 require 'call_me_ruby'
+require 'shenanigans/hash/to_ostruct'
 require 'shanty/env'
 require 'shanty/project'
 
@@ -31,11 +32,11 @@ module Shanty
     end
 
     def self.option(option, default = nil)
-      config[name][option] = default if config[name][option].nil?
+      (@options ||= {})[option] = default
     end
 
     def self.options
-      config[name]
+      (@options ||= {}).merge(config[name].to_h).to_ostruct
     end
 
     def self.projects(*globs_or_syms)
