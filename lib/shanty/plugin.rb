@@ -1,83 +1,58 @@
 require 'call_me_ruby'
-require 'shenanigans/hash/to_ostruct'
-require 'shanty/env'
+require 'shanty/plugin_dsl'
 require 'shanty/project'
 
 module Shanty
   # Some basic functionality for every plugin.
   class Plugin
     include CallMeRuby
-    include Env
-    extend Env
+    extend PluginDsl
 
-    def self.inherited(plugin_class)
-      @plugins ||= []
-      @plugins << plugin_class.new
+    attr_reader :project, :env
+
+    def initialize(project, env)
+      @project = project
+      @env = env
     end
 
-    def self.plugins
-      (@plugins || [])
+    # External getters
+    def self.project_providers
+      @project_providers ||= []
     end
 
-    def self.all_projects
-      (@plugins || []).flat_map(&:projects).uniq
+    def self.project_globs
+      @project_globs ||= []
     end
 
-    def self.all_with_graph(graph)
-      (@plugins || []).each { |plugin| plugin.with_graph(graph) }
-    end
-
-    def self.tags(*args)
-      (@tags ||= [name]).concat(args.map(&:to_sym))
-    end
-
-    def self.option(option, default = nil)
-      (@options ||= {})[option] = default
-    end
-
-    def self.options
-      (@options ||= {}).merge(config[name].to_h).to_ostruct
-    end
-
-    def self.projects(*globs_or_syms)
-      (@project_matchers ||= []).concat(globs_or_syms)
-    end
-
-    def self.with_graph(&block)
-      (@with_graph_callbacks ||= []) << block
+    def self.tags
+      @tags ||= [name]
     end
 
     def self.name
       to_s.split('::').last.downcase.gsub('plugin', '').to_sym
     end
 
-    def projects
-      project_matchers = self.class.instance_variable_get(:@project_matchers)
-      return [] if project_matchers.nil? || project_matchers.empty?
-      (projects_from_globs(project_matchers) + projects_from_callbacks(project_matchers)).uniq.tap do |projects|
+    # Outside builders
+
+    def self.projects(env)
+      Set.new.tap do |projects|
+        projects.merge(project_providers.flat_map { |provider| send(provider, env) })
+        env.file_tree.glob(*project_globs).each do |path|
+          projects << find_or_create_project(File.dirname(path), env)
+        end
+
         projects.each { |project| project.add_plugin(self) }
       end
     end
 
+    # Inner class methods
+    def self.find_or_create_project(path, env)
+      path = File.absolute_path(path)
+      (env.projects[path] ||= Project.new(path, env))
+    end
+
     def artifacts(_)
       []
-    end
-
-    def with_graph(graph)
-      callbacks = self.class.instance_variable_get(:@with_graph_callbacks)
-      return [] if callbacks.nil? || callbacks.empty?
-      callbacks.each { |callback| callback.call(graph) }
-    end
-
-    private
-
-    def projects_from_globs(project_matchers)
-      globs = project_matchers.find_all { |glob_or_sym| glob_or_sym.is_a?(String) }
-      project_tree.glob(*globs).map { |path| Project.new(File.absolute_path(File.dirname(path))) }
-    end
-
-    def projects_from_callbacks(project_matchers)
-      project_matchers.find_all { |glob_or_sym| glob_or_sym.is_a?(Symbol) }.flat_map { |sym| send(sym) }
     end
   end
 end

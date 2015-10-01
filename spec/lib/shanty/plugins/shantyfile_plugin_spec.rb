@@ -1,39 +1,43 @@
 require 'spec_helper'
 require 'shanty/plugins/shantyfile_plugin'
 
-# All classes referenced belong to the shanty project
-module Shanty
-  RSpec.describe(ShantyfilePlugin) do
-    include_context('graph')
+RSpec.describe(Shanty::Plugins::ShantyfilePlugin) do
+  include_context('plugin')
 
-    it('adds the shantyfile tag shantyfile') do
-      expect(described_class.tags).to match_array([:shantyfile])
+  it('adds the shantyfile tag automatically') do
+    expect(described_class).to provide_tags(:shantyfile)
+  end
+
+  it('finds projects by calling a method to locate the ones that have a Shantyfile') do
+    expect(described_class).to provide_projects(:shantyfile_projects)
+  end
+
+  describe('#shantyfile_projects') do
+    before do
+      allow(file_tree).to receive(:glob).and_return(shantyfiles)
+
+      shantyfiles.each_with_index do |shantyfile, i|
+        File.write(shantyfile, "instance_variable_set(:@this_is_a_test, #{i})")
+      end
     end
 
-    it('finds projects by calling a method to locate the ones that have a Shantyfile') do
-      expect(described_class).to define_projects.with(:shantyfile_projects)
+    let(:shantyfiles) do
+      [
+        File.join(project_paths.first, 'Shantyfile'),
+        File.join(project_paths[2], 'Shantyfile')
+      ]
     end
 
-    describe('#shantyfile_projects') do
-      it('finds all projects with a Shantyfile') do
-        FileUtils.touch(File.join(project_paths[:one], 'Shantyfile'))
-        FileUtils.touch(File.join(project_paths[:three], 'Shantyfile'))
+    it('finds all projects with a Shantyfile') do
+      result = described_class.shantyfile_projects(env).map(&:path)
+      expect(result).to contain_exactly(project_paths.first, project_paths[2])
+    end
 
-        expect(subject.shantyfile_projects).to match_array([
-          projects[:one],
-          projects[:three]
-        ])
-      end
+    it('executes the found Shantyfiles within the context of the project') do
+      projects = described_class.shantyfile_projects(env)
 
-      it('executes the found Shantyfiles within the context of the project') do
-        File.write(File.join(project_paths[:one], 'Shantyfile'), 'instance_variable_set(:@this_is_a_test, "foo")')
-        File.write(File.join(project_paths[:three], 'Shantyfile'), 'instance_variable_set(:@this_is_a_test, "bar")')
-
-        subject.shantyfile_projects
-
-        expect(projects[:one].instance_variable_get(:@this_is_a_test)).to eq('foo')
-        expect(projects[:three].instance_variable_get(:@this_is_a_test)).to eq('bar')
-      end
+      expect(projects.first.instance_variable_get(:@this_is_a_test)).to eq(0)
+      expect(projects[1].instance_variable_get(:@this_is_a_test)).to eq(1)
     end
   end
 end

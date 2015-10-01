@@ -1,0 +1,5 @@
+require 'shanty/plugins/bundler_plugin'
+require 'shanty/plugins/cucumber_plugin'
+require 'shanty/plugins/rspec_plugin'
+require 'shanty/plugins/rubocop_plugin'
+require 'shanty/plugins/rubygem_plugin'

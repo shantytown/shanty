@@ -1,29 +1,26 @@
 require 'spec_helper'
 require 'shanty/plugins/rubocop_plugin'
 
-# All classes referenced belong to the shanty project
-module Shanty
-  RSpec.describe(RubocopPlugin) do
-    include_context('graph')
+RSpec.describe(Shanty::Plugins::RubocopPlugin) do
+  include_context('plugin')
 
-    it('adds the rubocop tag automatically') do
-      expect(described_class.tags).to match_array([:rubocop])
-    end
+  it('adds the rubocop tag automatically') do
+    expect(described_class).to provide_tags(:rubocop)
+  end
 
-    it('finds projects that have a .rubocop.yml file') do
-      expect(described_class).to define_projects.with('**/.rubocop.yml')
-    end
+  it('finds projects that have a .rubocop.yml file') do
+    expect(described_class).to provide_projects_containing('**/.rubocop.yml')
+  end
 
-    it('subscribes to the test event') do
-      expect(described_class).to subscribe_to(:test).with(:rubocop)
-    end
+  it('subscribes to the test event') do
+    expect(described_class).to subscribe_to(:test).with(:rubocop)
+  end
 
-    describe('#rubocop') do
-      it('calls rubocop') do
-        expect(subject).to receive(:system).with('rubocop')
+  describe('#rubocop') do
+    it('calls rubocop') do
+      expect(subject).to receive(:system).with('rubocop')
 
-        subject.rubocop(project)
-      end
+      subject.rubocop
     end
   end
 end

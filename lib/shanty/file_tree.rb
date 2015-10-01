@@ -5,7 +5,7 @@ module Shanty
   #
   # FIXME: The ignores are not implemented yet, this work has been recorded in
   # issue #9 (https://github.com/shantytown/shanty/issues/9).
-  class ProjectTree
+  class FileTree
     # Allow double globbing, and matching hidden files.
     GLOB_FLAGS = File::FNM_EXTGLOB | File::FNM_DOTMATCH
     # FIXME: Basic ignores until the .gitignore file can be loaded instead.

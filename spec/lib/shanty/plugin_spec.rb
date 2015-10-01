@@ -1,182 +1,66 @@
 require 'spec_helper'
 require 'shanty/plugin'
 
-# All classes referenced belong to the shanty project
-module Shanty
-  RSpec.describe(Plugin) do
-    include_context('graph')
-    let(:graph) { double('graph') }
-    let(:plugin_class) do
-      Class.new(described_class) do
-        def foo; end
-      end
-    end
-    subject { plugin_class.new }
+RSpec.describe(Shanty::Plugin) do
+  include_context('workspace')
 
-    around do |example|
-      plugins = described_class.instance_variable_get(:@plugins).clone
-      described_class.instance_variable_set(:@plugins, [subject])
-      example.run
-      described_class.instance_variable_set(:@plugins, plugins)
-    end
+  subject { plugin_class.new(env, project) }
+  let(:plugin_class) { Class.new(described_class) }
+  let(:env) { double('env') }
+  let(:project) { double('project') }
 
-    describe('.plugins') do
-      it('finds all the loaded plugins') do
-        expect(described_class.plugins.length).to be(1)
-      end
+  describe('.name') do
+    it('gets the name of the class') do
+      expect(plugin_class.name).to eql(plugin_class.to_s.downcase.to_sym)
     end
+  end
 
-    describe('.name') do
-      it('gets the name of the class') do
-        expect(plugin_class.name).to eql(plugin_class.to_s.downcase.to_sym)
-      end
+  describe('.projects') do
+    before do
+      allow(env).to receive(:file_tree).and_return(file_tree)
+      allow(env).to receive(:projects).and_return({})
+      allow(env).to receive(:root).and_return(root)
+      allow(file_tree).to receive(:glob).and_return([])
+      allow(project).to receive(:add_plugin)
+
+      plugin_class.define_singleton_method(:foo) { |_| [] }
     end
 
-    describe('.inherited') do
-      it('stores a new instance of any class that extends Plugin') do
-        expect(described_class.instance_variable_get(:@plugins).size).to eq(1)
-        expect(described_class.instance_variable_get(:@plugins).first).to be_instance_of(plugin_class)
-      end
+    let(:file_tree) { double('file tree') }
+    let(:project) { double('project') }
+
+    it('returns no projects if there are no matchers') do
+      expect(plugin_class.projects(env)).to be_empty
     end
 
-    describe('.all_projects') do
-      it('returns all the nominated projects from all the registered plugins') do
-        allow(subject).to receive(:projects).and_return(project)
-        expect(described_class.all_projects).to match_array(project)
-      end
+    it('returns projects matching any stored globs') do
+      paths = project_paths.map { |p| File.join(p, 'foo') }
+      plugin_class.project_globs.concat(['**/foo', '**/bar'])
+      allow(file_tree).to receive(:glob).with('**/foo', '**/bar').and_return(paths)
+
+      expect(plugin_class.projects(env).map(&:path)).to match_array(project_paths)
     end
 
-    describe('.all_with_graph') do
-      before do
-        described_class.instance_variable_set(:@plugins, [subject])
-      end
+    it('returns projects provided by the stored callbacks') do
+      allow(plugin_class).to receive(:foo).and_return([project])
+      plugin_class.project_providers << :foo
 
-      it('calls #with_graph on every registered plugin') do
-        expect(subject).to receive(:with_graph).with(graph)
-
-        described_class.all_with_graph(graph)
-      end
+      expect(plugin_class.projects(env)).to match_array([project])
     end
 
-    describe('.option') do
-      it('can set an expected option default') do
-        allow(plugin_class).to receive(:config).and_return(plugin_class.name => {})
+    it('adds the current plugin to the project') do
+      allow(plugin_class).to receive(:foo).and_return([project])
+      plugin_class.project_providers << :foo
 
-        plugin_class.option(:nic, 'cage')
+      expect(project).to receive(:add_plugin).with(plugin_class)
 
-        expect(plugin_class.options[:nic]).to eql('cage')
-      end
+      plugin_class.projects(env)
     end
+  end
 
-    describe('.options') do
-      it('returns a default option value') do
-        allow(plugin_class).to receive(:config).and_return(plugin_class.name => {})
-
-        plugin_class.option(:nic, 'cage')
-
-        expect(plugin_class.options[:nic]).to eql('cage')
-      end
-
-      it('returns an existing option value') do
-        allow(plugin_class).to receive(:config).and_return(plugin_class.name => { test: 'test' })
-
-        expect(plugin_class.options[:test]).to eql('test')
-      end
-
-      it('overrides a default option value') do
-        allow(plugin_class).to receive(:config).and_return(plugin_class.name => { nic: 'cage' })
-
-        plugin_class.option(:nic, 'copolla')
-
-        expect(plugin_class.options[:nic]).to eql('cage')
-      end
-
-      it('returns nothing for a non-existent option') do
-        allow(plugin_class).to receive(:config).and_return(plugin_class.name => {})
-
-        expect(plugin_class.options[:nic]).to be_nil
-      end
-    end
-
-    describe('.tags') do
-      it('stores the given tags') do
-        plugin_class.tags(:foo, :marbles)
-
-        expect(plugin_class.instance_variable_get(:@tags)).to match_array([plugin_class.name.to_sym, :foo, :marbles])
-      end
-
-      it('converts any given tags to symbols') do
-        plugin_class.tags('bar', 'lux')
-
-        expect(plugin_class.instance_variable_get(:@tags)).to match_array([plugin_class.name.to_sym, :bar, :lux])
-      end
-    end
-
-    describe('.projects') do
-      it('stores the given globs or symbols') do
-        plugin_class.projects('**/foo', :bar)
-
-        expect(plugin_class.instance_variable_get(:@project_matchers)).to match_array(['**/foo', :bar])
-      end
-    end
-
-    describe('.with_graph') do
-      it('stores the passed block') do
-        block = proc {}
-        plugin_class.with_graph(&block)
-
-        expect(plugin_class.instance_variable_get(:@with_graph_callbacks)).to match_array([block])
-      end
-    end
-
-    describe('#artifacts') do
-      it('returns no artifacts when artifacts have not been implemented') do
-        expect(subject.artifacts(project)).to be_empty
-      end
-    end
-
-    describe('#projects') do
-      let(:project_tree) { double('project_tree') }
-
-      it('returns no projects if there are no matchers') do
-        expect(subject.projects).to be_empty
-      end
-
-      it('returns projects matching any stored globs') do
-        paths = project_paths.values.map { |p| File.join(p, 'foo') }
-        plugin_class.projects('**/foo', '**/bar')
-        allow(subject).to receive(:project_tree).and_return(project_tree)
-        allow(project_tree).to receive(:glob).with('**/foo', '**/bar').and_return(paths)
-
-        expect(subject.projects).to match_array(projects.values)
-      end
-
-      it('returns projects provided by the stored callbacks') do
-        allow(subject).to receive(:foo).and_return(projects.values)
-        plugin_class.projects(:foo)
-
-        expect(subject.projects).to match_array(projects.values)
-      end
-
-      it('adds the current plugin to the project') do
-        allow(subject).to receive(:foo).and_return([project])
-        plugin_class.projects(:foo)
-
-        expect(project).to receive(:add_plugin).with(subject)
-
-        subject.projects
-      end
-    end
-
-    describe('#with_graph') do
-      it('calls the stored callbacks with the given graph') do
-        block = proc {}
-        plugin_class.with_graph(&block)
-
-        expect(block).to receive(:call).with(graph)
-
-        subject.with_graph(graph)
-      end
+  describe('#artifacts') do
+    it('returns no artifacts when artifacts have not been implemented') do
+      expect(subject.artifacts(project)).to be_empty
     end
   end
 end
