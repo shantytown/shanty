@@ -1,29 +1,37 @@
 require 'i18n'
 require 'pathname'
-
 require 'shanty/cli'
 require 'shanty/env'
 require 'shanty/graph'
-
-# Require all plugins and task sets.
-Dir[File.join(__dir__, 'shanty', '{plugins,task_sets}', '*.rb')].each { |f| require f }
+require 'shanty/graph_factory'
 
 module Shanty
   # Main shanty class
   class Shanty
-    include Env
-
     # This is the root directory where the Shanty gem is located. Do not confuse this with the root of the repository
     # in which Shanty is operating, which is available via the TaskEnv class.
     GEM_ROOT = File.expand_path(File.join(__dir__, '..'))
 
+    def initialize
+      @env = Env.new
+    end
+
     def start!
       setup_i18n
-      require!
-      Cli.new(TaskSet.task_sets).run
+      execute_shantyconfig!
+      Cli.new(@env.task_sets, @env, graph).run
     end
 
     private
+
+    def execute_shantyconfig!
+      config_path = File.join(@env.root, Env::CONFIG_FILE)
+      @env.instance_eval(File.read(config_path), config_path)
+    end
+
+    def graph
+      GraphFactory.new(@env).graph
+    end
 
     def setup_i18n
       I18n.enforce_available_locales = true

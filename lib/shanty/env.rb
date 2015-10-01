@@ -1,83 +1,59 @@
 require 'i18n'
 require 'logger'
 require 'pathname'
+require 'shanty/file_tree'
+require 'shanty/plugin'
+require 'shanty/plugins/shantyfile_plugin'
+require 'shanty/task_set'
+require 'shanty/task_sets/basic_task_set'
 require 'yaml'
-require 'shenanigans/hash/to_ostruct'
-
-require 'shanty/config'
-require 'shanty/project_tree'
 
 module Shanty
-  #
-  module Env
-    # Idiom to allow singletons that can be mixed in: http://ozmm.org/posts/singin_singletons.html
-    extend self
-
-    CONFIG_FILE = '.shanty.yml'
-
-    # This must be defined first due to being a class var that isn't first
-    # first accessed with ||=.
-    @@config = nil
-
-    def clear!
-      @@logger = nil
-      @@environment = nil
-      @@build_number = nil
-      @@root = nil
-      @@config = nil
-      @@project_tree = nil
-    end
-
-    def require!
-      Dir.chdir(root) do
-        (config['require'] || []).each do |path|
-          requires_in_path(path).each { |f| require File.join(root, f) }
-        end
-      end
-    end
-
-    def logger
-      @@logger ||= Logger.new($stdout).tap do |logger|
-        logger.formatter = proc do |_, datetime, _, msg|
-          "#{datetime}: #{msg}\n"
-        end
-      end
-    end
-
-    def environment
-      @@environment ||= ENV['SHANTY_ENV'] || 'local'
-    end
-
-    def build_number
-      @@build_number ||= (ENV['SHANTY_BUILD_NUMBER'] || 1).to_i
-    end
+  # RWS Monad pattern.
+  class Env
+    CONFIG_FILE = 'Shantyconfig'
 
     def root
-      @@root ||= find_root
+      @root ||= find_root
     end
 
-    def project_tree
-      @@project_tree ||= ProjectTree.new(root)
+    def file_tree
+      @file_tree ||= FileTree.new(root)
+    end
+
+    def plugins
+      @plugins ||= [Plugins::ShantyfilePlugin]
+    end
+
+    def task_sets
+      @task_sets ||= [TaskSets::BasicTaskSet]
+    end
+
+    def projects
+      @projects ||= {}
     end
 
     def config
-      @@config ||= Config.new(root, environment)
-    rescue RuntimeError
-      # Create config object without .shanty.yml if the project root cannot be resolved
-      @@config ||= Config.new(nil, environment)
+      @config ||= Hash.new { |h, k| h[k] = {} }
+    end
+
+    def require(*args)
+      new_plugins = []
+      new_task_sets = []
+
+      Plugin.send(:define_singleton_method, :inherited) { |klass| new_plugins << klass }
+      TaskSet.send(:define_singleton_method, :inherited) { |klass| new_task_sets << klass }
+
+      super(*args)
+
+      Plugin.singleton_class.send(:remove_method, :inherited)
+      TaskSet.singleton_class.send(:remove_method, :inherited)
+
+      plugins.concat(new_plugins)
+      task_sets.concat(new_task_sets)
     end
 
     private
-
-    def requires_in_path(path)
-      if File.directory?(path)
-        Dir[File.join(path, '**', '*.rb')]
-      elsif File.exist?(path)
-        [path]
-      else
-        Dir[path]
-      end
-    end
 
     def find_root
       fail I18n.t('missing_root', config_file: CONFIG_FILE) if root_dir.nil?

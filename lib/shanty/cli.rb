@@ -3,8 +3,6 @@ require 'i18n'
 require 'shanty/info'
 require 'shanty/task_set'
 require 'shanty/env'
-require 'shenanigans/hash/to_ostruct'
-require 'deep_merge'
 
 module Shanty
   # Public: Handle the CLI interface between the user and the registered tasks
@@ -16,8 +14,10 @@ module Shanty
 
     CONFIG_FORMAT = '[plugin]:[key] [value]'
 
-    def initialize(task_sets)
+    def initialize(task_sets, env, graph)
       @task_sets = task_sets
+      @env = env
+      @graph = graph
     end
 
     def tasks
@@ -42,7 +42,7 @@ module Shanty
     def global_config
       global_option('-c', '--config [CONFIG]', "Add config via command line in the format #{CONFIG_FORMAT}") do |config|
         if (match = config.match(/(?<plugin>\S+):(?<key>\S+)\s+(?<value>\S+)/))
-          Env.config.merge!(match[:plugin] => { match[:key] => match[:value] })
+          @env.config[match[:plugin].to_sym][match[:key].to_sym] = match[:value]
         else
           fail(I18n.t('cli.invalid_config_param', actual: config, expected: CONFIG_FORMAT))
         end
@@ -73,14 +73,14 @@ module Shanty
     def add_action_to_command(name, task, command)
       command.action do |_, options|
         task = tasks[name]
-        options.default(Hash[defaults_for_options(task)])
+        options.default(defaults_for_options(task).to_h)
         enforce_required_options(task, options)
         execute_task(name, task, options)
       end
     end
 
     def execute_task(name, task, options)
-      klass = task[:klass].new
+      klass = task[:klass].new(@env, @graph)
       arity = klass.method(name).arity
       args = (arity >= 1 ? [options] : [])
       klass.send(name, *args)
