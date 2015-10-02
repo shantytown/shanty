@@ -10,6 +10,7 @@ module Shanty
       provides_projects_containing '**/*.gemspec'
       provides_tags :gem
       subscribe :build, :build_gem
+      description 'Builds a Rubygem for projects with a gemspec file'
 
       def build_gem
         gemspec_files.each do |file|

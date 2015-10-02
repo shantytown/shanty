@@ -10,6 +10,7 @@ module Shanty
       # being used from the presence of a spec directory alone (this can be many other testing frameworks!)
       provides_projects :rspec_projects
       subscribe :test, :rspec
+      description 'Discovers and runs RSpec tests on Ruby projects'
 
       def self.rspec_projects(env)
         env.file_tree.glob('**/{*.gemspec,Gemfile}').each_with_object([]) do |dependency_file, acc|

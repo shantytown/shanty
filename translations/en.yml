@@ -10,6 +10,11 @@ en:
         tags: An optional list of tags to filter by. By default, all projects are used. Note that the tags are ANDed together, eg. passing "foo" and "bar" will only find projects with both those tags.
     plugins:
       desc: Lists all plugins
+    plugin:
+      desc: See documentation on a plugin
+      options:
+        name: The name of the plugin
+      failed: "Name of plugin not supplied or invalid. Available plugins are: %{plugins}"
     projects:
       desc: Lists all projects.
     build:

@@ -1,4 +1,6 @@
 require 'call_me_ruby'
+require 'shanty/config'
+require 'shanty/config_mixin'
 require 'shanty/plugin_dsl'
 require 'shanty/project'
 
@@ -6,6 +8,7 @@ module Shanty
   # Some basic functionality for every plugin.
   class Plugin
     include CallMeRuby
+    extend ConfigMixin
     extend PluginDsl
 
     attr_reader :project, :env
@@ -32,6 +35,16 @@ module Shanty
       to_s.split('::').last.downcase.gsub('plugin', '').to_sym
     end
 
+    def self.info
+      {
+        name: name,
+        description: @description,
+        tags: tags,
+        subscribes: class_callbacks.keys,
+        config: config
+      }
+    end
+
     # Outside builders
 
     def self.projects(env)
@@ -53,6 +66,10 @@ module Shanty
 
     def artifacts(_)
       []
+    end
+
+    def config
+      @config ||= Config.new(project.config[self.class.name], env.config[self.class.name], self.class.config)
     end
   end
 end

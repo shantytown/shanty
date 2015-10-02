@@ -10,6 +10,7 @@ module Shanty
       # being used from the presence of a spec directory alone (this can be many other testing frameworks!)
       provides_projects :cucumber_projects
       subscribe :test, :cucumber
+      description 'Discovers and runs Cucumber tests on Ruby projects'
 
       def self.cucumber_projects(env)
         env.file_tree.glob('**/{*.gemspec,Gemfile}').each_with_object([]) do |dependency_file, acc|
