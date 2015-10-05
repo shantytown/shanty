@@ -1,6 +1,7 @@
 require 'i18n'
 require 'logger'
 require 'pathname'
+require 'shanty/config_mixin'
 require 'shanty/file_tree'
 require 'shanty/plugin'
 require 'shanty/plugins/shantyfile_plugin'
@@ -11,6 +12,8 @@ require 'yaml'
 module Shanty
   # RWS Monad pattern.
   class Env
+    include ConfigMixin
+
     CONFIG_FILE = 'Shantyconfig'
 
     def root
@@ -31,10 +34,6 @@ module Shanty
 
     def projects
       @projects ||= {}
-    end
-
-    def config
-      @config ||= Hash.new { |h, k| h[k] = {} }
     end
 
     def require(*args)

@@ -1,0 +1,22 @@
+<% require 'terminal-table' %>
+  <%= $terminal.color 'PLUGIN NAME', :bold %>:
+
+    <%= name %>
+
+  <% unless description.nil? %><%= $terminal.color 'DESCRIPTION', :bold %>:
+
+    <%= description %>
+
+  <% end %><% unless subscribes.empty? %><%= $terminal.color 'TASK SUBSCRIPTIONS', :bold %>:
+
+    <%= subscribes.join(', ') %>
+
+  <% end %><%= $terminal.color 'TAGS', :bold %>:
+
+    <%= tags.join(', ') %>
+
+  <% unless config.empty? %><%= $terminal.color 'CONFIGURATION', :bold %>:
+
+<%= Terminal::Table.new(:headings => ['Config Key', 'Default Value'], rows: config) %>
+
+  <% end %>

@@ -1,3 +1,4 @@
+require 'erubis'
 require 'fileutils'
 require 'i18n'
 require 'shanty/task_set'
@@ -15,9 +16,18 @@ module Shanty
 
       desc 'plugins', 'tasks.plugins.desc'
       def plugins(_)
-        Plugin.plugins.each do |plugin|
-          puts plugin.class.name
+        env.plugins.each do |plugin|
+          puts plugin.name
         end
+      end
+
+      desc 'plugin [--name PLUGIN]', 'tasks.plugin.desc'
+      option :name, desc: 'tasks.plugin.options.names'
+      def plugin(options)
+        plugin = plugin_index[options.name]
+
+        fail I18n.t('tasks.plugin.failed', plugins: env.plugins.map(&:name).join(', ')) if plugin.nil?
+        print_plugin_info(info)
       end
 
       desc 'projects [--tags TAG,TAG,...]', 'tasks.projects.desc'
@@ -62,6 +72,16 @@ module Shanty
       def scoped_graph
         return graph if Dir.pwd == env.root
         graph.projects_within_path(Dir.pwd)
+      end
+
+      def plugin_index
+        @plugin_index ||= env.plugins.each_with_object({}) do |plugin, acc|
+          acc[plugin.name.to_s] = plugin
+        end
+      end
+
+      def print_plugin_info(info)
+        puts Erubis::Eruby.new(File.read(File.join(__dir__, 'plugin.erb'))).result(info)
       end
     end
   end

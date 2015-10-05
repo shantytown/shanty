@@ -1,14 +1,16 @@
 require 'acts_as_graph_vertex'
 require 'call_me_ruby'
+require 'shanty/config_mixin'
 require 'shanty/logger'
 
 module Shanty
   # Public: Represents a project in the current repository.
   class Project
     include ActsAsGraphVertex
+    include ConfigMixin
     include Logger
 
-    attr_accessor :path, :env, :name, :artifacts, :tags, :config
+    attr_accessor :path, :env, :name, :artifacts, :tags
 
     # Public: Initialise the Project instance.
     #
@@ -28,7 +30,6 @@ module Shanty
       @artifacts = []
       @plugins = []
       @tags = []
-      @config = {}
     end
 
     def add_plugin(plugin)
@@ -96,7 +97,7 @@ module Shanty
         name: @name,
         path: @path,
         tags: all_tags,
-        config: @config,
+        config: config,
         parents: parents.map(&:path)
       }.inspect
     end

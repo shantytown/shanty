@@ -6,6 +6,7 @@ module Shanty
     # Public: Plugin for finding all directories marked with a Shantyfile.
     class ShantyfilePlugin < Plugin
       provides_projects :shantyfile_projects
+      description 'Discovers and configures projects with a Shantyfile'
 
       def self.shantyfile_projects(env)
         env.file_tree.glob('**/Shantyfile').map do |shantyfile_path|

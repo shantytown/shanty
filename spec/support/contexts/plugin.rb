@@ -1,3 +1,4 @@
+require 'active_support/core_ext/hash/indifferent_access'
 require_relative 'workspace'
 
 RSpec.shared_context('plugin') do
@@ -8,6 +9,9 @@ RSpec.shared_context('plugin') do
     allow(env).to receive(:file_tree).and_return(file_tree)
     allow(env).to receive(:projects).and_return({})
     allow(env).to receive(:root).and_return(root)
+    allow(env).to receive(:config).and_return(
+      HashWithIndifferentAccess.new { |h, k| h[k] = HashWithIndifferentAccess.new }
+    )
 
     allow(file_tree).to receive(:glob).and_return([])
   end

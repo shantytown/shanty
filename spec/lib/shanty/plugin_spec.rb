@@ -1,3 +1,4 @@
+require 'active_support/core_ext/hash/indifferent_access'
 require 'spec_helper'
 require 'shanty/plugin'
 
@@ -12,6 +13,16 @@ RSpec.describe(Shanty::Plugin) do
   describe('.name') do
     it('gets the name of the class') do
       expect(plugin_class.name).to eql(plugin_class.to_s.downcase.to_sym)
+    end
+  end
+
+  describe('.info') do
+    it('info to contain information on the plugin') do
+      expect(plugin_class.info).to eql(name: plugin_class.name,
+                                       description: nil,
+                                       tags: [plugin_class.name],
+                                       subscribes: [],
+                                       config: {})
     end
   end
 
@@ -61,6 +72,39 @@ RSpec.describe(Shanty::Plugin) do
   describe('#artifacts') do
     it('returns no artifacts when artifacts have not been implemented') do
       expect(subject.artifacts(project)).to be_empty
+    end
+  end
+
+  describe('#config') do
+    before(:each) do
+      allow(env).to receive(:config).and_return(
+        HashWithIndifferentAccess.new { |h, k| h[k] = HashWithIndifferentAccess.new }
+      )
+      allow(project).to receive(:config).and_return(
+        HashWithIndifferentAccess.new { |h, k| h[k] = HashWithIndifferentAccess.new }
+      )
+    end
+
+    it('returns nothing when no configuration set') do
+      expect(subject.config[:nic]).to be_empty
+    end
+
+    it('retuns valid config when set in the project') do
+      project.config[plugin_class.name][:nic] = 'cage'
+
+      expect(subject.config[:nic]).to eql('cage')
+    end
+
+    it('returns valid config when set in the env') do
+      env.config[plugin_class.name][:nic] = 'cage'
+
+      expect(subject.config[:nic]).to eql('cage')
+    end
+
+    it('returns valid config when set in the plugin') do
+      plugin_class.config[:nic] = 'cage'
+
+      expect(subject.config[:nic]).to eql('cage')
     end
   end
 end
