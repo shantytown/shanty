@@ -90,4 +90,4 @@ shanty help <task> # Help for a specific task
 
 ## Contributing
 
-We welcome any contribution, whether big or small! Simply raise [GitHub pull requests](/pulls), and we'll collaborate with you! If you need ideas on what to work on, [look at the list of GitHub issues](/issues).
+We welcome any contribution, whether big or small! Simply raise [GitHub pull requests](https://github.com/shantytown/shanty/pulls), and we'll collaborate with you! If you need ideas on what to work on, [look at the list of GitHub issues](https://github.com/shantytown/shanty/issues).
