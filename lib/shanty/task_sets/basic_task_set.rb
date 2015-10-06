@@ -27,7 +27,7 @@ module Shanty
         plugin = plugin_index[options.name]
 
         fail I18n.t('tasks.plugin.failed', plugins: env.plugins.map(&:name).join(', ')) if plugin.nil?
-        print_plugin_info(info)
+        print_plugin_info(plugin.info)
       end
 
       desc 'projects [--tags TAG,TAG,...]', 'tasks.projects.desc'
