@@ -15,6 +15,9 @@ rvm:
 #   - rustc --version
 #   - cargo --version
 
+before_install:
+  - gem install bundler
+
 script: bundle exec ./bin/shanty --trace test
 
 notifications:
