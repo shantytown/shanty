@@ -1,18 +1,20 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.2.3
+  - 2.5.0
 
+# FIXME: Disabled for now as we're not using it yet - enable if we do!
 # We have to install Rust manually, as Travis does not yet allow multiligual
 # builds. We install the latest stable Rust build.
-before_install:
-  - mkdir ~/rust-installer
-  - curl -sL https://static.rust-lang.org/rustup.sh -o ~/rust-installer/rustup.sh
-  - sh ~/rust-installer/rustup.sh --prefix=~/rust --spec=stable -y --disable-sudo 2> /dev/null
-  - export PATH=~/rust/bin:$PATH
-  - export LD_LIBRARY_PATH=~/rust/lib:$LD_LIBRARY_PATH
-  - rustc --version
-  - cargo --version
+# before_install:
+#   - mkdir ~/rust-installer
+#   - curl -sL https://static.rust-lang.org/rustup.sh -o ~/rust-installer/rustup.sh
+#   - sh ~/rust-installer/rustup.sh --prefix=~/rust --spec=stable -y --disable-sudo 2> /dev/null
+#   - export PATH=~/rust/bin:$PATH
+#   - export LD_LIBRARY_PATH=~/rust/lib:$LD_LIBRARY_PATH
+#   - rustc --version
+#   - cargo --version
+
 script: bundle exec ./bin/shanty --trace test
 
 notifications:
