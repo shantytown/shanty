@@ -2,8 +2,10 @@ require 'spec_helper'
 require 'shanty/task_set'
 
 RSpec.describe(Shanty::TaskSet) do
-  include_context('workspace')
-  subject { test_plugin.new(env, graph) }
+  include_context('with tmp shanty')
+
+  subject(:task_set) { test_plugin.new(env, graph) }
+
   let(:env) { double('env') }
   let(:graph) { double('graph') }
   let(:test_plugin) do
@@ -72,13 +74,13 @@ RSpec.describe(Shanty::TaskSet) do
 
   describe('#env') do
     it('returns the env passed to the constructor') do
-      expect(subject.env).to eql(env)
+      expect(task_set.env).to eql(env)
     end
   end
 
   describe('#graph') do
     it('returns the graph passed to the constructor') do
-      expect(subject.graph).to eql(graph)
+      expect(task_set.graph).to eql(graph)
     end
   end
 end

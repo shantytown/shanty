@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'shanty/plugins/rspec_plugin'
 
 RSpec.describe(Shanty::Plugins::RspecPlugin) do
-  include_context('plugin')
+  include_context('with plugin')
 
   it('adds the rspec tag automatically') do
     expect(described_class).to provide_tags(:rspec)

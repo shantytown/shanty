@@ -2,6 +2,7 @@ require 'active_support/core_ext/hash/indifferent_access'
 
 RSpec.describe(Shanty::ConfigMixin) do
   subject { test_config_class.new }
+
   let(:test_config_class) { Class.new.tap { |klass| klass.include(described_class) } }
 
   describe('#config') do

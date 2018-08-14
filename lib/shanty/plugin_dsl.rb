@@ -19,7 +19,7 @@ module Shanty
     end
 
     def provides_config(key, default = nil)
-      fail "Default config value for key #{key} is not a string" unless default.is_a?(String) || default.nil?
+      raise "Default config value for key #{key} is not a string" unless default.is_a?(String) || default.nil?
       config[key] = default
     end
   end

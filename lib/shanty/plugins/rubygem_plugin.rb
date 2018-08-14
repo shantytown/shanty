@@ -5,7 +5,7 @@ module Shanty
   module Plugins
     # Public: Rubygem plugin for buildin gems.
     class RubygemPlugin < Plugin
-      ARTIFACT_EXTENSION = 'gem'
+      ARTIFACT_EXTENSION = 'gem'.freeze
 
       provides_projects_containing '**/*.gemspec'
       provides_tags :gem

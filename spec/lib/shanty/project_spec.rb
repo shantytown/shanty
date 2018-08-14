@@ -2,8 +2,10 @@ require 'spec_helper'
 require 'shanty/project'
 
 RSpec.describe(Shanty::Project) do
-  include_context('workspace')
+  include_context('with tmp shanty')
+
   subject { described_class.new(project_path, env) }
+
   let(:env) do
     double('env').tap do |d|
       allow(d).to receive(:root) { root }
@@ -71,10 +73,10 @@ RSpec.describe(Shanty::Project) do
     end
 
     it('defaults changed to false') do
-      pending(<<-eof)
+      pending(<<-PENDING_MSG)
         This will only pass once the default value is set to true when we
         have proper change detection working.
-      eof
+      PENDING_MSG
       # FIXME: Delete the following setup eventually.
       subject.instance_variable_set(:@changed, true)
 
@@ -111,6 +113,7 @@ RSpec.describe(Shanty::Project) do
 
   describe('#publish') do
     before { subject.instance_variable_get(:@plugins) << plugin }
+
     let(:plugin) { double('plugin') }
 
     it('skips over any plugins that are not subscribed to the event') do
@@ -118,7 +121,7 @@ RSpec.describe(Shanty::Project) do
 
       subject.publish(:foo)
 
-      expect(subject).to_not receive(:publish)
+      expect(subject).not_to receive(:publish)
     end
 
     it('publishes the event on any listening plugins') do
@@ -135,7 +138,7 @@ RSpec.describe(Shanty::Project) do
       expect(plugin).to receive(:publish).and_return(false)
 
       expect(subject.publish(:foo)).to be(false)
-      expect(next_plugin).to_not receive(:subscribed?)
+      expect(next_plugin).not_to receive(:subscribed?)
     end
   end
 

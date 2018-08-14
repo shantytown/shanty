@@ -3,19 +3,19 @@ require 'fileutils'
 require 'shanty/plugins/rubygem_plugin'
 
 RSpec.describe(Shanty::Plugins::RubygemPlugin) do
-  include_context('plugin')
+  include_context('with plugin')
   let(:gemspec_path) { File.join(project_path, 'foo.gemspec') }
 
   before do
     allow(file_tree).to receive(:glob).and_return([gemspec_path])
     allow(project).to receive(:path).and_return(project_paths.first)
 
-    File.write(gemspec_path, <<-eof)
+    File.write(gemspec_path, <<-GEMSPEC)
       Gem::Specification.new do |gem|
         gem.name = 'foo'
         gem.version = '1.2.3'
       end
-    eof
+    GEMSPEC
   end
 
   it('adds the gem tag') do
@@ -48,11 +48,11 @@ RSpec.describe(Shanty::Plugins::RubygemPlugin) do
     it('lists the project artifacts') do
       result = subject.artifacts
 
-      expect(result.length).to eql(1)
-      expect(result.first.to_local_path).to eql(gem_path)
-      expect(result.first.file_extension).to eql('gem')
-      expect(result.first.local?).to be true
-      expect(result.first.uri.scheme).to eql('file')
+      expect(result.length).to be(1)
+      expect(result.first.to_local_path).to eq(gem_path)
+      expect(result.first.file_extension).to eq('gem')
+      expect(result.first.local?).to be(true)
+      expect(result.first.uri.scheme).to eq('file')
     end
   end
 end

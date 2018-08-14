@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'shanty/plugins/rubocop_plugin'
 
 RSpec.describe(Shanty::Plugins::RubocopPlugin) do
-  include_context('plugin')
+  include_context('with plugin')
 
   it('adds the rubocop tag automatically') do
     expect(described_class).to provide_tags(:rubocop)

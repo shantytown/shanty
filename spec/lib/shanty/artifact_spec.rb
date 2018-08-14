@@ -1,7 +1,8 @@
 require 'shanty/artifact'
 
 RSpec.describe(Shanty::Artifact) do
-  subject { described_class.new('html', 'test', uri) }
+  subject(:artifact) { described_class.new('html', 'test', uri) }
+
   let(:relative_path_artifact) { described_class.new('html', 'test', URI('file:kim/cage.html')) }
   let(:http_artifact) { described_class.new('html', 'test', URI('http://www.nic.com/kim/cage.html')) }
   let(:schemless_artifact) { described_class.new('html', 'test', URI('kim/cage.html')) }
@@ -24,18 +25,18 @@ RSpec.describe(Shanty::Artifact) do
     end
 
     it('returns true if the file is a local file') do
-      expect(subject.local?).to be(true)
+      expect(artifact.local?).to be(true)
     end
   end
 
   describe('#to_local_path') do
     it('throws an exception if the resource is not local') do
       allow(subject).to receive(:local?).and_return(false)
-      expect { subject.to_local_path }.to raise_error('URI is not a local resource')
+      expect { artifact.to_local_path }.to raise_error('URI is not a local resource')
     end
 
     it('returns the path if the resource is local') do
-      expect(subject.to_local_path).to eql('/nic/kim/cage.html')
+      expect(artifact.to_local_path).to eql('/nic/kim/cage.html')
     end
   end
 end

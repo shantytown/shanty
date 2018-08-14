@@ -15,7 +15,7 @@ module Shanty
       end
 
       desc 'plugins', 'tasks.plugins.desc'
-      def plugins(_)
+      def plugins(_options)
         env.plugins.each do |plugin|
           puts plugin.name
         end
@@ -26,7 +26,7 @@ module Shanty
       def plugin(options)
         plugin = plugin_index[options.name]
 
-        fail I18n.t('tasks.plugin.failed', plugins: env.plugins.map(&:name).join(', ')) if plugin.nil?
+        raise I18n.t('tasks.plugin.failed', plugins: env.plugins.map(&:name).join(', ')) if plugin.nil?
         print_plugin_info(info)
       end
 
@@ -59,7 +59,7 @@ module Shanty
       def run_common_task(task, *tags)
         filtered_graph(*tags).each do |project|
           Dir.chdir(project.path) do
-            fail I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
+            raise I18n.t("tasks.#{task}.failed", project: project) unless project.publish(task)
           end
         end
       end

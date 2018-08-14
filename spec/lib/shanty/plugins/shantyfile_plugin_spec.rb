@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'shanty/plugins/shantyfile_plugin'
 
 RSpec.describe(Shanty::Plugins::ShantyfilePlugin) do
-  include_context('plugin')
+  include_context('with plugin')
 
   it('adds the shantyfile tag automatically') do
     expect(described_class).to provide_tags(:shantyfile)

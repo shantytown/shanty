@@ -3,8 +3,9 @@ require 'tmpdir'
 require 'shanty/graph_factory'
 
 RSpec.describe(Shanty::GraphFactory) do
-  include_context('workspace')
-  subject { described_class.new(env) }
+  include_context('with tmp shanty')
+  subject(:graph_factory) { described_class.new(env) }
+
   let(:env) { double('env') }
   let(:plugins) do
     [
@@ -38,7 +39,7 @@ RSpec.describe(Shanty::GraphFactory) do
 
   describe('#graph') do
     it("returns a graph with the projects sorted using Tarjan's strongly connected components algorithm") do
-      graph = subject.graph
+      graph = graph_factory.graph
 
       expect(graph.first).to eql(projects.first)
       expect(graph[1]).to eql(projects[1])

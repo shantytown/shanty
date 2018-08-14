@@ -64,7 +64,7 @@ module Shanty
       (env.projects[path] ||= Project.new(path, env))
     end
 
-    def artifacts(_)
+    def artifacts
       []
     end
 

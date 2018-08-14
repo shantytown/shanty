@@ -6,8 +6,8 @@ require 'pathname'
 require 'simplecov'
 require 'tmpdir'
 
-require_relative 'support/contexts/plugin'
-require_relative 'support/contexts/workspace'
+require_relative 'support/contexts/with_plugin'
+require_relative 'support/contexts/with_tmp_shanty'
 require_relative 'support/matchers/call_me_ruby'
 require_relative 'support/matchers/plugin'
 

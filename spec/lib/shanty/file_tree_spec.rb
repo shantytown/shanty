@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'shanty/file_tree'
 
 RSpec.describe(Shanty::FileTree) do
-  include_context('workspace')
+  include_context('with tmp shanty')
   subject { described_class.new(root) }
 
   before do
@@ -19,21 +19,25 @@ RSpec.describe(Shanty::FileTree) do
 
   describe('#files') do
     it('returns all the files within the root') do
-      expect(subject.files).to match_array([
-        File.join(root, 'Shantyconfig'),
-        File.join(root, '.gitignore'),
-        File.join(project_paths.first, 'Shantyfile'),
-        File.join(project_paths[2], 'Shantyfile')
-      ])
+      expect(subject.files).to match_array(
+        [
+          File.join(root, 'Shantyconfig'),
+          File.join(root, '.gitignore'),
+          File.join(project_paths.first, 'Shantyfile'),
+          File.join(project_paths[2], 'Shantyfile')
+        ]
+      )
     end
   end
 
   describe('#glob') do
     it('returns all the files within the root that match any of the given globs') do
-      expect(subject.glob('**/Shantyfile', 'badglob')).to match_array([
-        File.join(project_paths.first, 'Shantyfile'),
-        File.join(project_paths[2], 'Shantyfile')
-      ])
+      expect(subject.glob('**/Shantyfile', 'badglob')).to match_array(
+        [
+          File.join(project_paths.first, 'Shantyfile'),
+          File.join(project_paths[2], 'Shantyfile')
+        ]
+      )
     end
   end
 end

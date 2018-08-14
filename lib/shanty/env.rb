@@ -14,7 +14,7 @@ module Shanty
   class Env
     include ConfigMixin
 
-    CONFIG_FILE = 'Shantyconfig'
+    CONFIG_FILE = 'Shantyconfig'.freeze
 
     def root
       @root ||= find_root
@@ -55,7 +55,7 @@ module Shanty
     private
 
     def find_root
-      fail I18n.t('missing_root', config_file: CONFIG_FILE) if root_dir.nil?
+      raise I18n.t('missing_root', config_file: CONFIG_FILE) if root_dir.nil?
       root_dir
     end
 

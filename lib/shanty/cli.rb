@@ -12,7 +12,7 @@ module Shanty
 
     attr_reader :task_sets
 
-    CONFIG_FORMAT = '[plugin]:[key] [value]'
+    CONFIG_FORMAT = '[plugin]:[key] [value]'.freeze
 
     def initialize(task_sets, env, graph)
       @task_sets = task_sets
@@ -22,7 +22,7 @@ module Shanty
 
     def tasks
       @tasks ||= task_sets.reduce({}) do |acc, task_set|
-        # FIXME: Warn or fail when there are duplicate task names?
+        # FIXME: Warn or raise when there are duplicate task names?
         acc.merge(task_set.tasks)
       end
     end
@@ -34,6 +34,7 @@ module Shanty
 
       setup_tasks
       global_config
+
       run!
     end
 
@@ -41,11 +42,14 @@ module Shanty
 
     def global_config
       global_option('-c', '--config [CONFIG]', "Add config via command line in the format #{CONFIG_FORMAT}") do |config|
+        # Disable using guards here because the line is too long otherwise if we do.
+        # rubocop:disable Style/GuardClause
         if (match = config.match(/(?<plugin>\S+):(?<key>\S+)\s+(?<value>\S+)/))
           @env.config[match[:plugin].to_sym][match[:key].to_sym] = match[:value]
         else
-          fail(I18n.t('cli.invalid_config_param', actual: config, expected: CONFIG_FORMAT))
+          raise(I18n.t('cli.invalid_config_param', actual: config, expected: CONFIG_FORMAT))
         end
+        # rubocop:enable Style/GuardClause
       end
     end
 
@@ -121,10 +125,10 @@ module Shanty
 
     def enforce_required_options(task, options)
       missing = task[:options].keep_if do |option_name, option|
-        option[:required] && options.send(option_name).nil?
+        option[:required] && options.__send__(option_name).nil?
       end.keys.join(', ')
 
-      fail(I18n.t('cli.params_missing', missing: missing)) unless missing.empty?
+      raise(I18n.t('cli.params_missing', missing: missing)) unless missing.empty?
     end
   end
 end

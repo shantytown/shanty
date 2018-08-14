@@ -3,6 +3,7 @@ require 'shanty/graph'
 
 RSpec.describe(Shanty::Graph) do
   subject { described_class.new(project_path_trie, projects) }
+
   let(:project_path_trie) { double('project path trie') }
   let(:projects) do
     [
@@ -37,7 +38,7 @@ RSpec.describe(Shanty::Graph) do
   describe('#all_with_tags') do
     before do
       allow(projects.first).to receive(:all_tags).and_return([:foo])
-      allow(projects[1]).to receive(:all_tags).and_return([:foo, :bar])
+      allow(projects[1]).to receive(:all_tags).and_return(%i[foo bar])
       allow(projects[2]).to receive(:all_tags).and_return([:lux])
     end
 

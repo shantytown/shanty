@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'shanty/plugins/cucumber_plugin'
 
 RSpec.describe(Shanty::Plugins::CucumberPlugin) do
-  include_context('plugin')
+  include_context('with plugin')
 
   it('adds the cucumber tag automatically') do
     expect(described_class).to provide_tags(:cucumber)

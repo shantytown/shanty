@@ -36,7 +36,7 @@ module Shanty
     # Raises RuntimeError if the artifact is not local.
     def to_local_path
       return @uri.path if local?
-      fail 'URI is not a local resource'
+      raise 'URI is not a local resource'
     end
 
     # Public: A simple string representation of this artifact.
@@ -49,8 +49,8 @@ module Shanty
     private
 
     def validate_uri
-      fail 'Scheme not present on URI' unless @uri.absolute?
-      fail 'URI is not absolute' if @uri.path.nil?
+      raise 'Scheme not present on URI' unless @uri.absolute?
+      raise 'URI is not absolute' if @uri.path.nil?
     end
   end
 end

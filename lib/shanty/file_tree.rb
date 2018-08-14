@@ -26,7 +26,7 @@ module Shanty
     # project.
     def files
       @files ||= Dir.glob(File.join(@root, '**/*'), GLOB_FLAGS).select do |path|
-        File.file?(path) && !(path =~ IGNORE_REGEX)
+        File.file?(path) && path !~ IGNORE_REGEX
       end
     end
 

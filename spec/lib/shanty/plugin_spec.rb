@@ -3,9 +3,10 @@ require 'spec_helper'
 require 'shanty/plugin'
 
 RSpec.describe(Shanty::Plugin) do
-  include_context('workspace')
+  include_context('with tmp shanty')
 
   subject { plugin_class.new(env, project) }
+
   let(:plugin_class) { Class.new(described_class) }
   let(:env) { double('env') }
   let(:project) { double('project') }
@@ -71,12 +72,12 @@ RSpec.describe(Shanty::Plugin) do
 
   describe('#artifacts') do
     it('returns no artifacts when artifacts have not been implemented') do
-      expect(subject.artifacts(project)).to be_empty
+      expect(subject.artifacts).to be_empty
     end
   end
 
   describe('#config') do
-    before(:each) do
+    before do
       allow(env).to receive(:config).and_return(
         HashWithIndifferentAccess.new { |h, k| h[k] = HashWithIndifferentAccess.new }
       )

@@ -4,7 +4,7 @@ module Shanty
   # Public: Config mixin for use with any class which is configurable
   module ConfigMixin
     def config
-      @configuration ||= HashWithIndifferentAccess.new { |h, k| h[k] = HashWithIndifferentAccess.new }
+      @config ||= HashWithIndifferentAccess.new { |h, k| h[k] = HashWithIndifferentAccess.new }
     end
   end
 end

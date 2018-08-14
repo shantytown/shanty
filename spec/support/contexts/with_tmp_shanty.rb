@@ -1,4 +1,4 @@
-RSpec.shared_context('workspace') do
+RSpec.shared_context('with tmp shanty') do
   around do |example|
     FileUtils.touch(File.join(root, 'Shantyconfig'))
     project_paths.each { |project_path| FileUtils.mkdir_p(project_path) }

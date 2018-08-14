@@ -18,7 +18,7 @@ module Shanty
     # env - The instance of the environment this project should have access to.
     def initialize(path, env)
       full_path = File.expand_path(path, env.root)
-      fail('Path to project must be a directory.') unless File.directory?(full_path)
+      raise('Path to project must be a directory.') unless File.directory?(full_path)
 
       @path = full_path
       @env = env
